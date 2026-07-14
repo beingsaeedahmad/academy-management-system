@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import Input from "../UI/Input";
 import Button from "../UI/Button";
 import Card from "../UI/Card";
+import { useAcademyStore } from "@/store/academyStore";
 
 interface AdmissionFormData {
   admissionNo: string;
@@ -18,6 +19,7 @@ interface AdmissionFormData {
 }
 
 export default function AdmissionForm() {
+  
 
   const {
     register,
@@ -37,14 +39,52 @@ export default function AdmissionForm() {
     },
   });
 
+  const addStudent = useAcademyStore(
+  (state) => state.addStudent
+);
 
-  const onSubmit = (data: AdmissionFormData) => {
 
-    console.log("New Admission:", data);
+ const onSubmit = (data: AdmissionFormData) => {
 
-    reset();
+  addStudent({
 
-  };
+    admissionNo: data.admissionNo,
+
+    rollNumber: data.rollNo,
+
+    name: data.studentName,
+
+    fatherName: data.fatherName,
+
+    gender: data.gender as "Male" | "Female",
+
+    className: data.className,
+
+    phone: data.mobile,
+
+    address: data.address,
+
+    monthlyFees: Number(data.monthlyFees),
+
+    admissionDate: new Date(),
+
+    photo: "",
+
+  });
+
+  reset({
+    admissionNo: "AUTO",
+    rollNo: "AUTO",
+    studentName: "",
+    gender: "",
+    className: "",
+    fatherName: "",
+    mobile: "",
+    address: "",
+    monthlyFees: "",
+  });
+
+};
 
 
   return (
