@@ -1,14 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import Input from "../UI/Input";
-import Button from "../UI/Button";
-import Card from "../UI/Card";
 import { useAcademyStore } from "@/store/academyStore";
 
+import Card from "../UI/Card";
+import Input from "../UI/Input";
+import Button from "../UI/Button";
+
 interface AdmissionFormData {
-  admissionNo: string;
-  rollNo: string;
   studentName: string;
   gender: string;
   className: string;
@@ -19,7 +19,11 @@ interface AdmissionFormData {
 }
 
 export default function AdmissionForm() {
-  
+  const addStudent = useAcademyStore(
+    (state) => state.addStudent
+  );
+
+  const [photo, setPhoto] = useState("");
 
   const {
     register,
@@ -27,8 +31,6 @@ export default function AdmissionForm() {
     reset,
   } = useForm<AdmissionFormData>({
     defaultValues: {
-      admissionNo: "AUTO",
-      rollNo: "AUTO",
       studentName: "",
       gender: "",
       className: "",
@@ -39,98 +41,81 @@ export default function AdmissionForm() {
     },
   });
 
-  const addStudent = useAcademyStore(
-  (state) => state.addStudent
-);
+  const handlePhoto = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
 
+    if (!file) return;
 
- const onSubmit = (data: AdmissionFormData) => {
+    const reader = new FileReader();
 
-  addStudent({
+    reader.onloadend = () => {
+      setPhoto(reader.result as string);
+    };
 
-    admissionNo: data.admissionNo,
+    reader.readAsDataURL(file);
+  };
 
-    rollNumber: data.rollNo,
+  const onSubmit = (data: AdmissionFormData) => {
+    addStudent({
+      name: data.studentName,
 
-    name: data.studentName,
+      fatherName: data.fatherName,
 
-    fatherName: data.fatherName,
+      gender: data.gender as "Male" | "Female",
 
-    gender: data.gender as "Male" | "Female",
+      className: data.className,
 
-    className: data.className,
+      phone: data.mobile,
 
-    phone: data.mobile,
+      address: data.address,
 
-    address: data.address,
+      monthlyFees: Number(data.monthlyFees),
 
-    monthlyFees: Number(data.monthlyFees),
+      admissionDate: new Date(),
 
-    admissionDate: new Date(),
+      photo,
+    });
 
-    photo: "",
+    reset();
 
-  });
-
-  reset({
-    admissionNo: "AUTO",
-    rollNo: "AUTO",
-    studentName: "",
-    gender: "",
-    className: "",
-    fatherName: "",
-    mobile: "",
-    address: "",
-    monthlyFees: "",
-  });
-
-};
-
+    setPhoto("");
+  };
 
   return (
     <Card
       title="New Admission"
-      subtitle="Register new student"
+      subtitle="Register New Student"
     >
-
       <form
+        autoComplete="off"
         onSubmit={handleSubmit(onSubmit)}
-        className="space-y-5"
+        className="space-y-6"
       >
-
-
-        {/* Auto Numbers */}
-
-        <div className="grid grid-cols-2 gap-4">
-
-          <Input
-            label="Admission No"
-            disabled
-            {...register("admissionNo")}
-          />
-
-          <Input
-            label="Roll No"
-            disabled
-            {...register("rollNo")}
-          />
-
-        </div>
-
-
-
-        {/* Student */}
+        {/* Student Name */}
 
         <Input
           label="Student Name"
-          placeholder="Enter student name"
-          {...register("studentName")}
+          placeholder="Enter Student Name"
+          autoComplete="off"
+          {...register("studentName", {
+            required: true,
+          })}
         />
 
+        {/* Gender */}
 
-        <select
-          {...register("gender")}
-          className="
+        <div>
+
+          <label className="mb-2 block text-sm text-slate-400">
+            Gender
+          </label>
+
+          <select
+            autoComplete="off"
+            {...register("gender")}
+            className="
             h-12
             w-full
             rounded-2xl
@@ -140,25 +125,25 @@ export default function AdmissionForm() {
             px-4
             text-white
             outline-none
+            transition
             focus:border-blue-500
           "
-        >
+          >
+            <option value="">
+              Select Gender
+            </option>
 
-          <option value="">
-            Select Gender
-          </option>
+            <option value="Male">
+              Male
+            </option>
 
-          <option value="Male">
-            Male
-          </option>
+            <option value="Female">
+              Female
+            </option>
 
-          <option value="Female">
-            Female
-          </option>
+          </select>
 
-        </select>
-
-
+        </div>
 
         {/* Photo */}
 
@@ -171,6 +156,7 @@ export default function AdmissionForm() {
           <input
             type="file"
             accept="image/*"
+            onChange={handlePhoto}
             className="
               w-full
               rounded-2xl
@@ -178,72 +164,97 @@ export default function AdmissionForm() {
               border-slate-700
               bg-slate-900
               p-3
-              text-sm
               text-slate-300
+            "
+          />
+
+          {photo && (
+
+            <div className="mt-5 flex justify-center">
+
+              <img
+                src={photo}
+                alt="Preview"
+                className="
+                  h-32
+                  w-32
+                  rounded-full
+                  border-4
+                  border-blue-600
+                  object-cover
+                "
+              />
+
+            </div>
+
+          )}
+
+        </div>
+
+        {/* Class */}
+
+        <Input
+          label="Class"
+          placeholder="Example : Class 5"
+          autoComplete="off"
+          {...register("className")}
+        />
+
+        {/* Father */}
+
+        <Input
+          label="Father Name"
+          placeholder="Enter Father Name"
+          autoComplete="off"
+          {...register("fatherName")}
+        />
+
+        {/* Mobile */}
+
+        <Input
+          label="Mobile Number"
+          placeholder="03XXXXXXXXX"
+          autoComplete="off"
+          {...register("mobile")}
+        />
+
+        {/* Address */}
+
+        <div>
+
+          <label className="mb-2 block text-sm text-slate-400">
+            Address
+          </label>
+
+          <textarea
+            autoComplete="off"
+            {...register("address")}
+            placeholder="Complete Address"
+            className="
+              min-h-28
+              w-full
+              rounded-2xl
+              border
+              border-slate-700
+              bg-slate-900
+              p-4
+              text-white
+              outline-none
+              transition
+              focus:border-blue-500
             "
           />
 
         </div>
 
-
-
-        {/* Academic */}
+        {/* Monthly Fee */}
 
         <Input
-          label="Class"
-          placeholder="Example: Class 5"
-          {...register("className")}
-        />
-
-
-
-        {/* Parent */}
-
-        <Input
-          label="Father Name"
-          placeholder="Enter father name"
-          {...register("fatherName")}
-        />
-
-
-        <Input
-          label="Mobile No."
-          placeholder="03xxxxxxxxx"
-          {...register("mobile")}
-        />
-
-
-
-        {/* Address */}
-
-        <textarea
-          {...register("address")}
-          placeholder="Complete address"
-          className="
-            min-h-24
-            w-full
-            rounded-2xl
-            border
-            border-slate-700
-            bg-slate-900
-            p-4
-            text-white
-            outline-none
-            focus:border-blue-500
-          "
-        />
-
-
-
-        {/* Fees */}
-
-        <Input
-          label="Monthly Fees"
-          placeholder="Enter monthly fee"
+          label="Monthly Fee"
+          placeholder="Enter Monthly Fee"
+          autoComplete="off"
           {...register("monthlyFees")}
         />
-
-
 
         <Button
           type="submit"
@@ -252,9 +263,7 @@ export default function AdmissionForm() {
           Save Admission
         </Button>
 
-
       </form>
-
     </Card>
   );
 }

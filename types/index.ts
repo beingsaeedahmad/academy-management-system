@@ -1,31 +1,27 @@
 export interface Student {
   id: string;
 
-  // Admission
   admissionNo: string;
   rollNumber: string;
-  admissionDate: Date;
 
-  // Personal
   name: string;
   fatherName: string;
-  gender?: "Male" | "Female";
   dateOfBirth?: string;
-  photo?: string;
+  gender?: "Male" | "Female";
 
-  // Contact
   phone: string;
   email?: string;
   address?: string;
 
-  // Academic
   className: string;
   section?: string;
 
-  // Fees
   monthlyFees: number;
 
-  // System
+  admissionDate: Date;
+
+  photo?: string;
+
   createdAt: Date;
   updatedAt: Date;
 }

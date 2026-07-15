@@ -1,0 +1,28 @@
+model Student {
+  id             String   @id @default(cuid())
+
+  admissionNo    String   @unique
+  rollNumber     String   @unique
+
+  name           String
+  fatherName     String
+
+  gender         String?
+
+  className      String
+
+  phone          String
+
+  email          String?
+
+  address        String?
+
+  monthlyFees    Int
+
+  photo          String?
+
+  admissionDate  DateTime
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}

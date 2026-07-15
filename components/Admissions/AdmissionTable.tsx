@@ -12,16 +12,16 @@ export default function AdmissionTable() {
       subtitle={`Total Students: ${students.length}`}
     >
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm">
-          <thead className="border-b border-slate-700 text-slate-400">
-            <tr>
-              <th className="p-3">Admission No</th>
-              <th className="p-3">Roll No</th>
-              <th className="p-3">Student</th>
-              <th className="p-3">Father</th>
-              <th className="p-3">Class</th>
-              <th className="p-3">Mobile</th>
-              <th className="p-3">Fee</th>
+        <table className="w-full text-left">
+          <thead className="border-b border-slate-700 bg-slate-900">
+            <tr className="text-slate-300">
+              <th className="p-4">Admission No</th>
+              <th className="p-4">Roll No</th>
+              <th className="p-4">Student</th>
+              <th className="p-4">Father</th>
+              <th className="p-4">Class</th>
+              <th className="p-4">Mobile</th>
+              <th className="p-4">Fee</th>
             </tr>
           </thead>
 
@@ -30,7 +30,7 @@ export default function AdmissionTable() {
               <tr>
                 <td
                   colSpan={7}
-                  className="p-6 text-center text-slate-500"
+                  className="p-8 text-center text-slate-500"
                 >
                   No admissions yet.
                 </td>
@@ -39,15 +39,35 @@ export default function AdmissionTable() {
               students.map((student) => (
                 <tr
                   key={student.id}
-                  className="border-b border-slate-800 hover:bg-slate-900"
+                  className="border-b border-slate-800 transition hover:bg-slate-800/60"
                 >
-                  <td className="p-3">{student.admissionNo}</td>
-                  <td className="p-3">{student.rollNumber}</td>
-                  <td className="p-3">{student.name}</td>
-                  <td className="p-3">{student.fatherName}</td>
-                  <td className="p-3">{student.className}</td>
-                  <td className="p-3">{student.phone}</td>
-                  <td className="p-3">Rs. {student.monthlyFees}</td>
+                  <td className="p-4 font-medium text-slate-200">
+                    {student.admissionNo}
+                  </td>
+
+                  <td className="p-4 text-slate-200">
+                    {student.rollNumber}
+                  </td>
+
+                  <td className="p-4 font-semibold text-white">
+                    {student.name}
+                  </td>
+
+                  <td className="p-4 text-slate-200">
+                    {student.fatherName}
+                  </td>
+
+                  <td className="p-4 text-slate-200">
+                    {student.className}
+                  </td>
+
+                  <td className="p-4 text-slate-200">
+                    {student.phone}
+                  </td>
+
+                  <td className="p-4 font-medium text-green-400">
+                    Rs. {student.monthlyFees}
+                  </td>
                 </tr>
               ))
             )}
