@@ -1,7 +1,0 @@
-export default function AttendanceTable() {
-  return (
-    <div className="rounded-xl border border-slate-700 bg-slate-900 p-5">
-      Attendance Table Coming Soon...
-    </div>
-  );
-}

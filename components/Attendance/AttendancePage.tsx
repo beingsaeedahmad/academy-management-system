@@ -1,20 +1,31 @@
 "use client";
 
 import AttendanceHeader from "./AttendanceHeader";
-import AttendanceStats from "./AttendanceStats";
-import AttendanceFilters from "./AttendanceFilters";
-import AttendanceTable from "./AttendanceTable";
+import AttendanceToolbar from "./AttendanceToolbar";
+import AttendanceRegister from "./AttendanceRegister";
+import AttendanceLegend from "./AttendanceLegend";
+import AttendanceOverviewCards from "./AttendanceOverviewCards";
 
 export default function AttendancePage() {
   return (
-    <div className="space-y-6 p-6">
-      <AttendanceHeader />
+    <div className="min-h-screen bg-[#020817] text-white">
 
-      <AttendanceStats />?
+      <div className="mx-auto max-w-[1900px] space-y-6 p-6">
 
-      <AttendanceFilters />
+        <AttendanceHeader />
 
-      <AttendanceTable />
+        <AttendanceOverviewCards />
+
+        <AttendanceToolbar />
+
+        <AttendanceRegister />
+
+        <AttendanceLegend />
+
+        
+
+      </div>
+
     </div>
   );
 }

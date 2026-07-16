@@ -1,4 +1,5 @@
-import AttendancePage from "@/components/attendance/AttendancePage";
+import AttendancePage from "@/components/Attendance/AttendancePage";
+
 export default function Page() {
   return <AttendancePage />;
 }
