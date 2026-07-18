@@ -1,24 +1,37 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-
+import { useEffect, useRef, useState } from "react";
 import AttendanceRow from "./AttendanceRow";
 import useAttendanceGrid from "./useAttendanceGrid";
 import useKeyboardNavigation from "./useKeyboardNavigation";
 
-import { students } from "./attendanceData";
-
+import { getStudents } from "@/actions/studentActions";
+import { Student } from "@/types";
 export default function AttendanceRegister() {
+  const [students, setStudents] = useState<Student[]>([]);
   const {
     dates,
     grid,
     selectedCell,
     moveSelection,
     setAttendance,
-  } = useAttendanceGrid();
+  } = useAttendanceGrid(students);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
+
+  useEffect(() => {
+  async function loadStudents() {
+    try {
+      const data = await getStudents();
+      setStudents(data);
+    } catch (error) {
+      console.error("LOAD STUDENTS ERROR:", error);
+    }
+  }
+
+  loadStudents();
+}, []);
   /* ================= Keyboard ================= */
 
   useKeyboardNavigation({

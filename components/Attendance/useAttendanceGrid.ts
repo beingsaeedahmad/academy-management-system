@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Student } from "@/types";
 
 import {
   AttendanceGrid,
@@ -20,7 +21,9 @@ import {
   getTodayColumn,
 } from "./attendanceUtils";
 
-export default function useAttendanceGrid() {
+export default function useAttendanceGrid(
+  students: Student[]
+) {
   const [month, setMonth] = useState(getCurrentMonth());
 
   const [year, setYear] = useState(getCurrentYear());
@@ -30,15 +33,18 @@ export default function useAttendanceGrid() {
     [month, year]
   );
 
-  const [grid, setGrid] = useState<AttendanceGrid>(
-    createAttendanceGrid()
-  );
-
+ const [grid, setGrid] = useState<AttendanceGrid>(
+  createAttendanceGrid(students)
+);
   const [selectedCell, setSelectedCell] =
     useState<SelectedCell>({
       row: 0,
       column: Math.max(getTodayColumn(dates), 0),
     });
+
+    useEffect(() => {
+  setGrid(createAttendanceGrid(students));
+}, [students]);
 
   function setAttendance(
     studentId: string,
