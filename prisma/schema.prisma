@@ -1,28 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
 model Student {
-  id             String   @id @default(cuid())
+  id            String   @id @default(cuid())
 
-  admissionNo    String   @unique
-  rollNumber     String   @unique
+  admissionNo   String   @unique
+  rollNumber    String   @unique
 
-  name           String
-  fatherName     String
+  name          String
+  fatherName    String
 
-  gender         String?
+  gender        String?
 
-  className      String
+  className     String
 
-  phone          String
+  phone         String
 
-  email          String?
+  email         String?
 
-  address        String?
+  address       String?
 
-  monthlyFees    Int
+  monthlyFees   Int
 
-  photo          String?
+  photo         String?
 
-  admissionDate  DateTime
+  admissionDate DateTime
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }

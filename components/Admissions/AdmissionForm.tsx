@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useAcademyStore } from "@/store/academyStore";
-
+import { createStudent } from "@/actions/studentActions";
 import Card from "../UI/Card";
 import Input from "../UI/Input";
 import Button from "../UI/Button";
@@ -19,9 +18,7 @@ interface AdmissionFormData {
 }
 
 export default function AdmissionForm() {
-  const addStudent = useAcademyStore(
-    (state) => state.addStudent
-  );
+
 
   const [photo, setPhoto] = useState("");
 
@@ -57,26 +54,28 @@ export default function AdmissionForm() {
     reader.readAsDataURL(file);
   };
 
-  const onSubmit = (data: AdmissionFormData) => {
-    addStudent({
-      name: data.studentName,
+  const onSubmit = async (
+  data: AdmissionFormData
+) => {
+   await createStudent({
 
-      fatherName: data.fatherName,
+  name: data.studentName,
 
-      gender: data.gender as "Male" | "Female",
+  fatherName: data.fatherName,
 
-      className: data.className,
+  gender: data.gender,
 
-      phone: data.mobile,
+  className: data.className,
 
-      address: data.address,
+  phone: data.mobile,
 
-      monthlyFees: Number(data.monthlyFees),
+  address: data.address,
 
-      admissionDate: new Date(),
+  monthlyFees: Number(data.monthlyFees),
 
-      photo,
-    });
+  photo,
+
+});
 
     reset();
 

@@ -7,11 +7,12 @@ export interface Student {
   name: string;
   fatherName: string;
   dateOfBirth?: string;
-  gender?: "Male" | "Female";
+gender?: string | null;  phone: string;
+  email?: string | null;
 
-  phone: string;
-  email?: string;
-  address?: string;
+address?: string | null;
+
+
 
   className: string;
   section?: string;
@@ -20,7 +21,7 @@ export interface Student {
 
   admissionDate: Date;
 
-  photo?: string;
+ photo?: string | null;
 
   createdAt: Date;
   updatedAt: Date;

@@ -1,10 +1,8 @@
+import type { Student } from "@/types";
+
 export type AttendanceStatus = "" | "P" | "A" | "L" | "H";
 
-export interface Student {
-  id: string;
-  rollNo: string;
-  name: string;
-}
+export type { Student };
 
 export interface AttendanceColumn {
   date: string;

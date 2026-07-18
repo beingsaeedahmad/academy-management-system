@@ -75,7 +75,7 @@ export default function AttendanceRow({
           font-semibold
         "
       >
-        {student.rollNo}
+        {student.rollNumber}
       </td>
 
       {/* Student Name */}
