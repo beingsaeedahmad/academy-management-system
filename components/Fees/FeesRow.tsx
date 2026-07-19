@@ -297,12 +297,22 @@ export default function FeesRow({
 
           <button
 
-            onClick={()=>
-              onPayment(
-                fee.id,
-                remaining
-              )
-            }
+      onClick={() => {
+
+ const confirmAction = confirm(
+   `${fee.name} ki fee status change karni hai?`
+ );
+
+
+ if(!confirmAction) return;
+
+
+ onPayment(
+   fee.id,
+   fee.totalFee
+ );
+
+}}
 
             className="
             rounded-md

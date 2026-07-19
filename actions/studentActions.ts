@@ -25,29 +25,77 @@ interface CreateStudentData {
 
 
 
+// CREATE STUDENT
+
 export async function createStudent(
   data: CreateStudentData
 ) {
 
   try {
 
-    const count = await prisma.student.count();
+
+    // Generate Unique Admission No & Roll No
+
+    const totalStudents = await prisma.student.count();
 
 
-    const admissionNo =
-      `ADM-${String(count + 1).padStart(4, "0")}`;
+    let nextNumber = totalStudents + 1;
 
 
-    const rollNumber =
-      `R-${String(count + 1).padStart(4, "0")}`;
+
+    let admissionNo =
+      `ADM-${String(nextNumber).padStart(4, "0")}`;
 
 
+    let rollNumber =
+      `R-${String(nextNumber).padStart(4, "0")}`;
+
+
+
+
+    // Check duplicate admission number
+
+    while (
+
+      await prisma.student.findUnique({
+
+        where: {
+
+          admissionNo,
+
+        },
+
+      })
+
+    ) {
+
+
+      nextNumber++;
+
+
+      admissionNo =
+        `ADM-${String(nextNumber).padStart(4, "0")}`;
+
+
+      rollNumber =
+        `R-${String(nextNumber).padStart(4, "0")}`;
+
+
+    }
+
+
+
+
+
+    // Create Student
 
     const student = await prisma.student.create({
 
       data: {
 
+
         admissionNo,
+
 
         rollNumber,
 
@@ -58,7 +106,7 @@ export async function createStudent(
         fatherName: data.fatherName,
 
 
-        gender: data.gender,
+        gender: data.gender ?? null,
 
 
         className: data.className,
@@ -67,20 +115,55 @@ export async function createStudent(
         phone: data.phone,
 
 
-        address: data.address,
+        address: data.address ?? null,
 
 
         monthlyFees: data.monthlyFees,
 
 
-        photo: data.photo,
+        photo: data.photo ?? null,
 
 
         admissionDate: new Date(),
 
+
       },
 
+
     });
+
+
+
+
+
+
+    // Automatically create Fee Record
+
+    await prisma.fee.create({
+
+      data: {
+
+
+        studentId: student.id,
+
+
+        totalFee: student.monthlyFees,
+
+
+        paidAmount: 0,
+
+
+        dueDate: new Date(),
+
+
+        status: "Pending",
+
+
+      },
+
+
+    });
+
 
 
 
@@ -92,14 +175,15 @@ export async function createStudent(
 
 
     console.error(
+
       "CREATE STUDENT ERROR:",
+
       error
+
     );
 
 
-    throw new Error(
-      "Student creation failed"
-    );
+    throw error;
 
 
   }
@@ -109,90 +193,220 @@ export async function createStudent(
 
 
 
+
+
+
+// GET ALL STUDENTS
 
 export async function getStudents() {
 
 
-  const students = await prisma.student.findMany({
-
-    orderBy: {
-
-      createdAt: "desc",
-
-    },
-
-  });
-
-
-  return students;
-
-
-}
-export async function deleteStudent(id: string) {
   try {
-    await prisma.student.delete({
-      where: {
-        id,
+
+
+    const students = await prisma.student.findMany({
+
+
+      orderBy: {
+
+
+        createdAt: "desc",
+
+
       },
+
+
+      include: {
+
+
+        fees: true,
+
+
+      },
+
+
     });
 
-    return {
-      success: true,
-    };
+
+
+    return students;
+
+
 
   } catch (error) {
 
+
     console.error(
-      "DELETE STUDENT ERROR:",
+
+      "GET STUDENTS ERROR:",
+
       error
+
     );
 
-    throw new Error(
-      "Student delete failed"
-    );
+
+    throw error;
+
+
   }
+
 }
-export async function updateStudent(
-  id: string,
-  data: {
-    name?: string;
-    fatherName?: string;
-    gender?: string;
-    className?: string;
-    phone?: string;
-    address?: string;
-    monthlyFees?: number;
-    photo?: string;
-  }
+
+
+
+
+
+
+
+// DELETE STUDENT
+
+export async function deleteStudent(
+  id: string
 ) {
 
+
   try {
+
+
+
+    // Delete related fees first
+
+    await prisma.fee.deleteMany({
+
+      where: {
+
+        studentId: id,
+
+      },
+
+    });
+
+
+
+
+
+    await prisma.student.delete({
+
+      where: {
+
+        id,
+
+      },
+
+    });
+
+
+
+
+
+    return {
+
+      success: true,
+
+    };
+
+
+
+  } catch (error) {
+
+
+    console.error(
+
+      "DELETE STUDENT ERROR:",
+
+      error
+
+    );
+
+
+    throw error;
+
+
+  }
+
+}
+
+
+
+
+
+
+
+// UPDATE STUDENT
+
+export async function updateStudent(
+
+  id: string,
+
+
+  data: {
+
+
+    name?: string;
+
+
+    fatherName?: string;
+
+
+    gender?: string;
+
+
+    className?: string;
+
+
+    phone?: string;
+
+
+    address?: string;
+
+
+    monthlyFees?: number;
+
+
+    photo?: string;
+
+
+  }
+
+) {
+
+
+  try {
+
 
     const student = await prisma.student.update({
 
       where: {
+
         id,
+
       },
+
 
       data,
 
     });
 
 
+
     return student;
 
 
-  } catch(error) {
+
+  } catch (error) {
+
 
     console.error(
+
       "UPDATE STUDENT ERROR:",
+
       error
+
     );
 
 
-    throw new Error(
-      "Student update failed"
-    );
+    throw error;
+
 
   }
 

@@ -7,7 +7,7 @@ export type FeeStatus =
 export interface StudentFee {
   id: string;
 
-  rollNo: number;
+  rollNo: string;
 
   name: string;
 

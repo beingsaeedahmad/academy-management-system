@@ -1,81 +1,91 @@
 "use client";
 
-
 import {
+  useEffect,
   useMemo,
   useState,
 } from "react";
 
-
 import {
   StudentFee,
 } from "./feesTypes";
-
 
 import {
   calculateFeesSummary,
   getFeeStatus,
 } from "./feesUtils";
 
+import {
+  getStudents,
+} from "@/actions/studentActions";
 
-
-const initialFees: StudentFee[] = [
-
-  {
-    id:"1",
-    rollNo:1,
-    name:"Ali Khan",
-    className:"10-A",
-    totalFee:50000,
-    paidAmount:50000,
-    dueDate:"2026-07-10",
-    status:"Paid",
-  },
-
-
-  {
-    id:"2",
-    rollNo:2,
-    name:"Ahmed Ali",
-    className:"10-B",
-    totalFee:50000,
-    paidAmount:30000,
-    dueDate:"2026-07-20",
-    status:"Pending",
-  },
-
-
-  {
-    id:"3",
-    rollNo:3,
-    name:"Sara Khan",
-    className:"9-A",
-    totalFee:45000,
-    paidAmount:0,
-    dueDate:"2026-06-15",
-    status:"Overdue",
-  },
-
-];
-
+import {
+  Student,
+} from "@/types";
 
 
 export default function useFees(){
 
-
   const [fees,setFees] =
-    useState<StudentFee[]>(
-      initialFees
-    );
+    useState<StudentFee[]>([]);
 
 
   const [search,setSearch] =
     useState("");
 
 
-
   const [selectedClass,setSelectedClass] =
     useState("All");
+
+
+
+  // ==========================
+  // LOAD STUDENTS FROM DATABASE
+  // ==========================
+
+  useEffect(()=>{
+
+
+    async function loadFees(){
+
+      const students: Student[] =
+        await getStudents();
+
+
+      const feeData: StudentFee[] =
+        students.map((student)=>({
+
+          id: student.id,
+
+rollNo: student.rollNumber,
+          name: student.name,
+
+          className: student.className,
+
+          totalFee: student.monthlyFees,
+
+          paidAmount:0,
+
+          dueDate:
+            new Date().toISOString(),
+
+          status:"Pending",
+
+        }));
+
+
+      setFees(feeData);
+
+
+    }
+
+
+    loadFees();
+
+
+  },[]);
+
+
 
 
 
@@ -106,6 +116,7 @@ export default function useFees(){
           matchClass
         );
 
+
       });
 
 
@@ -118,14 +129,19 @@ export default function useFees(){
 
 
 
+
   const summary =
     useMemo(()=>{
+
 
       return calculateFeesSummary(
         fees
       );
 
+
     },[fees]);
+
+
 
 
 
@@ -142,9 +158,8 @@ export default function useFees(){
       prev.map(item=>{
 
 
-        if(item.id !== id)
+        if(item.id!==id)
           return item;
-
 
 
         const paid =
@@ -158,12 +173,13 @@ export default function useFees(){
 
           paidAmount:paid,
 
+
           status:
-            getFeeStatus(
-              item.totalFee,
-              paid,
-              item.dueDate
-            )
+          getFeeStatus(
+            item.totalFee,
+            paid,
+            item.dueDate
+          )
 
         };
 
@@ -196,5 +212,6 @@ export default function useFees(){
     updatePayment,
 
   };
+
 
 }
