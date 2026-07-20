@@ -139,31 +139,17 @@ export async function createStudent(
 
     // Automatically create Fee Record
 
-    await prisma.fee.create({
-
-      data: {
-
-
-        studentId: student.id,
-
-
-        totalFee: student.monthlyFees,
-
-
-        paidAmount: 0,
-
-
-        dueDate: new Date(),
-
-
-        status: "Pending",
-
-
-      },
-
-
-    });
-
+ await prisma.fee.create({
+  data: {
+    studentId: student.id,
+    month: new Date().getMonth() + 1,
+    year: new Date().getFullYear(),
+    totalFee: student.monthlyFees,
+    paidAmount: 0,
+    dueDate: new Date(),
+    status: "Pending",
+  },
+});
 
 
 
