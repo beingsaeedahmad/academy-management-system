@@ -4,15 +4,10 @@ import { AttendanceStatus } from "./attendanceTypes";
 
 interface AttendanceCellProps {
   status: AttendanceStatus;
-
   isSelected: boolean;
-
   isToday: boolean;
-
   isSunday: boolean;
-
   onClick: () => void;
-
   onChange: (status: AttendanceStatus) => void;
 }
 
@@ -32,6 +27,7 @@ export default function AttendanceCell({
   onClick,
   onChange,
 }: AttendanceCellProps) {
+
   function nextStatus(): AttendanceStatus {
     const current = STATUS_ORDER.indexOf(status);
 
@@ -59,7 +55,16 @@ export default function AttendanceCell({
     }
   }
 
-  function handleDoubleClick() {
+  function handleClick() {
+    onClick();
+  }
+
+  function handleDoubleClick(
+    e: React.MouseEvent<HTMLTableCellElement>
+  ) {
+    e.preventDefault();
+    e.stopPropagation();
+
     if (isSunday) return;
 
     onChange(nextStatus());
@@ -69,26 +74,21 @@ export default function AttendanceCell({
     <td
       tabIndex={0}
       data-selected={isSelected ? "true" : "false"}
-      onClick={onClick}
+      onClick={handleClick}
       onDoubleClick={handleDoubleClick}
       className={`
-       w-7
-min-w-[28px]
+        w-7
+        min-w-[28px]
         h-8
-
         border
         border-slate-700
-
         text-[11px]
         font-bold
         text-center
         align-middle
-
-        transition-all
-        duration-150
-
         select-none
         outline-none
+        transition-all
 
         ${
           isSunday
@@ -96,17 +96,9 @@ min-w-[28px]
             : "cursor-pointer hover:bg-slate-800"
         }
 
-        ${
-          isToday
-            ? "ring-1 ring-blue-400"
-            : ""
-        }
+        ${isToday ? "ring-1 ring-blue-400" : ""}
 
-        ${
-          isSelected
-            ? "outline outline-2 outline-blue-500 z-20"
-            : ""
-        }
+        ${isSelected ? "outline outline-2 outline-blue-500" : ""}
 
         ${getBackground()}
       `}

@@ -1,7 +1,7 @@
 import { AttendanceColumn } from "./attendanceTypes";
 
 export function getCurrentMonth() {
-  return new Date().getMonth();
+  return new Date().getMonth() + 1;
 }
 
 export function getCurrentYear() {
@@ -12,12 +12,12 @@ export function generateMonthDates(
   year: number,
   month: number
 ): AttendanceColumn[] {
-  const totalDays = new Date(year, month + 1, 0).getDate();
+  const totalDays = new Date(year, month, 0).getDate();
 
   const today = new Date();
 
   return Array.from({ length: totalDays }, (_, index) => {
-    const date = new Date(year, month, index + 1);
+    const date = new Date(year, month - 1, index + 1);
 
     return {
       date: date.toISOString().split("T")[0],
@@ -25,7 +25,7 @@ export function generateMonthDates(
       isSunday: date.getDay() === 0,
       isToday:
         today.getDate() === index + 1 &&
-        today.getMonth() === month &&
+        today.getMonth() + 1 === month &&
         today.getFullYear() === year,
     };
   });

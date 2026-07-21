@@ -9,10 +9,7 @@ import {
   SelectedCell,
 } from "./attendanceTypes";
 
-import {
-  createAttendanceGrid,
-  updateAttendance,
-} from "./attendanceData";
+import { createAttendanceGrid } from "./attendanceData";
 
 import {
   generateMonthDates,
@@ -33,27 +30,84 @@ export default function useAttendanceGrid(
     [month, year]
   );
 
- const [grid, setGrid] = useState<AttendanceGrid>(
-  createAttendanceGrid(students)
-);
+  const [grid, setGrid] = useState<AttendanceGrid>(
+    createAttendanceGrid(students)
+  );
+
   const [selectedCell, setSelectedCell] =
     useState<SelectedCell>({
       row: 0,
       column: Math.max(getTodayColumn(dates), 0),
     });
 
-    useEffect(() => {
-  setGrid(createAttendanceGrid(students));
-}, [students]);
+  useEffect(() => {
+    async function loadAttendance() {
+      const response = await fetch(
+        `/api/attendance?month=${month}&year=${year}`
+      );
 
-  function setAttendance(
+      if (!response.ok) return;
+
+      const records = await response.json();
+
+      const newGrid: AttendanceGrid =
+        createAttendanceGrid(students);
+
+      records.forEach((record: any) => {
+        const date = new Date(record.date)
+          .toISOString()
+          .split("T")[0];
+
+        newGrid[record.studentId][date] =
+          record.status;
+      });
+
+      setGrid(newGrid);
+    }
+
+    if (students.length) {
+      loadAttendance();
+    }
+  }, [students, month, year]);
+    async function setAttendance(
     studentId: string,
     date: string,
     status: AttendanceStatus
   ) {
-    setGrid((prev) =>
-      updateAttendance(prev, studentId, date, status)
-    );
+
+    console.log("Saving:", {
+  studentId,
+  date,
+  status,
+});
+
+    try {
+      const response = await fetch("/api/attendance", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          studentId,
+          date,
+          status,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save attendance");
+      }
+
+      setGrid((prev) => ({
+        ...prev,
+        [studentId]: {
+          ...prev[studentId],
+          [date]: status,
+        },
+      }));
+    } catch (error) {
+      console.error("SAVE ATTENDANCE ERROR:", error);
+    }
   }
 
   function moveSelection(
