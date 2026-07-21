@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+
 import { Student } from "@/types";
 
 import {
@@ -9,7 +15,6 @@ import {
   SelectedCell,
 } from "./attendanceTypes";
 
-import { createAttendanceGrid } from "./attendanceData";
 
 import {
   generateMonthDates,
@@ -18,122 +23,167 @@ import {
   getTodayColumn,
 } from "./attendanceUtils";
 
+import {
+  getAttendance,
+  saveAttendance,
+  deleteAttendance,
+} from "@/actions/attendanceActions";
+
+
+
+
 export default function useAttendanceGrid(
   students: Student[]
 ) {
-  const [month, setMonth] = useState(getCurrentMonth());
 
-  const [year, setYear] = useState(getCurrentYear());
 
+function createEmptyGrid(students: Student[]): AttendanceGrid {
+  const grid: AttendanceGrid = {};
+
+  students.forEach((student) => {
+    grid[student.id] = {};
+  });
+
+  return grid;
+}
+
+const [month, setMonth] = useState(
+  getCurrentMonth()
+);
+
+const [year, setYear] = useState(
+  getCurrentYear()
+);
   const dates = useMemo(
     () => generateMonthDates(year, month),
     [month, year]
   );
 
-  const [grid, setGrid] = useState<AttendanceGrid>(
-    createAttendanceGrid(students)
-  );
+  const [grid, setGrid] =
+    useState<AttendanceGrid>({});
 
   const [selectedCell, setSelectedCell] =
     useState<SelectedCell>({
       row: 0,
-      column: Math.max(getTodayColumn(dates), 0),
+      column: Math.max(
+        getTodayColumn(dates),
+        0
+      ),
     });
 
   useEffect(() => {
+    setGrid(createEmptyGrid(students));
+  }, [students]);
+    useEffect(() => {
     async function loadAttendance() {
-      const response = await fetch(
-        `/api/attendance?month=${month}&year=${year}`
-      );
+      if (!students.length) return;
 
-      if (!response.ok) return;
+      try {
+        const records = await getAttendance(
+          month,
+          year
+        );
 
-      const records = await response.json();
+        const newGrid =
+          createEmptyGrid(students);
 
-      const newGrid: AttendanceGrid =
-        createAttendanceGrid(students);
+        records.forEach((record: {
+  studentId: string;
+  date: Date;
+  status: string;
+}) => {
+          const d = new Date(record.date);
 
-      records.forEach((record: any) => {
-        const date = new Date(record.date)
-          .toISOString()
-          .split("T")[0];
+          const date =
+            `${d.getFullYear()}-` +
+            `${String(
+              d.getMonth() + 1
+            ).padStart(2, "0")}-` +
+            `${String(
+              d.getDate()
+            ).padStart(2, "0")}`;
 
-        newGrid[record.studentId][date] =
-          record.status;
-      });
+          if (newGrid[record.studentId]) {
+            newGrid[record.studentId][date] =
+              record.status as AttendanceStatus;
+          }
+        });
 
-      setGrid(newGrid);
-    }
-
-    if (students.length) {
-      loadAttendance();
-    }
-  }, [students, month, year]);
-    async function setAttendance(
-    studentId: string,
-    date: string,
-    status: AttendanceStatus
-  ) {
-
-    console.log("Saving:", {
-  studentId,
-  date,
-  status,
-});
-
-    try {
-      const response = await fetch("/api/attendance", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          studentId,
-          date,
-          status,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to save attendance");
+        setGrid(newGrid);
+      } catch (error) {
+        console.error(
+          "LOAD ATTENDANCE ERROR:",
+          error
+        );
       }
-
-      setGrid((prev) => ({
-        ...prev,
-        [studentId]: {
-          ...prev[studentId],
-          [date]: status,
-        },
-      }));
-    } catch (error) {
-      console.error("SAVE ATTENDANCE ERROR:", error);
     }
-  }
 
-  function moveSelection(
-    row: number,
-    column: number
-  ) {
-    setSelectedCell({
-      row,
-      column,
-    });
-  }
+    loadAttendance();
+  }, [students, month, year]);
 
-  function changeMonth(
-    month: number,
-    year: number
-  ) {
-    setMonth(month);
-    setYear(year);
-  }
+  const setAttendance = useCallback(
+    async (
+      studentId: string,
+      date: string,
+      status: AttendanceStatus
+    ) => {
+      try {
+        if (status === "") {
+          await deleteAttendance(
+            studentId,
+            date
+          );
+        } else {
+          await saveAttendance(
+            studentId,
+            date,
+            status
+          );
+        }
 
-  function focusToday() {
+        setGrid((prev) => ({
+          ...prev,
+          [studentId]: {
+            ...prev[studentId],
+            [date]: status,
+          },
+        }));
+      } catch (error) {
+        console.error(
+          "SAVE ATTENDANCE ERROR:",
+          error
+        );
+      }
+    },
+    []
+  );
+
+  const moveSelection = useCallback(
+    (row: number, column: number) => {
+      setSelectedCell({
+        row,
+        column,
+      });
+    },
+    []
+  );
+    const changeMonth = useCallback(
+    (newMonth: number, newYear: number) => {
+      setMonth(newMonth);
+      setYear(newYear);
+    },
+    []
+  );
+
+  const focusToday = useCallback(() => {
     setSelectedCell({
       row: 0,
-      column: Math.max(getTodayColumn(dates), 0),
+      column: Math.max(
+        getTodayColumn(dates),
+        0
+      ),
     });
-  }
+  }, [dates]);
 
   return {
     month,

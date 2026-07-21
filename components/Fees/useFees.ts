@@ -6,9 +6,9 @@ import {
   useState,
 } from "react";
 
-import {
-  StudentFee,
-} from "./feesTypes";
+import { Fee, Student } from "@prisma/client";
+
+import { StudentFee } from "./feesTypes";
 
 import {
   calculateFeesSummary,
@@ -16,188 +16,178 @@ import {
 } from "./feesUtils";
 
 import {
-  getStudents,
-} from "@/actions/studentActions";
+  getFees,
+  updateFeePayment,
+} from "@/actions/feeActions";
 
-import {
-  Student,
-} from "@/types";
-
-
-export default function useFees(){
-
-  const [fees,setFees] =
+export default function useFees() {
+  const [fees, setFees] =
     useState<StudentFee[]>([]);
 
-
-  const [search,setSearch] =
+  const [search, setSearch] =
     useState("");
 
-
-  const [selectedClass,setSelectedClass] =
-    useState("All");
-
-
+  const [
+    selectedClass,
+    setSelectedClass,
+  ] = useState("All");
 
   // ==========================
-  // LOAD STUDENTS FROM DATABASE
+  // LOAD FEES FROM DATABASE
   // ==========================
 
-  useEffect(()=>{
+  useEffect(() => {
+    async function loadFees() {
+      try {
+        const feeData = await getFees();
 
+        const fees: StudentFee[] =
+          feeData.map(
+            (
+              fee: Fee & {
+                student: Student;
+              }
+            ) => ({
+              id: fee.id,
 
-    async function loadFees(){
+              rollNo:
+                fee.student.rollNumber,
 
-      const students: Student[] =
-        await getStudents();
+              name: fee.student.name,
 
+              className:
+                fee.student.className,
 
-      const feeData: StudentFee[] =
-        students.map((student)=>({
+              totalFee:
+                fee.totalFee,
 
-          id: student.id,
+              paidAmount:
+                fee.paidAmount,
 
-rollNo: student.rollNumber,
-          name: student.name,
+              dueDate:
+                fee.dueDate.toISOString(),
 
-          className: student.className,
-
-          totalFee: student.monthlyFees,
-
-          paidAmount:0,
-
-          dueDate:
-            new Date().toISOString(),
-
-          status:"Pending",
-
-        }));
-
-
-      setFees(feeData);
-
-
-    }
-
-
-    loadFees();
-
-
-  },[]);
-
-
-
-
-
-  const filteredFees =
-    useMemo(()=>{
-
-
-      return fees.filter((item)=>{
-
-
-        const matchSearch =
-          item.name
-          .toLowerCase()
-          .includes(
-            search.toLowerCase()
+              status: fee.status as
+                | "Paid"
+                | "Pending"
+                | "Overdue",
+            })
           );
 
+        setFees(fees);
+      } catch (error) {
+        console.error(
+          "LOAD FEES ERROR:",
+          error
+        );
+      }
+    }
+
+    loadFees();
+  }, []);
+
+  // ==========================
+  // FILTER
+  // ==========================
+
+  const filteredFees =
+    useMemo(() => {
+      return fees.filter((item) => {
+        const matchSearch =
+          item.name
+            .toLowerCase()
+            .includes(
+              search.toLowerCase()
+            );
 
         const matchClass =
-          selectedClass==="All"
-          ||
-          item.className===selectedClass;
-
-
+          selectedClass === "All" ||
+          item.className ===
+            selectedClass;
 
         return (
           matchSearch &&
           matchClass
         );
-
-
       });
-
-
-    },[
+    }, [
       fees,
       search,
-      selectedClass
+      selectedClass,
     ]);
 
-
-
-
+  // ==========================
+  // SUMMARY
+  // ==========================
 
   const summary =
-    useMemo(()=>{
-
-
+    useMemo(() => {
       return calculateFeesSummary(
         fees
       );
+    }, [fees]);
 
+  // ==========================
+  // UPDATE PAYMENT
+  // ==========================
 
-    },[fees]);
+  async function updatePayment(
+    id: string,
+    amount: number
+  ) {
+    try {
+      await updateFeePayment(
+        id,
+        amount
+      );
 
+      const feeData =
+        await getFees();
 
+      const updatedFees: StudentFee[] =
+        feeData.map(
+          (
+            fee: Fee & {
+              student: Student;
+            }
+          ) => ({
+            id: fee.id,
 
+            rollNo:
+              fee.student.rollNumber,
 
+            name: fee.student.name,
 
+            className:
+              fee.student.className,
 
+            totalFee:
+              fee.totalFee,
 
-  function updatePayment(
-    id:string,
-    amount:number
-  ){
+            paidAmount:
+              fee.paidAmount,
 
+            dueDate:
+              fee.dueDate.toISOString(),
 
-    setFees(prev=>
+            status: fee.status as
+              | "Paid"
+              | "Pending"
+              | "Overdue",
+          })
+        );
 
-      prev.map(item=>{
-
-
-        if(item.id!==id)
-          return item;
-
-
-        const paid =
-          item.paidAmount + amount;
-
-
-
-        return {
-
-          ...item,
-
-          paidAmount:paid,
-
-
-          status:
-          getFeeStatus(
-            item.totalFee,
-            paid,
-            item.dueDate
-          )
-
-        };
-
-
-      })
-
-    );
-
-
+      setFees(updatedFees);
+    } catch (error) {
+      console.error(
+        "UPDATE PAYMENT ERROR:",
+        error
+      );
+    }
   }
 
-
-
-
-
   return {
-
-    fees:filteredFees,
+    fees: filteredFees,
 
     summary,
 
@@ -210,8 +200,5 @@ rollNo: student.rollNumber,
     setSelectedClass,
 
     updatePayment,
-
   };
-
-
 }

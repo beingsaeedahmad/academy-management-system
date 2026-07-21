@@ -2,114 +2,104 @@
 
 import { prisma } from "@/lib/prisma";
 
+// ================= GET FEES =================
 
-// Get all fees
 export async function getFees() {
-
-  const fees = await prisma.fee.findMany({
-
+  return prisma.fee.findMany({
     include: {
       student: true,
     },
-
-    orderBy: {
-      createdAt: "desc",
-    },
-
+    orderBy: [
+      {
+        year: "desc",
+      },
+      {
+        month: "desc",
+      },
+      {
+        createdAt: "desc",
+      },
+    ],
   });
-
-
-  return fees;
-
 }
 
+// ================= CREATE FEE =================
 
-
-// Create fee record for student
 export async function createFee(
   studentId: string,
   amount: number
 ) {
+  const today = new Date();
 
-  const fee = await prisma.fee.create({
-
+  return prisma.fee.create({
     data: {
-
       studentId,
+
+      month: today.getMonth() + 1,
+
+      year: today.getFullYear(),
 
       totalFee: amount,
 
       paidAmount: 0,
 
-      dueDate: new Date(),
+      dueDate: new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        10
+      ),
 
       status: "Pending",
-
     },
-
   });
-
-
-  return fee;
-
 }
 
+// ================= UPDATE PAYMENT =================
 
-
-// Update payment
 export async function updateFeePayment(
   id: string,
   amount: number
 ) {
-
-
   const fee =
     await prisma.fee.findUnique({
-
-      where:{
+      where: {
         id,
       },
-
     });
 
-
-
-  if(!fee){
+  if (!fee) {
     throw new Error(
       "Fee record not found"
     );
   }
 
-
-
   const paidAmount =
     fee.paidAmount + amount;
 
-
-
   const status =
     paidAmount >= fee.totalFee
-    ? "Paid"
-    : "Pending";
+      ? "Paid"
+      : "Pending";
 
-
-
-  return await prisma.fee.update({
-
-    where:{
+  return prisma.fee.update({
+    where: {
       id,
     },
-
-
-    data:{
-
+    data: {
       paidAmount,
-
       status,
-
     },
-
   });
+}
 
+// ================= DELETE FEE =================
 
+export async function deleteFee(
+  id: string
+) {
+  return prisma.fee.delete({
+    where: {
+      id,
+    },
+  });
 }
