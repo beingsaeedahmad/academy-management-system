@@ -1,22 +1,15 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { Prisma } from "@prisma/client";
+import type { Fee, Student } from "@prisma/client";
 
-export type FeeWithStudent = Prisma.FeeGetPayload<{
-  include: {
-    student: true;
-  };
-}>;
+export type FeeWithStudent = Fee & {
+  student: Student;
+};
 
 // ================= GET FEES =================
 
 export async function getFees(): Promise<FeeWithStudent[]> {
-
-  const fee = await prisma.fee.findFirst();
-
-console.log(fee?.paymentDate);
-
   const today = new Date();
 
   const currentMonth = today.getMonth() + 1;
@@ -25,7 +18,7 @@ console.log(fee?.paymentDate);
   // Get all students
   const students = await prisma.student.findMany();
 
-  // Create current month fee if missing
+  // Create current month fee automatically if missing
   for (const student of students) {
     const feeExists = await prisma.fee.findUnique({
       where: {
@@ -43,11 +36,9 @@ console.log(fee?.paymentDate);
           studentId: student.id,
 
           month: currentMonth,
-
           year: currentYear,
 
           totalFee: student.monthlyFees,
-
           paidAmount: 0,
 
           dueDate: new Date(
@@ -57,7 +48,6 @@ console.log(fee?.paymentDate);
           ),
 
           paymentDate: null,
-
           remarks: null,
 
           status: "Pending",
@@ -86,6 +76,7 @@ console.log(fee?.paymentDate);
   return fees;
 }
 
+
 // ================= CREATE FEE =================
 
 export async function createFee(
@@ -99,11 +90,9 @@ export async function createFee(
       studentId,
 
       month: today.getMonth() + 1,
-
       year: today.getFullYear(),
 
       totalFee: amount,
-
       paidAmount: 0,
 
       dueDate: new Date(
@@ -113,13 +102,13 @@ export async function createFee(
       ),
 
       paymentDate: null,
-
       remarks: null,
 
       status: "Pending",
     },
   });
 }
+
 
 // ================= UPDATE PAYMENT =================
 
@@ -159,6 +148,7 @@ export async function updateFeePayment(
     },
   });
 }
+
 
 // ================= DELETE FEE =================
 

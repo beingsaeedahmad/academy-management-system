@@ -6,7 +6,6 @@ import {
   useState,
 } from "react";
 
-
 import { StudentFee } from "./feesTypes";
 
 import {
@@ -31,70 +30,57 @@ export default function useFees() {
     setSelectedClass,
   ] = useState("All");
 
-  // ==========================
-  // LOAD FEES FROM DATABASE
-  // ==========================
+  async function loadFees() {
+    try {
+      const feeData = await getFees();
 
-  useEffect(() => {
-    async function loadFees() {
-      try {
-        const feeData = await getFees();
+      const data: StudentFee[] =
+        feeData.map(
+          (fee: FeeWithStudent) => ({
+            id: fee.id,
 
-const fees: StudentFee[] =
-  feeData.map((fee: FeeWithStudent) => ({
-              id: fee.id,
+            rollNo:
+              fee.student.rollNumber,
 
-              rollNo:
-                fee.student.rollNumber,
+            name:
+              fee.student.name,
 
-              name:
-                fee.student.name,
+            className:
+              fee.student.className,
 
-              className:
-                fee.student.className,
+            month: fee.month,
 
-              // NEW
-              month: fee.month,
+            year: fee.year,
 
-              year: fee.year,
+            totalFee:
+              fee.totalFee,
 
-              totalFee:
-                fee.totalFee,
+            paidAmount:
+              fee.paidAmount,
 
-              paidAmount:
-                fee.paidAmount,
+            dueDate:
+              fee.dueDate.toISOString(),
 
-              dueDate:
-                fee.dueDate.toISOString(),
-
-              // NEW
-              paymentDate:
-                fee.paymentDate
-                  ? fee.paymentDate.toISOString()
-                  : null,
-
-              status: fee.status as
+            status:
+              fee.status as
                 | "Paid"
                 | "Pending"
                 | "Overdue",
-            })
-          );
-
-        setFees(fees);
-      } catch (error) {
-        console.error(
-          "LOAD FEES ERROR:",
-          error
+          })
         );
-      }
-    }
 
+      setFees(data);
+    } catch (error) {
+      console.error(
+        "LOAD FEES ERROR:",
+        error
+      );
+    }
+  }
+
+  useEffect(() => {
     loadFees();
   }, []);
-
-  // ==========================
-  // FILTER
-  // ==========================
 
   const filteredFees =
     useMemo(() => {
@@ -122,20 +108,12 @@ const fees: StudentFee[] =
       selectedClass,
     ]);
 
-  // ==========================
-  // SUMMARY
-  // ==========================
-
   const summary =
     useMemo(() => {
       return calculateFeesSummary(
         fees
       );
     }, [fees]);
-
-  // ==========================
-  // UPDATE PAYMENT
-  // ==========================
 
   async function updatePayment(
     id: string,
@@ -147,50 +125,7 @@ const fees: StudentFee[] =
         amount
       );
 
-      const feeData =
-        await getFees();
-
-const updatedFees: StudentFee[] =
-  feeData.map((fee: FeeWithStudent) => ({
-            id: fee.id,
-
-            rollNo:
-              fee.student.rollNumber,
-
-            name:
-              fee.student.name,
-
-            className:
-              fee.student.className,
-
-            // NEW
-            month: fee.month,
-
-            year: fee.year,
-
-            totalFee:
-              fee.totalFee,
-
-            paidAmount:
-              fee.paidAmount,
-
-            dueDate:
-              fee.dueDate.toISOString(),
-
-            // NEW
-            paymentDate:
-              fee.paymentDate
-                ? fee.paymentDate.toISOString()
-                : null,
-
-            status: fee.status as
-              | "Paid"
-              | "Pending"
-              | "Overdue",
-          })
-        );
-
-      setFees(updatedFees);
+      await loadFees();
     } catch (error) {
       console.error(
         "UPDATE PAYMENT ERROR:",

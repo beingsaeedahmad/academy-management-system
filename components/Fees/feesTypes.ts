@@ -1,8 +1,3 @@
-export type FeeStatus =
-  | "Paid"
-  | "Pending"
-  | "Overdue";
-
 export interface StudentFee {
   id: string;
 
@@ -22,26 +17,7 @@ export interface StudentFee {
 
   dueDate: string;
 
-  paymentDate: string | null;
+  paymentDate?: string | null;
 
-  status: FeeStatus;
-}
-export interface FeesSummary {
-  total: number;
 
-  paid: number;
-
-  pending: number;
-
-  overdue: number;
-}
-
-export interface FeeFilters {
-  search: string;
-
-  className: string;
-
-  month: number;
-
-  year: number;
 }
