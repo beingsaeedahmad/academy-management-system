@@ -1,11 +1,72 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
+
+export type FeeWithStudent = Prisma.FeeGetPayload<{
+  include: {
+    student: true;
+  };
+}>;
 
 // ================= GET FEES =================
 
-export async function getFees() {
-  return prisma.fee.findMany({
+export async function getFees(): Promise<FeeWithStudent[]> {
+
+  const fee = await prisma.fee.findFirst();
+
+console.log(fee?.paymentDate);
+
+  const today = new Date();
+
+  const currentMonth = today.getMonth() + 1;
+  const currentYear = today.getFullYear();
+
+  // Get all students
+  const students = await prisma.student.findMany();
+
+  // Create current month fee if missing
+  for (const student of students) {
+    const feeExists = await prisma.fee.findUnique({
+      where: {
+        studentId_month_year: {
+          studentId: student.id,
+          month: currentMonth,
+          year: currentYear,
+        },
+      },
+    });
+
+    if (!feeExists) {
+      await prisma.fee.create({
+        data: {
+          studentId: student.id,
+
+          month: currentMonth,
+
+          year: currentYear,
+
+          totalFee: student.monthlyFees,
+
+          paidAmount: 0,
+
+          dueDate: new Date(
+            currentYear,
+            currentMonth - 1,
+            10
+          ),
+
+          paymentDate: null,
+
+          remarks: null,
+
+          status: "Pending",
+        },
+      });
+    }
+  }
+
+  const fees = await prisma.fee.findMany({
     include: {
       student: true,
     },
@@ -21,6 +82,8 @@ export async function getFees() {
       },
     ],
   });
+
+  return fees;
 }
 
 // ================= CREATE FEE =================
@@ -49,6 +112,10 @@ export async function createFee(
         10
       ),
 
+      paymentDate: null,
+
+      remarks: null,
+
       status: "Pending",
     },
   });
@@ -60,21 +127,17 @@ export async function updateFeePayment(
   id: string,
   amount: number
 ) {
-  const fee =
-    await prisma.fee.findUnique({
-      where: {
-        id,
-      },
-    });
+  const fee = await prisma.fee.findUnique({
+    where: {
+      id,
+    },
+  });
 
   if (!fee) {
-    throw new Error(
-      "Fee record not found"
-    );
+    throw new Error("Fee record not found");
   }
 
-  const paidAmount =
-    fee.paidAmount + amount;
+  const paidAmount = fee.paidAmount + amount;
 
   const status =
     paidAmount >= fee.totalFee
@@ -88,6 +151,11 @@ export async function updateFeePayment(
     data: {
       paidAmount,
       status,
+
+      paymentDate:
+        status === "Paid"
+          ? new Date()
+          : null,
     },
   });
 }

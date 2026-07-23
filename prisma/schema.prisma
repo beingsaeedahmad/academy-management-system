@@ -40,19 +40,25 @@ model Fee {
   id String @id @default(cuid())
 
   studentId String
-  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   month Int
-  year  Int
+  year Int
 
-  totalFee   Int
+  totalFee Int
+
   paidAmount Int @default(0)
 
   dueDate DateTime
 
+  paymentDate DateTime?
+
+  remarks String?
+
   status String @default("Pending")
 
   createdAt DateTime @default(now())
+
   updatedAt DateTime @updatedAt
 
   @@unique([studentId, month, year])

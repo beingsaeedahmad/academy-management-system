@@ -1,261 +1,128 @@
 import FeesRow from "./FeesRow";
 
-
-import {
-  StudentFee,
-} from "./feesTypes";
-
-
+import { StudentFee } from "./feesTypes";
 
 interface Props {
+  fees: StudentFee[];
 
-  fees:StudentFee[];
-
-  onPayment:
-  (
-    id:string,
-    amount:number
-  )=>void;
-
+  onPayment: (
+    id: string,
+    amount: number
+  ) => void;
 }
 
-
-
-
 export default function FeesTable({
-
   fees,
-
   onPayment,
-
-}:Props){
-
-
-
+}: Props) {
   return (
-
     <div
-
       className="
-      rounded-xl
-
-      border
-
-      border-slate-800
-
-      bg-[#0F172A]
-
-      shadow-xl
-
-      overflow-hidden
+        overflow-hidden
+        rounded-2xl
+        border
+        border-slate-800
+        bg-[#0F172A]
+        shadow-xl
       "
-
     >
-
-
-      <div
-
-        className="
-        overflow-x-auto
-        "
-
-      >
-
-
+      <div className="overflow-x-auto">
         <table
-
           className="
-          w-full
-
-          table-fixed
-
-          border-collapse
+            w-full
+            table-fixed
+            border-collapse
           "
-
         >
-
-
-
           {/* HEADER */}
 
-          <thead
-
-            className="
-            sticky
-
-            top-0
-
-            z-40
-            "
-
-          >
-
+          <thead className="sticky top-0 z-40">
             <tr>
-
-
               <th
-
                 className="
-                sticky
-
-                left-0
-
-                z-50
-
-                w-14
-
-                min-w-[56px]
-
-                border
-
-                border-slate-700
-
-                bg-[#0F172A]
-
-                py-3
-
-                text-xs
-
-                font-bold
-
-                text-white
+                  sticky
+                  left-0
+                  z-50
+                  w-20
+                  border
+                  border-slate-700
+                  bg-[#0F172A]
+                  py-4
+                  text-xs
+                  font-semibold
+                  uppercase
+                  tracking-wider
+                  text-slate-300
                 "
-
               >
-
                 Roll
-
               </th>
-
-
-
 
               <th
-
                 className="
-                sticky
-
-                left-14
-
-                z-50
-
-                w-44
-
-                min-w-[176px]
-
-                border
-
-                border-slate-700
-
-                bg-[#0F172A]
-
-                px-3
-
-                text-left
-
-                text-xs
-
-                font-bold
-
-                text-white
+                  sticky
+                  left-20
+                  z-50
+                  w-56
+                  border
+                  border-slate-700
+                  bg-[#0F172A]
+                  px-4
+                  text-left
+                  text-xs
+                  font-semibold
+                  uppercase
+                  tracking-wider
+                  text-slate-300
                 "
-
               >
-
-                Student Name
-
+                Student
               </th>
 
-
-
-
-
-              {
-                [
-                  "Class",
-                  "Total Fee",
-                  "Paid",
-                  "Due",
-                  "Status",
-                  "Action"
-                ]
-                .map(title=>(
-
-                  <th
-
-                    key={title}
-
-                    className="
+              {[
+                "Class",
+                "Month",
+                "Due Date",
+                "Payment Date",
+                "Total Fee",
+                "Paid",
+                "Due",
+                "Status",
+                "Action",
+              ].map((title) => (
+                <th
+                  key={title}
+                  className="
                     border
-
                     border-slate-700
-
                     bg-[#0F172A]
-
-                    py-3
-
+                    py-4
+                    px-3
+                    text-center
                     text-xs
-
-                    font-bold
-
-                    text-white
-                    "
-
-                  >
-
-                    {title}
-
-                  </th>
-
-                ))
-              }
-
-
-
+                    font-semibold
+                    uppercase
+                    tracking-wider
+                    text-slate-300
+                  "
+                >
+                  {title}
+                </th>
+              ))}
             </tr>
-
-
           </thead>
 
-
-
-
-
           <tbody>
-
-
-            {
-              fees.map((fee)=>(
-
-                <FeesRow
-
-                  key={fee.id}
-
-                  fee={fee}
-
-                  onPayment={
-                    onPayment
-                  }
-
-                />
-
-              ))
-            }
-
-
+            {fees.map((fee) => (
+              <FeesRow
+                key={fee.id}
+                fee={fee}
+                onPayment={onPayment}
+              />
+            ))}
           </tbody>
-
-
-
-
         </table>
-
-
       </div>
-
-
     </div>
-
   );
-
 }

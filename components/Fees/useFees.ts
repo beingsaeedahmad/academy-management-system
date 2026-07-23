@@ -6,18 +6,17 @@ import {
   useState,
 } from "react";
 
-import { Fee, Student } from "@prisma/client";
 
 import { StudentFee } from "./feesTypes";
 
 import {
   calculateFeesSummary,
-  getFeeStatus,
 } from "./feesUtils";
 
 import {
   getFees,
   updateFeePayment,
+  type FeeWithStudent,
 } from "@/actions/feeActions";
 
 export default function useFees() {
@@ -41,22 +40,23 @@ export default function useFees() {
       try {
         const feeData = await getFees();
 
-        const fees: StudentFee[] =
-          feeData.map(
-            (
-              fee: Fee & {
-                student: Student;
-              }
-            ) => ({
+const fees: StudentFee[] =
+  feeData.map((fee: FeeWithStudent) => ({
               id: fee.id,
 
               rollNo:
                 fee.student.rollNumber,
 
-              name: fee.student.name,
+              name:
+                fee.student.name,
 
               className:
                 fee.student.className,
+
+              // NEW
+              month: fee.month,
+
+              year: fee.year,
 
               totalFee:
                 fee.totalFee,
@@ -66,6 +66,12 @@ export default function useFees() {
 
               dueDate:
                 fee.dueDate.toISOString(),
+
+              // NEW
+              paymentDate:
+                fee.paymentDate
+                  ? fee.paymentDate.toISOString()
+                  : null,
 
               status: fee.status as
                 | "Paid"
@@ -144,22 +150,23 @@ export default function useFees() {
       const feeData =
         await getFees();
 
-      const updatedFees: StudentFee[] =
-        feeData.map(
-          (
-            fee: Fee & {
-              student: Student;
-            }
-          ) => ({
+const updatedFees: StudentFee[] =
+  feeData.map((fee: FeeWithStudent) => ({
             id: fee.id,
 
             rollNo:
               fee.student.rollNumber,
 
-            name: fee.student.name,
+            name:
+              fee.student.name,
 
             className:
               fee.student.className,
+
+            // NEW
+            month: fee.month,
+
+            year: fee.year,
 
             totalFee:
               fee.totalFee,
@@ -169,6 +176,12 @@ export default function useFees() {
 
             dueDate:
               fee.dueDate.toISOString(),
+
+            // NEW
+            paymentDate:
+              fee.paymentDate
+                ? fee.paymentDate.toISOString()
+                : null,
 
             status: fee.status as
               | "Paid"
