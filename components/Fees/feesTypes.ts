@@ -1,3 +1,8 @@
+export type FeeStatus =
+  | "Paid"
+  | "Pending"
+  | "Overdue";
+
 export interface StudentFee {
   id: string;
 
@@ -19,5 +24,12 @@ export interface StudentFee {
 
   paymentDate?: string | null;
 
+  status: FeeStatus;
+}
 
+export interface FeesSummary {
+  total: number;
+  paid: number;
+  pending: number;
+  overdue: number;
 }

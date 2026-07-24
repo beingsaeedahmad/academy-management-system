@@ -1,372 +1,204 @@
 import FeeStatusBadge from "./FeeStatusBadge";
 
-import {
-  StudentFee,
-} from "./feesTypes";
+import { StudentFee } from "./feesTypes";
 
 import {
   calculateRemaining,
   formatCurrency,
 } from "./feesUtils";
 
-
-
 interface Props {
-
   fee: StudentFee;
 
-  onPayment:(
-    id:string,
-    amount:number
-  )=>void;
-
+  onPayment: (
+    id: string,
+    amount: number
+  ) => void;
 }
 
-
-
 export default function FeesRow({
-
   fee,
-
   onPayment,
+}: Props) {
+  const remaining = calculateRemaining(
+    fee.totalFee,
+    fee.paidAmount
+  );
 
-}:Props){
+  const monthName = new Date(
+    fee.year,
+    fee.month - 1
+  ).toLocaleString("default", {
+    month: "short",
+  });
 
+  const dueDate = new Date(
+    fee.dueDate
+  ).toLocaleDateString("en-GB");
 
-  const remaining =
-    calculateRemaining(
-      fee.totalFee,
-      fee.paidAmount
-    );
-
-
+  const paymentDate = fee.paymentDate
+    ? new Date(
+        fee.paymentDate
+      ).toLocaleDateString("en-GB")
+    : "-";
 
   return (
-
     <tr
-
       className="
-      transition-colors
-
-      hover:bg-slate-800/30
+        border-b
+        border-slate-800
+        bg-[#0B1220]
+        transition
+        hover:bg-slate-800/40
       "
-
     >
-
-
       {/* Roll */}
 
       <td
-
         className="
-        sticky
-
-        left-0
-
-        z-20
-
-        w-14
-
-        min-w-[56px]
-
-        border
-
-        border-slate-700
-
-        bg-[#020817]
-
-        text-center
-
-        text-xs
-
-        font-semibold
-
-        text-white
+          w-24
+          px-3
+          py-4
+          text-sm
+          font-semibold
+          text-white
+          whitespace-nowrap
         "
-
       >
-
         {fee.rollNo}
-
       </td>
 
+      {/* Student */}
 
+      <td className="w-56 px-3 py-4">
+        <div className="flex items-center gap-3">
+          <div
+            className="
+              flex
+              h-9
+              w-9
+              items-center
+              justify-center
+              rounded-full
+              bg-gradient-to-r
+              from-blue-600
+              to-cyan-500
+              text-sm
+              font-bold
+              text-white
+            "
+          >
+            {fee.name.charAt(0).toUpperCase()}
+          </div>
 
+          <div className="min-w-0">
+            <p className="truncate font-semibold text-white">
+              {fee.name}
+            </p>
 
-      {/* Student Name */}
-
-      <td
-
-        className="
-        sticky
-
-        left-14
-
-        z-20
-
-        w-44
-
-        min-w-[176px]
-
-        border
-
-        border-slate-700
-
-        bg-[#020817]
-
-        px-3
-
-        text-xs
-
-        font-medium
-
-        text-white
-
-        whitespace-nowrap
-        "
-
-      >
-
-        {fee.name}
-
+            <p className="text-xs text-slate-400">
+              {fee.rollNo}
+            </p>
+          </div>
+        </div>
       </td>
-
-
-
-
 
       {/* Class */}
 
-      <td
-
-        className="
-        border
-
-        border-slate-700
-
-        text-center
-
-        text-xs
-
-        text-slate-300
-        "
-
-      >
-
+      <td className="px-2 py-4 text-center text-sm text-slate-300">
         {fee.className}
-
       </td>
 
+      {/* Month */}
 
+      <td className="px-2 py-4 text-center text-sm text-slate-300">
+        {monthName}
+      </td>
 
+      {/* Due Date */}
 
+      <td className="px-2 py-4 text-center text-sm text-slate-300">
+        {dueDate}
+      </td>
+
+      {/* Payment Date */}
+
+      <td className="px-2 py-4 text-center text-sm text-slate-300">
+        {paymentDate}
+      </td>
 
       {/* Total Fee */}
 
-      <td
-
-        className="
-        border
-
-        border-slate-700
-
-        px-2
-
-        text-center
-
-        text-xs
-
-        text-white
-        "
-
-      >
-
-        {formatCurrency(
-          fee.totalFee
-        )}
-
+      <td className="px-2 py-4 text-center font-semibold text-white">
+        {formatCurrency(fee.totalFee)}
       </td>
-
-
-
-
 
       {/* Paid */}
 
-      <td
-
-        className="
-        border
-
-        border-slate-700
-
-        px-2
-
-        text-center
-
-        text-xs
-
-        text-green-300
-        "
-
-      >
-
-        {formatCurrency(
-          fee.paidAmount
-        )}
-
+      <td className="px-2 py-4 text-center font-semibold text-emerald-400">
+        {formatCurrency(fee.paidAmount)}
       </td>
-
-
-
-
 
       {/* Due */}
 
-      <td
-
-        className="
-        border
-
-        border-slate-700
-
-        px-2
-
-        text-center
-
-        text-xs
-
-        text-red-300
-        "
-
-      >
-
-        {formatCurrency(
-          remaining
-        )}
-
+      <td className="px-2 py-4 text-center font-semibold text-red-400">
+        {formatCurrency(remaining)}
       </td>
-
-
-
-
 
       {/* Status */}
 
-      <td
-
-        className="
-        border
-
-        border-slate-700
-
-        text-center
-        "
-
-      >
-
+      <td className="px-2 py-4 text-center">
         <FeeStatusBadge
-
           status={fee.status}
-
         />
-
       </td>
-
-
-
-
-
 
       {/* Action */}
 
-      <td
+      <td className="px-2 py-4 text-center">
+        <button
+          onClick={() => {
+            if (remaining <= 0) {
+              alert(
+                "Fee already paid."
+              );
+              return;
+            }
 
-        className="
-        border
+            if (
+              !confirm(
+                `Collect remaining fee from ${fee.name}?`
+              )
+            ) {
+              return;
+            }
 
-        border-slate-700
-
-        text-center
-        "
-
-      >
-
-        {
-          remaining > 0 &&
-
-          <button
-
-      onClick={() => {
-
- const confirmAction = confirm(
-   `${fee.name} ki fee status change karni hai?`
- );
-
-
- if(!confirmAction) return;
-
-
- onPayment(
-   fee.id,
-   fee.totalFee
- );
-
-}}
-
-            className="
-            rounded-md
-
-            bg-blue-600
-
+            onPayment(
+              fee.id,
+              remaining
+            );
+          }}
+          disabled={remaining <= 0}
+          className={`
+            rounded-lg
             px-3
-
-            py-1
-
-            text-[11px]
-
+            py-2
+            text-xs
             font-semibold
-
             text-white
-
-            hover:bg-blue-700
-            "
-
-          >
-
-            Pay
-
-          </button>
-
-        }
-
-
-        {
-          remaining <= 0 &&
-
-          <span
-
-            className="
-            text-[11px]
-
-            text-slate-500
-            "
-
-          >
-
-            Completed
-
-          </span>
-
-        }
-
-
+            transition-all
+            ${
+              remaining > 0
+                ? "bg-blue-600 hover:bg-blue-700"
+                : "cursor-not-allowed bg-slate-700 text-slate-400"
+            }
+          `}
+        >
+          {remaining > 0
+            ? "Collect"
+            : "Paid"}
+        </button>
       </td>
-
-
-
     </tr>
-
   );
-
 }

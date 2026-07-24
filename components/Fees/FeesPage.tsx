@@ -3,7 +3,6 @@
 
 import FeesSummaryCards from "./FeesSummaryCards";
 
-import FeesToolbar from "./FeesToolbar";
 
 import FeesTable from "./FeesTable";
 
@@ -131,21 +130,6 @@ export default function FeesPage(){
 
 
 
-      {/* Toolbar */}
-
-      <FeesToolbar
-
-        search={search}
-
-        setSearch={setSearch}
-
-        selectedClass={selectedClass}
-
-        setSelectedClass={
-          setSelectedClass
-        }
-
-      />
 
 
 

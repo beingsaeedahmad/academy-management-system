@@ -1,5 +1,6 @@
-import FeesRow from "./FeesRow";
+import { ArrowUpDown } from "lucide-react";
 
+import FeesRow from "./FeesRow";
 import { StudentFee } from "./feesTypes";
 
 interface Props {
@@ -11,6 +12,18 @@ interface Props {
   ) => void;
 }
 
+const headers = [
+  "Class",
+  "Month",
+  "Due Date",
+  "Payment",
+  "Fee",
+  "Paid",
+  "Due",
+  "Status",
+  "Action",
+];
+
 export default function FeesTable({
   fees,
   onPayment,
@@ -18,111 +31,79 @@ export default function FeesTable({
   return (
     <div
       className="
-        overflow-hidden
-        rounded-2xl
-        border
-        border-slate-800
-        bg-[#0F172A]
-        shadow-xl
-      "
+      overflow-hidden
+      rounded-2xl
+      border
+      border-slate-800
+      bg-[#0B1120]
+      shadow-xl
+    "
     >
-      <div className="overflow-x-auto">
-        <table
-          className="
-            w-full
-            table-fixed
-            border-collapse
-          "
-        >
-          {/* HEADER */}
-
-          <thead className="sticky top-0 z-40">
-            <tr>
-              <th
-                className="
-                  sticky
-                  left-0
-                  z-50
-                  w-20
-                  border
-                  border-slate-700
-                  bg-[#0F172A]
-                  py-4
-                  text-xs
-                  font-semibold
-                  uppercase
-                  tracking-wider
-                  text-slate-300
-                "
-              >
+      <table className="w-full table-fixed">
+        <thead>
+          <tr className="border-b border-slate-700 bg-[#111827]">
+            <th className="w-24 px-3 py-4 text-left text-[11px] font-bold uppercase tracking-widest text-slate-300">
+              <div className="flex items-center gap-1">
                 Roll
-              </th>
+                <ArrowUpDown size={12} />
+              </div>
+            </th>
 
+            <th className="w-56 px-3 py-4 text-left text-[11px] font-bold uppercase tracking-widest text-slate-300">
+              <div className="flex items-center gap-1">
+                Student
+                <ArrowUpDown size={12} />
+              </div>
+            </th>
+
+            {headers.map((item) => (
               <th
+                key={item}
                 className="
-                  sticky
-                  left-20
-                  z-50
-                  w-56
-                  border
-                  border-slate-700
-                  bg-[#0F172A]
-                  px-4
-                  text-left
-                  text-xs
-                  font-semibold
+                  px-2
+                  py-4
+                  text-center
+                  text-[11px]
+                  font-bold
                   uppercase
-                  tracking-wider
+                  tracking-widest
                   text-slate-300
                 "
               >
-                Student
+                <div className="flex items-center justify-center gap-1">
+                  {item}
+                  <ArrowUpDown size={12} />
+                </div>
               </th>
+            ))}
+          </tr>
+        </thead>
 
-              {[
-                "Class",
-                "Month",
-                "Due Date",
-                "Payment Date",
-                "Total Fee",
-                "Paid",
-                "Due",
-                "Status",
-                "Action",
-              ].map((title) => (
-                <th
-                  key={title}
-                  className="
-                    border
-                    border-slate-700
-                    bg-[#0F172A]
-                    py-4
-                    px-3
-                    text-center
-                    text-xs
-                    font-semibold
-                    uppercase
-                    tracking-wider
-                    text-slate-300
-                  "
-                >
-                  {title}
-                </th>
-              ))}
-            </tr>
-          </thead>
-
-          <tbody>
-            {fees.map((fee) => (
+        <tbody>
+          {fees.length > 0 ? (
+            fees.map((fee) => (
               <FeesRow
                 key={fee.id}
                 fee={fee}
                 onPayment={onPayment}
               />
-            ))}
-          </tbody>
-        </table>
-      </div>
+            ))
+          ) : (
+            <tr>
+              <td
+                colSpan={11}
+                className="
+                  py-16
+                  text-center
+                  text-slate-400
+                "
+              >
+                No fee records found.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
   );
 }
