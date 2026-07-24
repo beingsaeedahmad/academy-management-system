@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import {
   Users,
   UserCheck,
@@ -8,53 +10,82 @@ import {
   LucideIcon,
 } from "lucide-react";
 
+import { getStudentStats } from "@/actions/studentActions";
+
+interface StudentStats {
+  totalStudents: number;
+  activeStudents: number;
+  newAdmissions: number;
+  feeDefaulters: number;
+}
+
 interface CardItem {
   title: string;
-  value: string;
+  value: number;
   icon: LucideIcon;
   color: string;
 }
 
-const cards: CardItem[] = [
-  {
-    title: "Total Students",
-    value: "0",
-    icon: Users,
-    color:
-      "border-blue-500/30 from-blue-500/20 to-blue-900/20",
-  },
-  {
-    title: "Active Students",
-    value: "0",
-    icon: UserCheck,
-    color:
-      "border-green-500/30 from-green-500/20 to-green-900/20",
-  },
-  {
-    title: "New Admissions",
-    value: "0",
-    icon: UserPlus,
-    color:
-      "border-cyan-500/30 from-cyan-500/20 to-cyan-900/20",
-  },
-  {
-    title: "Fee Defaulters",
-    value: "0",
-    icon: Wallet,
-    color:
-      "border-red-500/30 from-red-500/20 to-red-900/20",
-  },
-];
-
 export default function StudentCard() {
+  const [stats, setStats] = useState<StudentStats>({
+    totalStudents: 0,
+    activeStudents: 0,
+    newAdmissions: 0,
+    feeDefaulters: 0,
+  });
+
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const data = await getStudentStats();
+        setStats(data);
+      } catch (error) {
+        console.error("LOAD STUDENT STATS ERROR:", error);
+      }
+    }
+
+    loadStats();
+  }, []);
+
+  const cards: CardItem[] = [
+    {
+      title: "Total Students",
+      value: stats.totalStudents,
+      icon: Users,
+      color:
+        "border-blue-500/30 from-blue-500/20 to-blue-900/20",
+    },
+    {
+      title: "Active Students",
+      value: stats.activeStudents,
+      icon: UserCheck,
+      color:
+        "border-green-500/30 from-green-500/20 to-green-900/20",
+    },
+    {
+      title: "New Admissions",
+      value: stats.newAdmissions,
+      icon: UserPlus,
+      color:
+        "border-cyan-500/30 from-cyan-500/20 to-cyan-900/20",
+    },
+    {
+      title: "Fee Defaulters",
+      value: stats.feeDefaulters,
+      icon: Wallet,
+      color:
+        "border-red-500/30 from-red-500/20 to-red-900/20",
+    },
+  ];
+
   return (
     <div
       className="
         grid
         grid-cols-1
+        gap-5
         sm:grid-cols-2
         xl:grid-cols-4
-        gap-5
       "
     >
       {cards.map((card) => {
@@ -77,31 +108,13 @@ export default function StudentCard() {
               hover:shadow-[0_0_35px_rgba(37,99,235,0.25)]
             `}
           >
-            <div
-              className="
-                flex
-                items-center
-                justify-between
-              "
-            >
+            <div className="flex items-center justify-between">
               <div>
-                <p
-                  className="
-                    text-sm
-                    text-slate-400
-                  "
-                >
+                <p className="text-sm text-slate-400">
                   {card.title}
                 </p>
 
-                <h2
-                  className="
-                    mt-2
-                    text-3xl
-                    font-bold
-                    text-white
-                  "
-                >
+                <h2 className="mt-2 text-3xl font-bold text-white">
                   {card.value}
                 </h2>
               </div>

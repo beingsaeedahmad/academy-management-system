@@ -397,3 +397,67 @@ export async function updateStudent(
   }
 
 }
+// ================= STUDENT STATS =================
+
+export async function getStudentStats() {
+  try {
+    const today = new Date();
+
+    const firstDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      1
+    );
+
+    const nextMonth = new Date(
+      today.getFullYear(),
+      today.getMonth() + 1,
+      1
+    );
+
+    const [
+      totalStudents,
+      activeStudents,
+      newAdmissions,
+      feeDefaulters,
+    ] = await Promise.all([
+      prisma.student.count(),
+
+      prisma.student.count({
+        where: {
+          status: "Active",
+        },
+      }),
+
+      prisma.student.count({
+        where: {
+          createdAt: {
+            gte: firstDay,
+            lt: nextMonth,
+          },
+        },
+      }),
+
+      prisma.fee.count({
+        where: {
+          month: today.getMonth() + 1,
+          year: today.getFullYear(),
+          status: {
+            in: ["Pending", "Overdue"],
+          },
+        },
+      }),
+    ]);
+
+    return {
+      totalStudents,
+      activeStudents,
+      newAdmissions,
+      feeDefaulters,
+    };
+  } catch (error) {
+    console.error("GET STUDENT STATS ERROR:", error);
+    throw error;
+  }
+}
+

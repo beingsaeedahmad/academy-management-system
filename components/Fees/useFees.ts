@@ -19,6 +19,8 @@ import {
 } from "@/actions/feeActions";
 
 export default function useFees() {
+  const today = new Date();
+
   const [fees, setFees] =
     useState<StudentFee[]>([]);
 
@@ -30,9 +32,21 @@ export default function useFees() {
     setSelectedClass,
   ] = useState("All");
 
-  async function loadFees() {
+  const [selectedMonth, setSelectedMonth] =
+    useState(today.getMonth() + 1);
+
+  const [selectedYear, setSelectedYear] =
+    useState(today.getFullYear());
+
+  async function loadFees(
+    month = selectedMonth,
+    year = selectedYear
+  ) {
     try {
-      const feeData = await getFees();
+      const feeData = await getFees(
+        month,
+        year
+      );
 
       const data: StudentFee[] =
         feeData.map(
@@ -61,6 +75,11 @@ export default function useFees() {
             dueDate:
               fee.dueDate.toISOString(),
 
+            paymentDate:
+              fee.paymentDate
+                ? fee.paymentDate.toISOString()
+                : null,
+
             status:
               fee.status as
                 | "Paid"
@@ -79,8 +98,14 @@ export default function useFees() {
   }
 
   useEffect(() => {
-    loadFees();
-  }, []);
+    loadFees(
+      selectedMonth,
+      selectedYear
+    );
+  }, [
+    selectedMonth,
+    selectedYear,
+  ]);
 
   const filteredFees =
     useMemo(() => {
@@ -111,9 +136,9 @@ export default function useFees() {
   const summary =
     useMemo(() => {
       return calculateFeesSummary(
-        fees
+        filteredFees
       );
-    }, [fees]);
+    }, [filteredFees]);
 
   async function updatePayment(
     id: string,
@@ -125,7 +150,10 @@ export default function useFees() {
         amount
       );
 
-      await loadFees();
+      await loadFees(
+        selectedMonth,
+        selectedYear
+      );
     } catch (error) {
       console.error(
         "UPDATE PAYMENT ERROR:",
@@ -140,13 +168,23 @@ export default function useFees() {
     summary,
 
     search,
-
     setSearch,
 
     selectedClass,
-
     setSelectedClass,
 
+    selectedMonth,
+    setSelectedMonth,
+
+    selectedYear,
+    setSelectedYear,
+
     updatePayment,
+
+    reload: () =>
+      loadFees(
+        selectedMonth,
+        selectedYear
+      ),
   };
 }

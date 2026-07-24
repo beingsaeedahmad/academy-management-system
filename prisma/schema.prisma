@@ -10,16 +10,16 @@ model Student {
   id String @id @default(cuid())
 
   admissionNo String @unique
-  rollNumber  String @unique
+  rollNumber String @unique
 
-  name       String
+  name String
   fatherName String
-  gender     String?
+  gender String?
 
   className String
 
-  phone   String
-  email   String?
+  phone String
+  email String?
   address String?
 
   monthlyFees Int
@@ -28,8 +28,9 @@ model Student {
 
   admissionDate DateTime
 
-  // Relations
-  fees       Fee[]
+  status String @default("Active") // <-- Add this
+
+  fees Fee[]
   attendance Attendance[]
 
   createdAt DateTime @default(now())

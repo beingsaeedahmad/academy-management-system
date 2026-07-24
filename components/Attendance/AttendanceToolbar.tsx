@@ -2,7 +2,20 @@
 
 import AttendanceMonthDropdown from "./AttendanceMonthDropdown";
 
-export default function AttendanceToolbar() {
+interface Props {
+  month: number;
+  year: number;
+  onMonthChange: (
+    month: number,
+    year: number
+  ) => void;
+}
+
+export default function AttendanceToolbar({
+  month,
+  year,
+  onMonthChange,
+}: Props) {
   return (
     <div
       className="
@@ -19,21 +32,33 @@ export default function AttendanceToolbar() {
       md:justify-between
       "
     >
-
       {/* Left */}
+
       <div className="flex items-center gap-4">
 
         <div className="text-sm text-slate-400">
           Attendance Month
         </div>
 
-        <AttendanceMonthDropdown />
+        <AttendanceMonthDropdown
+          month={month}
+          year={year}
+          onChange={onMonthChange}
+        />
 
       </div>
 
-
       {/* Right */}
+
       <button
+        onClick={() => {
+          const today = new Date();
+
+          onMonthChange(
+            today.getMonth() + 1,
+            today.getFullYear()
+          );
+        }}
         className="
         rounded-lg
         bg-blue-600
@@ -48,7 +73,6 @@ export default function AttendanceToolbar() {
       >
         Today
       </button>
-
 
     </div>
   );

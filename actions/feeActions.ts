@@ -9,45 +9,52 @@ export type FeeWithStudent = Fee & {
 
 // ================= GET FEES =================
 
-export async function getFees(): Promise<FeeWithStudent[]> {
+export async function getFees(
+  month?: number,
+  year?: number
+): Promise<FeeWithStudent[]> {
   const today = new Date();
 
-  const currentMonth = today.getMonth() + 1;
-  const currentYear = today.getFullYear();
+  const selectedMonth =
+    month ?? today.getMonth() + 1;
+
+  const selectedYear =
+    year ?? today.getFullYear();
 
   // Get all students
   const students = await prisma.student.findMany();
 
-  // Create current month fee automatically if missing
+  // Auto create fee for selected month
   for (const student of students) {
-    const feeExists = await prisma.fee.findUnique({
+    const exists = await prisma.fee.findUnique({
       where: {
         studentId_month_year: {
           studentId: student.id,
-          month: currentMonth,
-          year: currentYear,
+          month: selectedMonth,
+          year: selectedYear,
         },
       },
     });
 
-    if (!feeExists) {
+    if (!exists) {
       await prisma.fee.create({
         data: {
           studentId: student.id,
 
-          month: currentMonth,
-          year: currentYear,
+          month: selectedMonth,
+          year: selectedYear,
 
           totalFee: student.monthlyFees,
           paidAmount: 0,
 
           dueDate: new Date(
-            currentYear,
-            currentMonth - 1,
+            selectedYear,
+            selectedMonth - 1,
             10
           ),
 
           paymentDate: null,
+
           remarks: null,
 
           status: "Pending",
@@ -56,26 +63,77 @@ export async function getFees(): Promise<FeeWithStudent[]> {
     }
   }
 
-  const fees = await prisma.fee.findMany({
+  return prisma.fee.findMany({
+    where: {
+      month: selectedMonth,
+      year: selectedYear,
+    },
+
     include: {
       student: true,
     },
-    orderBy: [
-      {
-        year: "desc",
-      },
-      {
-        month: "desc",
-      },
-      {
-        createdAt: "desc",
-      },
-    ],
-  });
 
-  return fees;
+    orderBy: {
+      student: {
+        rollNumber: "asc",
+      },
+    },
+  });
 }
 
+// ================= GENERATE MONTHLY FEES =================
+
+export async function generateMonthlyFees(
+  month: number,
+  year: number
+) {
+  const students =
+    await prisma.student.findMany();
+
+  for (const student of students) {
+    const exists =
+      await prisma.fee.findUnique({
+        where: {
+          studentId_month_year: {
+            studentId: student.id,
+            month,
+            year,
+          },
+        },
+      });
+
+    if (!exists) {
+      await prisma.fee.create({
+        data: {
+          studentId: student.id,
+
+          month,
+          year,
+
+          totalFee: student.monthlyFees,
+
+          paidAmount: 0,
+
+          dueDate: new Date(
+            year,
+            month - 1,
+            10
+          ),
+
+          paymentDate: null,
+
+          remarks: null,
+
+          status: "Pending",
+        },
+      });
+    }
+  }
+
+  return {
+    success: true,
+  };
+}
 
 // ================= CREATE FEE =================
 
@@ -90,9 +148,11 @@ export async function createFee(
       studentId,
 
       month: today.getMonth() + 1,
+
       year: today.getFullYear(),
 
       totalFee: amount,
+
       paidAmount: 0,
 
       dueDate: new Date(
@@ -102,6 +162,7 @@ export async function createFee(
       ),
 
       paymentDate: null,
+
       remarks: null,
 
       status: "Pending",
@@ -109,24 +170,27 @@ export async function createFee(
   });
 }
 
-
 // ================= UPDATE PAYMENT =================
 
 export async function updateFeePayment(
   id: string,
   amount: number
 ) {
-  const fee = await prisma.fee.findUnique({
-    where: {
-      id,
-    },
-  });
+  const fee =
+    await prisma.fee.findUnique({
+      where: {
+        id,
+      },
+    });
 
   if (!fee) {
-    throw new Error("Fee record not found");
+    throw new Error(
+      "Fee record not found"
+    );
   }
 
-  const paidAmount = fee.paidAmount + amount;
+  const paidAmount =
+    fee.paidAmount + amount;
 
   const status =
     paidAmount >= fee.totalFee
@@ -137,8 +201,10 @@ export async function updateFeePayment(
     where: {
       id,
     },
+
     data: {
       paidAmount,
+
       status,
 
       paymentDate:
@@ -148,7 +214,6 @@ export async function updateFeePayment(
     },
   });
 }
-
 
 // ================= DELETE FEE =================
 

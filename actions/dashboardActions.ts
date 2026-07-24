@@ -1,13 +1,14 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { Fee } from "@prisma/client";
 
 export async function getDashboardStats() {
-  // Today (00:00:00)
+  // Today
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  // Tomorrow (00:00:00)
+  // Tomorrow
   const tomorrow = new Date(today);
   tomorrow.setDate(today.getDate() + 1);
 
@@ -15,9 +16,7 @@ export async function getDashboardStats() {
     totalStudents,
     presentStudents,
     absentStudents,
-    feeSummary,
-    pendingFees,
-    overdueFees,
+    allFees,
   ] = await Promise.all([
     prisma.student.count(),
 
@@ -41,31 +40,51 @@ export async function getDashboardStats() {
       },
     }),
 
-    prisma.fee.aggregate({
-      _sum: {
+    prisma.fee.findMany({
+      select: {
+        totalFee: true,
         paidAmount: true,
-      },
-    }),
-
-    prisma.fee.count({
-      where: {
-        status: "Pending",
-      },
-    }),
-
-    prisma.fee.count({
-      where: {
-        status: "Overdue",
+        status: true,
       },
     }),
   ]);
+
+  // Total Collected Fee
+  const collectedFee = allFees.reduce(
+    (total: number, fee: Pick<Fee, "paidAmount">) =>
+      total + fee.paidAmount,
+    0
+  );
+
+  // Total Remaining Pending Fee
+  const pendingFees = allFees.reduce(
+    (
+      total: number,
+      fee: Pick<Fee, "totalFee" | "paidAmount">
+    ) => total + (fee.totalFee - fee.paidAmount),
+    0
+  );
+
+  // Total Overdue Remaining Fee
+  const overdueFees = allFees
+    .filter(
+      (fee: Pick<Fee, "status">) =>
+        fee.status === "Overdue"
+    )
+    .reduce(
+      (
+        total: number,
+        fee: Pick<Fee, "totalFee" | "paidAmount">
+      ) => total + (fee.totalFee - fee.paidAmount),
+      0
+    );
 
   return {
     totalStudents,
     presentStudents,
     absentStudents,
+    collectedFee,
     pendingFees,
     overdueFees,
-    collectedFee: feeSummary._sum.paidAmount ?? 0,
   };
 }
