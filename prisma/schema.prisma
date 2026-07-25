@@ -80,3 +80,30 @@ model Attendance {
 
   @@unique([studentId, date])
 }
+model Note {
+  id          String   @id @default(cuid())
+
+  title       String
+
+  description String?
+
+  subject     String
+
+  className   String
+
+
+  fileName    String
+
+  fileUrl     String
+
+  fileType    String
+
+  fileSize    Int @default(0)
+
+  downloads   Int @default(0)
+
+
+  createdAt   DateTime @default(now())
+
+  updatedAt   DateTime @updatedAt
+}
