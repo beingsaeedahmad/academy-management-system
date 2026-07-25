@@ -120,24 +120,22 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside
-      className={`
-        relative
-        flex
-        h-screen
-        flex-col
-        border-r
-        border-slate-800
-        bg-[#020617]
-        transition-all
-        duration-300
-        ${
-          collapsed
-            ? "w-24"
-            : "w-[300px]"
-        }
-      `}
-    >
+<aside
+  className={`
+    relative
+    flex
+    h-screen
+    overflow-hidden
+    overflow-hidden
+    flex-col
+    border-r
+    border-slate-800
+    bg-[#020617]
+    transition-all
+    duration-300
+    ${collapsed ? "w-24" : "w-[300px]"}
+  `}
+>
       {/* Logo */}
 
       <div className="border-b border-slate-800 p-6">
@@ -209,13 +207,13 @@ export default function Sidebar() {
 
       {/* Navigation */}
 
-      <div className="flex-1 overflow-y-auto px-4 py-6">
+      <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide px-4 py-6">
 
         {menu.map((section) => (
 
           <div
             key={section.title}
-            className="mb-8"
+            className="mb-6"
           >
 
             {!collapsed && (
@@ -243,7 +241,7 @@ export default function Sidebar() {
   rounded-2xl
   border
   px-4
-  py-3
+  py-2.5
   transition-all
   duration-300
 
@@ -279,7 +277,7 @@ export default function Sidebar() {
 
       </div>
 
-      <div className="border-t border-slate-800 p-5">
+      <div className="border-t border-slate-800 p-4">
   <div className="rounded-3xl border border-slate-800 bg-slate-900 p-4 shadow-[0_0_25px_rgba(37,99,235,.08)]">
 
     <div className="flex items-center gap-3">
