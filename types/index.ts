@@ -1,13 +1,24 @@
 export interface Fee {
   id: string;
 
+  studentId: string;
+
   month: number;
   year: number;
 
   totalFee: number;
   paidAmount: number;
 
-  status: "Paid" | "Pending" | "Overdue";
+  dueDate: Date;
+
+  paymentDate?: Date | null;
+
+  remarks?: string | null;
+
+  status: string;
+
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface Student {
@@ -19,31 +30,25 @@ export interface Student {
   name: string;
   fatherName: string;
 
-  dateOfBirth?: string;
-
   gender?: string | null;
 
-  phone: string;
+  className: string;
 
+  phone: string;
   email?: string | null;
 
   address?: string | null;
 
-  className: string;
-
-  section?: string;
-
   monthlyFees: number;
-
-  admissionDate: Date;
 
   photo?: string | null;
 
-  status: "Active" | "Inactive";
+  admissionDate: Date;
+
+  status: string;
 
   fees?: Fee[];
 
   createdAt: Date;
-
   updatedAt: Date;
 }

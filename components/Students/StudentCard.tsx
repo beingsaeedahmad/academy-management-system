@@ -121,9 +121,13 @@ export default function StudentCard({
           <button
             key={card.title}
             type="button"
-            onClick={() =>
-              setFilter(card.filterValue)
-            }
+            onClick={() => {
+  if (filter === card.filterValue) {
+    setFilter("all");
+  } else {
+    setFilter(card.filterValue);
+  }
+}}
             className={`
               rounded-3xl
               border
@@ -142,6 +146,7 @@ export default function StudentCard({
                   ? "ring-2 ring-blue-500 scale-[1.02]"
                   : ""
               }
+              cursor-pointer
             `}
           >
             <div className="flex items-center justify-between">
