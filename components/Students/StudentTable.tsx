@@ -16,11 +16,21 @@ import { Student } from "@/types";
 
 interface Props {
   onView: (student: Student) => void;
+
+  search: string;
+
+  filter:
+    | "all"
+    | "active"
+    | "new"
+    | "defaulters";
 }
 
 
 export default function StudentTable({
   onView,
+  search,
+  filter,
 }: Props) {
 
 
@@ -61,6 +71,54 @@ export default function StudentTable({
 
 
   }, []);
+
+const filteredStudents = students.filter((student) => {
+
+  const value = search.trim().toLowerCase();
+
+  const matchesSearch =
+    student.name.toLowerCase().includes(value) ||
+    student.fatherName.toLowerCase().includes(value) ||
+    student.className.toLowerCase().includes(value) ||
+    student.admissionNo.toLowerCase().includes(value) ||
+    student.rollNumber.toLowerCase().includes(value) ||
+    student.phone.toLowerCase().includes(value);
+
+  if (!matchesSearch) return false;
+
+  switch (filter) {
+
+    case "active":
+      return student.status === "Active";
+
+    case "new": {
+
+      const created =
+        new Date(student.createdAt);
+
+      const today =
+        new Date();
+
+      return (
+        created.getMonth() === today.getMonth() &&
+        created.getFullYear() ===
+          today.getFullYear()
+      );
+    }
+
+    case "defaulters":
+
+      return student.fees?.some(
+        (fee) =>
+          fee.status === "Pending" ||
+          fee.status === "Overdue"
+      );
+
+    default:
+      return true;
+  }
+
+});
     return (
 
     <div
@@ -127,7 +185,7 @@ export default function StudentTable({
 
 
           {
-            students.length === 0 ? (
+            filteredStudents.length === 0 ? (
 
               <tr>
 
@@ -150,7 +208,7 @@ export default function StudentTable({
             ) : (
 
 
-              students.map((student)=>(
+              filteredStudents.map((student) => (
 
 
                 <tr

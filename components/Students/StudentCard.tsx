@@ -26,7 +26,20 @@ interface CardItem {
   color: string;
 }
 
-export default function StudentCard() {
+interface Props {
+  filter: "all" | "active" | "new" | "defaulters";
+
+  setFilter: React.Dispatch<
+    React.SetStateAction<
+      "all" | "active" | "new" | "defaulters"
+    >
+  >;
+}
+
+export default function StudentCard({
+  filter,
+  setFilter,
+}: Props) {
   const [stats, setStats] = useState<StudentStats>({
     totalStudents: 0,
     activeStudents: 0,
@@ -47,11 +60,18 @@ export default function StudentCard() {
     loadStats();
   }, []);
 
-  const cards: CardItem[] = [
+  const cards: (CardItem & {
+    filterValue:
+      | "all"
+      | "active"
+      | "new"
+      | "defaulters";
+  })[] = [
     {
       title: "Total Students",
       value: stats.totalStudents,
       icon: Users,
+      filterValue: "all",
       color:
         "border-blue-500/30 from-blue-500/20 to-blue-900/20",
     },
@@ -59,6 +79,7 @@ export default function StudentCard() {
       title: "Active Students",
       value: stats.activeStudents,
       icon: UserCheck,
+      filterValue: "active",
       color:
         "border-green-500/30 from-green-500/20 to-green-900/20",
     },
@@ -66,6 +87,7 @@ export default function StudentCard() {
       title: "New Admissions",
       value: stats.newAdmissions,
       icon: UserPlus,
+      filterValue: "new",
       color:
         "border-cyan-500/30 from-cyan-500/20 to-cyan-900/20",
     },
@@ -73,6 +95,7 @@ export default function StudentCard() {
       title: "Fee Defaulters",
       value: stats.feeDefaulters,
       icon: Wallet,
+      filterValue: "defaulters",
       color:
         "border-red-500/30 from-red-500/20 to-red-900/20",
     },
@@ -91,21 +114,34 @@ export default function StudentCard() {
       {cards.map((card) => {
         const Icon = card.icon;
 
+        const active =
+          filter === card.filterValue;
+
         return (
-          <div
+          <button
             key={card.title}
+            type="button"
+            onClick={() =>
+              setFilter(card.filterValue)
+            }
             className={`
               rounded-3xl
               border
               bg-gradient-to-br
               ${card.color}
               p-5
+              text-left
               backdrop-blur-xl
               shadow-[0_0_25px_rgba(37,99,235,0.12)]
               transition-all
               duration-300
               hover:-translate-y-1
               hover:shadow-[0_0_35px_rgba(37,99,235,0.25)]
+              ${
+                active
+                  ? "ring-2 ring-blue-500 scale-[1.02]"
+                  : ""
+              }
             `}
           >
             <div className="flex items-center justify-between">
@@ -141,7 +177,7 @@ export default function StudentCard() {
                 />
               </div>
             </div>
-          </div>
+          </button>
         );
       })}
     </div>

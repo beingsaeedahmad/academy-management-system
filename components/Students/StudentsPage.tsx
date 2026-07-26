@@ -1,7 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Search, UserPlus, Download, Printer } from "lucide-react";
+import { useRouter } from "next/navigation";
+import {
+  Search,
+  UserPlus,
+  Download,
+  Printer,
+} from "lucide-react";
+
 import { Student } from "@/types";
 
 import StudentCard from "./StudentCard";
@@ -9,8 +16,20 @@ import StudentTable from "./StudentTable";
 import StudentProfile from "./StudentProfile";
 
 export default function StudentsPage() {
-  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
-  const [profileOpen, setProfileOpen] = useState(false);
+  const router = useRouter();
+
+  const [selectedStudent, setSelectedStudent] =
+    useState<Student | null>(null);
+
+  const [profileOpen, setProfileOpen] =
+    useState(false);
+
+  const [search, setSearch] =
+    useState("");
+
+  const [filter, setFilter] = useState<
+    "all" | "active" | "new" | "defaulters"
+  >("all");
 
   const openProfile = (student: Student) => {
     setSelectedStudent(student);
@@ -27,6 +46,7 @@ export default function StudentsPage() {
 
       {/* Header */}
       <div className="flex items-center justify-between">
+
         <div>
           <h1 className="text-3xl font-bold text-white">
             Students
@@ -38,44 +58,118 @@ export default function StudentsPage() {
         </div>
 
         <div className="flex gap-3">
-          <button className="flex items-center gap-2 rounded-xl bg-slate-800 px-4 py-2 text-white hover:bg-slate-700">
+
+          <button
+            className="
+              flex
+              items-center
+              gap-2
+              rounded-xl
+              bg-slate-800
+              px-4
+              py-2
+              text-white
+              hover:bg-slate-700
+            "
+          >
             <Download size={18} />
             Export
           </button>
 
-          <button className="flex items-center gap-2 rounded-xl bg-slate-800 px-4 py-2 text-white hover:bg-slate-700">
+          <button
+            className="
+              flex
+              items-center
+              gap-2
+              rounded-xl
+              bg-slate-800
+              px-4
+              py-2
+              text-white
+              hover:bg-slate-700
+            "
+          >
             <Printer size={18} />
             Print
           </button>
 
-          <button className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+          <button
+            onClick={() => router.push("/admissions")}
+            className="
+              flex
+              items-center
+              gap-2
+              rounded-xl
+              bg-blue-600
+              px-4
+              py-2
+              text-white
+              hover:bg-blue-700
+              transition-all
+            "
+          >
             <UserPlus size={18} />
             Add Student
           </button>
+
         </div>
+
       </div>
 
       {/* Search */}
+
       <div className="relative">
+
         <Search
           size={18}
-          className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
+          className="
+            absolute
+            left-4
+            top-1/2
+            -translate-y-1/2
+            text-slate-500
+          "
         />
 
         <input
           type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by Name, Admission No, Roll No or Phone..."
-          className="h-12 w-full rounded-2xl border border-slate-700 bg-slate-900 pl-11 pr-4 text-white outline-none focus:border-blue-500"
+          className="
+            h-12
+            w-full
+            rounded-2xl
+            border
+            border-slate-700
+            bg-slate-900
+            pl-11
+            pr-4
+            text-white
+            outline-none
+            focus:border-blue-500
+          "
         />
+
       </div>
 
       {/* Cards */}
-      <StudentCard />
+
+      <StudentCard
+  filter={filter}
+  setFilter={setFilter}
+/>
 
       {/* Table */}
-      <StudentTable onView={openProfile} />
 
-      {/* Drawer */}
+    <StudentTable
+  onView={openProfile}
+  search={search}
+  filter={filter}
+/>
+
+      {/* Profile Drawer */}
+
       <StudentProfile
         student={selectedStudent}
         open={profileOpen}
