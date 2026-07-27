@@ -1,15 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
 import {
   Bell,
-  Search,
   Settings,
   Maximize2,
   Moon,
   UserCircle2,
   ChevronDown,
 } from "lucide-react";
+
+import GlobalSearch from "@/components/Search/GlobalSearch";
 
 export default function Navbar() {
   const [currentTime, setCurrentTime] = useState("");
@@ -52,71 +54,18 @@ export default function Navbar() {
     >
       <div className="flex h-full items-center justify-between px-8">
 
-        {/* Search */}
+        {/* Global Search */}
 
-        <div className="relative w-[420px]">
+        <GlobalSearch />
 
-          <Search
-            size={18}
-            className="
-              absolute
-              left-4
-              top-1/2
-              -translate-y-1/2
-              text-slate-500
-            "
-          />
-
-          <input
-            type="text"
-            placeholder="Search students, admissions, reports..."
-            className="
-              h-12
-              w-full
-              rounded-2xl
-              border
-              border-slate-700
-              bg-slate-900
-              pl-12
-              pr-24
-              text-white
-              placeholder:text-slate-500
-              outline-none
-              transition-all
-              duration-300
-              focus:border-blue-500
-              focus:shadow-[0_0_30px_rgba(37,99,235,.35)]
-            "
-          />
-
-          <span
-            className="
-              absolute
-              right-3
-              top-1/2
-              -translate-y-1/2
-              rounded-lg
-              border
-              border-slate-700
-              bg-slate-800
-              px-2
-              py-1
-              text-xs
-              text-slate-400
-            "
-          >
-            Ctrl K
-          </span>
-
-        </div>
-
-        {/* Right */}
+        {/* Right Side */}
 
         <div className="flex items-center gap-4">
 
           {/* Time */}
 
           <div className="hidden lg:block text-right">
+
             <p className="text-sm font-medium text-white">
               {currentTime}
             </p>
@@ -124,9 +73,10 @@ export default function Navbar() {
             <p className="text-xs text-slate-400">
               Academy Dashboard
             </p>
+
           </div>
 
-          {/* Icon Button */}
+          {/* Action Buttons */}
 
           {[
             Bell,
@@ -134,6 +84,7 @@ export default function Navbar() {
             Moon,
             Settings,
           ].map((Icon, index) => (
+
             <button
               key={index}
               className="
@@ -156,6 +107,7 @@ export default function Navbar() {
             >
               <Icon size={20} />
             </button>
+
           ))}
 
           {/* Profile */}
