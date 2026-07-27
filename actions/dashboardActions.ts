@@ -40,44 +40,70 @@ export async function getDashboardStats() {
       },
     }),
 
-    prisma.fee.findMany({
-      select: {
-        totalFee: true,
-        paidAmount: true,
-        status: true,
-      },
-    }),
+prisma.fee.findMany({ where: { month: today.getMonth() + 1, year: today.getFullYear(), }, select: { totalFee: true, paidAmount: true, status: true, }, }),
   ]);
 
   // Total Collected Fee
   const collectedFee = allFees.reduce(
-    (total: number, fee: Pick<Fee, "paidAmount">) =>
-      total + fee.paidAmount,
-    0
-  );
-
-  // Total Remaining Pending Fee
-  const pendingFees = allFees.reduce(
     (
       total: number,
-      fee: Pick<Fee, "totalFee" | "paidAmount">
-    ) => total + (fee.totalFee - fee.paidAmount),
+      fee: Pick<Fee, "paidAmount">
+    ) => total + fee.paidAmount,
     0
   );
 
-  // Total Overdue Remaining Fee
-  const overdueFees = allFees
+  // Only Pending + Overdue Remaining Amount
+  const pendingFees = allFees
     .filter(
-      (fee: Pick<Fee, "status">) =>
+      (
+        fee: Pick<Fee, "status">
+      ) =>
+        fee.status === "Pending" ||
         fee.status === "Overdue"
     )
     .reduce(
       (
         total: number,
-        fee: Pick<Fee, "totalFee" | "paidAmount">
-      ) => total + (fee.totalFee - fee.paidAmount),
+        fee: Pick<
+          Fee,
+          "totalFee" | "paidAmount"
+        >
+      ) =>
+        total +
+        Math.max(
+          fee.totalFee - fee.paidAmount,
+          0
+        ),
       0
     );
+
+  // Overdue Remaining Amount
+  const overdueFees = allFees
+    .filter(
+      (
+        fee: Pick<Fee, "status">
+      ) =>
+        fee.status === "Overdue"
+    )
+    .reduce(
+      (
+        total: number,
+        fee: Pick<
+          Fee,
+          "totalFee" | "paidAmount"
+        >
+      ) =>
+        total +
+        Math.max(
+          fee.totalFee - fee.paidAmount,
+          0
+        ),
+      0
+    );
+
+    console.log("TOTAL FEES:", allFees.length);
+
+console.table(allFees);
 
   return {
     totalStudents,
