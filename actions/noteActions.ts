@@ -1,111 +1,159 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import type { Note } from "@prisma/client";
 
 
-// ================= TYPES =================
+// ================= GET ALL NOTES =================
 
-export type NoteData = Note;
+export async function getNotes() {
+
+  try {
+
+    const notes = await prisma.note.findMany({
+
+      orderBy: {
+        createdAt: "desc",
+      },
+
+    });
 
 
-// ================= GET NOTES =================
+    return notes;
 
-export async function getNotes(): Promise<NoteData[]> {
-  return await prisma.note.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+
+  } catch (error) {
+
+    console.log(
+      "GET NOTES ERROR",
+      error
+    );
+
+
+    return [];
+
+  }
+
 }
+
 
 
 // ================= CREATE NOTE =================
 
-interface CreateNoteData {
+
+export interface CreateNoteData {
+
   title: string;
+
   subject: string;
+
   className: string;
 
-  fileUrl: string;
-  fileType: string;
+  description?: string;
+
+  fileUrl?: string;
+
+  uploadedBy?: string;
+
 }
+
 
 
 export async function createNote(
   data: CreateNoteData
 ) {
-  return await prisma.note.create({
-    data: {
-      title: data.title,
 
-      subject: data.subject,
 
-      className: data.className,
+  try {
 
-      fileUrl: data.fileUrl,
 
-      fileType: data.fileType,
-    },
-  });
+    const note = await prisma.note.create({
+
+      data: {
+
+        title: data.title,
+
+        subject: data.subject,
+
+        className: data.className,
+
+        description: data.description,
+
+        fileUrl: data.fileUrl,
+
+        uploadedBy: data.uploadedBy,
+
+      },
+
+    });
+
+
+
+    return note;
+
+
+  } catch (error) {
+
+
+    console.log(
+      "CREATE NOTE ERROR",
+      error
+    );
+
+
+    throw new Error(
+      "Note creation failed"
+    );
+
+
+  }
+
+
 }
+
+
 
 
 // ================= DELETE NOTE =================
 
+
 export async function deleteNote(
-  id: string
-) {
-  await prisma.note.delete({
-    where: {
-      id,
-    },
-  });
-
-  return {
-    success: true,
-  };
-}
+  id:string
+){
 
 
-// ================= NOTE SUMMARY =================
-
-export async function getNotesStats() {
-
-  const [
-    totalNotes,
-    classes,
-    subjects,
-  ] = await Promise.all([
-
-    prisma.note.count(),
-
-    prisma.note.findMany({
-      distinct: ["className"],
-      select:{
-        className:true,
-      },
-    }),
-
-    prisma.note.findMany({
-      distinct:["subject"],
-      select:{
-        subject:true,
-      },
-    }),
-
-  ]);
+  try{
 
 
-  return {
+    await prisma.note.delete({
 
-    totalNotes,
+      where:{
+        id
+      }
 
-    totalClasses:
-      classes.length,
+    });
 
-    totalSubjects:
-      subjects.length,
 
-  };
+    return {
+      success:true
+    };
+
+
+  }
+  catch(error){
+
+
+    console.log(
+      "DELETE NOTE ERROR",
+      error
+    );
+
+
+    return {
+      success:false
+    };
+
+
+  }
+
+
 }
