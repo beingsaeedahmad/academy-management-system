@@ -91,6 +91,9 @@ model Note {
 
   className   String
 
+  category    String?
+
+  uploadedBy  String?
 
   fileName    String
 
@@ -98,10 +101,11 @@ model Note {
 
   fileType    String
 
-  fileSize    Int @default(0)
+  fileSize    Int      @default(0)
 
-  downloads   Int @default(0)
+  downloads   Int      @default(0)
 
+  isPublished Boolean  @default(true)
 
   createdAt   DateTime @default(now())
 

@@ -1,159 +1,315 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
+export interface GetNotesOptions {
+  search?: string;
+  className?: string;
+  subject?: string;
+  category?: string;
+  publishedOnly?: boolean;
+}
 
-// ================= GET ALL NOTES =================
+export interface CreateNoteData {
+  title: string;
+  description?: string;
 
-export async function getNotes() {
+  subject: string;
+  className: string;
 
+  category?: string;
+  uploadedBy?: string;
+
+  fileName: string;
+  fileUrl: string;
+  fileType: string;
+  fileSize: number;
+
+  isPublished?: boolean;
+}
+
+// ===========================
+// GET NOTES
+// ===========================
+
+export async function getNotes(
+  options: GetNotesOptions = {}
+) {
   try {
-
     const notes = await prisma.note.findMany({
+      where: {
+        ...(options.search
+          ? {
+              OR: [
+                {
+                  title: {
+                    contains: options.search,
+                    mode: "insensitive",
+                  },
+                },
+                {
+                  description: {
+                    contains: options.search,
+                    mode: "insensitive",
+                  },
+                },
+              ],
+            }
+          : {}),
+
+        ...(options.className
+          ? {
+              className: options.className,
+            }
+          : {}),
+
+        ...(options.subject
+          ? {
+              subject: options.subject,
+            }
+          : {}),
+
+        ...(options.category
+          ? {
+              category: options.category,
+            }
+          : {}),
+
+        ...(options.publishedOnly
+          ? {
+              isPublished: true,
+            }
+          : {}),
+      },
 
       orderBy: {
         createdAt: "desc",
       },
-
     });
 
-
     return notes;
-
-
   } catch (error) {
-
-    console.log(
-      "GET NOTES ERROR",
-      error
-    );
-
+    console.error("GET NOTES ERROR", error);
 
     return [];
-
   }
-
 }
 
-
-
-// ================= CREATE NOTE =================
-
-
-export interface CreateNoteData {
-
-  title: string;
-
-  subject: string;
-
-  className: string;
-
-  description?: string;
-
-  fileUrl?: string;
-
-  uploadedBy?: string;
-
-}
-
-
+// ===========================
+// CREATE NOTE
+// ===========================
 
 export async function createNote(
   data: CreateNoteData
 ) {
-
-
   try {
-
-
     const note = await prisma.note.create({
-
       data: {
-
         title: data.title,
+
+        description: data.description,
 
         subject: data.subject,
 
         className: data.className,
 
-        description: data.description,
-
-        fileUrl: data.fileUrl,
+        category: data.category,
 
         uploadedBy: data.uploadedBy,
 
-      },
+        fileName: data.fileName,
 
+        fileUrl: data.fileUrl,
+
+        fileType: data.fileType,
+
+        fileSize: data.fileSize,
+
+        isPublished:
+          data.isPublished ?? true,
+      },
     });
 
+    revalidatePath("/notes");
 
-
-    return note;
-
-
+    return {
+      success: true,
+      note,
+    };
   } catch (error) {
-
-
-    console.log(
+    console.error(
       "CREATE NOTE ERROR",
       error
     );
 
-
-    throw new Error(
-      "Note creation failed"
-    );
-
-
+    return {
+      success: false,
+      message: "Failed to create note.",
+    };
   }
+}
+//
+// ===========================
+// UPDATE NOTE
+// ===========================
+//
 
+export interface UpdateNoteData {
+  title?: string;
+  description?: string;
 
+  subject?: string;
+  className?: string;
+
+  category?: string;
+  uploadedBy?: string;
+
+  fileName?: string;
+  fileUrl?: string;
+  fileType?: string;
+  fileSize?: number;
+
+  isPublished?: boolean;
 }
 
+export async function updateNote(
+  id: string,
+  data: UpdateNoteData
+) {
+  try {
+    const note = await prisma.note.update({
+      where: {
+        id,
+      },
 
-
-
-// ================= DELETE NOTE =================
-
-
-export async function deleteNote(
-  id:string
-){
-
-
-  try{
-
-
-    await prisma.note.delete({
-
-      where:{
-        id
-      }
-
+      data,
     });
 
+    revalidatePath("/notes");
 
     return {
-      success:true
+      success: true,
+      note,
     };
+  } catch (error) {
+    console.error(
+      "UPDATE NOTE ERROR",
+      error
+    );
 
-
+    return {
+      success: false,
+      message: "Failed to update note.",
+    };
   }
-  catch(error){
+}
 
+//
+// ===========================
+// DELETE NOTE
+// ===========================
+//
 
-    console.log(
+export async function deleteNote(
+  id: string
+) {
+  try {
+    await prisma.note.delete({
+      where: {
+        id,
+      },
+    });
+
+    revalidatePath("/notes");
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.error(
       "DELETE NOTE ERROR",
       error
     );
 
+    return {
+      success: false,
+      message: "Failed to delete note.",
+    };
+  }
+}
+
+//
+// ===========================
+// DOWNLOAD COUNTER
+// ===========================
+//
+
+export async function incrementDownloads(
+  id: string
+) {
+  try {
+    await prisma.note.update({
+      where: {
+        id,
+      },
+
+      data: {
+        downloads: {
+          increment: 1,
+        },
+      },
+    });
 
     return {
-      success:false
+      success: true,
     };
+  } catch (error) {
+    console.error(
+      "DOWNLOAD ERROR",
+      error
+    );
 
-
+    return {
+      success: false,
+    };
   }
+}
 
+//
+// ===========================
+// TOGGLE PUBLISH
+// ===========================
+//
 
+export async function togglePublish(
+  id: string,
+  value: boolean
+) {
+  try {
+    await prisma.note.update({
+      where: {
+        id,
+      },
+
+      data: {
+        isPublished: value,
+      },
+    });
+
+    revalidatePath("/notes");
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.error(
+      "TOGGLE PUBLISH ERROR",
+      error
+    );
+
+    return {
+      success: false,
+    };
+  }
 }

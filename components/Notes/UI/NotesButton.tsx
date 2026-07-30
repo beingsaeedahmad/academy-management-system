@@ -1,90 +1,43 @@
-interface Props {
+"use client";
 
-    children: React.ReactNode;
+import { ButtonHTMLAttributes } from "react";
+import clsx from "clsx";
 
-    onClick?:()=>void;
-
-    type?:
-    | "primary"
-    | "secondary"
-    | "danger";
-
-    disabled?:boolean;
-
+interface NotesButtonProps
+  extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "primary" | "secondary" | "danger" | "success";
 }
 
-
 export default function NotesButton({
+  variant = "primary",
+  className,
+  children,
+  ...props
+}: NotesButtonProps) {
+  const variants = {
+    primary:
+      "bg-blue-600 hover:bg-blue-700 text-white",
 
-    children,
+    secondary:
+      "bg-slate-700 hover:bg-slate-600 text-white",
 
-    onClick,
+    success:
+      "bg-emerald-600 hover:bg-emerald-700 text-white",
 
-    type="primary",
+    danger:
+      "bg-red-600 hover:bg-red-700 text-white",
+  };
 
-    disabled=false,
-
-}:Props){
-
-
-    const styles={
-
-
-        primary:
-        `
-        bg-blue-600
-        text-white
-        hover:bg-blue-700
-        `,
-
-
-        secondary:
-        `
-        bg-slate-200
-        text-slate-800
-        hover:bg-slate-300
-        `,
-
-
-        danger:
-        `
-        bg-red-600
-        text-white
-        hover:bg-red-700
-        `,
-
-
-    };
-
-
-
-    return (
-
-        <button
-
-            disabled={disabled}
-
-            onClick={onClick}
-
-            className={`
-                px-4
-                py-2
-                rounded-xl
-                text-sm
-                font-semibold
-                transition
-                duration-200
-                disabled:opacity-50
-                ${styles[type]}
-            `}
-
-        >
-
-            {children}
-
-        </button>
-
-    );
-
-
+  return (
+    <button
+      {...props}
+      className={clsx(
+        "inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50",
+        variants[variant],
+        className
+      )}
+    >
+      {children}
+    </button>
+  );
 }

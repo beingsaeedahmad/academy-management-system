@@ -1,59 +1,42 @@
-interface Props {
+import clsx from "clsx";
 
-    children: React.ReactNode;
-
-    type?: 
-    | "default"
-    | "success"
-    | "warning"
-    | "danger";
-
+interface NotesBadgeProps {
+  children: React.ReactNode;
+  color?:
+    | "blue"
+    | "green"
+    | "red"
+    | "yellow"
+    | "purple"
+    | "gray";
 }
 
-
 export default function NotesBadge({
+  children,
+  color = "blue",
+}: NotesBadgeProps) {
+  const colors = {
+    blue: "bg-blue-500/15 text-blue-400",
 
-    children,
+    green: "bg-emerald-500/15 text-emerald-400",
 
-    type="default",
+    red: "bg-red-500/15 text-red-400",
 
-}:Props){
+    yellow: "bg-yellow-500/15 text-yellow-400",
 
+    purple: "bg-purple-500/15 text-purple-400",
 
-    const styles = {
+    gray: "bg-slate-500/15 text-slate-300",
+  };
 
-        default:
-        "bg-slate-100 text-slate-700",
-
-        success:
-        "bg-green-100 text-green-700",
-
-        warning:
-        "bg-yellow-100 text-yellow-700",
-
-        danger:
-        "bg-red-100 text-red-700",
-
-    };
-
-
-    return (
-
-        <span
-            className={`
-                px-3
-                py-1
-                rounded-full
-                text-xs
-                font-semibold
-                ${styles[type]}
-            `}
-        >
-
-            {children}
-
-        </span>
-
-    );
-
+  return (
+    <span
+      className={clsx(
+        "rounded-full px-3 py-1 text-xs font-semibold",
+        colors[color]
+      )}
+    >
+      {children}
+    </span>
+  );
 }
