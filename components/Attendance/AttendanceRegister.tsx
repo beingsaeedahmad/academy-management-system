@@ -89,6 +89,12 @@ export default function AttendanceRegister({
     cell.focus();
   }, [selectedCell]);
 
+  const sortedStudents = [...students].sort((a, b) =>
+  a.name.localeCompare(b.name, undefined, {
+    sensitivity: "base",
+  })
+);
+
   return (
     <div
       className="
@@ -193,31 +199,22 @@ export default function AttendanceRegister({
 
           {/* Body */}
 
-          <tbody>
-            {students.map(
-              (
-                student,
-                index
-              ) => (
-                <AttendanceRow
-                  key={student.id}
-                  student={student}
-                  rowIndex={index}
-                  dates={dates}
-                  grid={grid}
-                  selectedCell={
-                    selectedCell
-                  }
-                  moveSelection={
-                    moveSelection
-                  }
-                  setAttendance={
-                    setAttendance
-                  }
-                />
-              )
-            )}
-          </tbody>
+         <tbody>
+  {sortedStudents.map(
+    (student, index) => (
+      <AttendanceRow
+        key={student.id}
+        student={student}
+        rowIndex={index}
+        dates={dates}
+        grid={grid}
+        selectedCell={selectedCell}
+        moveSelection={moveSelection}
+        setAttendance={setAttendance}
+      />
+    )
+  )}
+</tbody>
         </table>
       </div>
     </div>
