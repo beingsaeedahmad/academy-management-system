@@ -27,7 +27,6 @@ export default function AttendanceCell({
   onClick,
   onChange,
 }: AttendanceCellProps) {
-
   function nextStatus(): AttendanceStatus {
     const current = STATUS_ORDER.indexOf(status);
 
@@ -77,6 +76,7 @@ export default function AttendanceCell({
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
       className={`
+        relative
         w-7
         min-w-[28px]
         h-8
@@ -89,6 +89,7 @@ export default function AttendanceCell({
         select-none
         outline-none
         transition-all
+        duration-150
 
         ${
           isSunday
@@ -96,9 +97,26 @@ export default function AttendanceCell({
             : "cursor-pointer hover:bg-slate-800"
         }
 
-        ${isToday ? "ring-1 ring-blue-400" : ""}
+        ${
+          isToday
+            ? "ring-1 ring-blue-500"
+            : ""
+        }
 
-        ${isSelected ? "outline outline-2 outline-blue-500" : ""}
+        ${
+          isSelected
+            ? `
+              z-20
+              border-sky-400
+              bg-sky-400/20
+              ring-2
+              ring-sky-400
+              ring-inset
+              scale-105
+              shadow-[0_0_0_2px_rgba(56,189,248,0.55),0_0_18px_rgba(56,189,248,0.9)]
+            `
+            : ""
+        }
 
         ${getBackground()}
       `}

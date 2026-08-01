@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import AttendanceRow from "./AttendanceRow";
 import useAttendanceGrid from "./useAttendanceGrid";
@@ -20,6 +20,17 @@ export default function AttendanceRegister({
 }: Props) {
   const [students, setStudents] = useState<Student[]>([]);
 
+  // ✅ Sort only once and use everywhere
+  const sortedStudents = useMemo(
+    () =>
+      [...students].sort((a, b) =>
+        a.name.localeCompare(b.name, undefined, {
+          sensitivity: "base",
+        })
+      ),
+    [students]
+  );
+
   const {
     dates,
     grid,
@@ -27,7 +38,7 @@ export default function AttendanceRegister({
     moveSelection,
     setAttendance,
     changeMonth,
-  } = useAttendanceGrid(students);
+  } = useAttendanceGrid(sortedStudents);
 
   const containerRef =
     useRef<HTMLDivElement>(null);
@@ -35,9 +46,7 @@ export default function AttendanceRegister({
   useEffect(() => {
     async function loadStudents() {
       try {
-        const data =
-          await getStudents();
-
+        const data = await getStudents();
         setStudents(data);
       } catch (error) {
         console.error(
@@ -50,28 +59,21 @@ export default function AttendanceRegister({
     loadStudents();
   }, []);
 
-  // Update month/year whenever dropdown changes
   useEffect(() => {
     changeMonth(month, year);
-  }, [
-    month,
-    year,
-    changeMonth,
-  ]);
+  }, [month, year, changeMonth]);
 
-  // Keyboard Navigation
   useKeyboardNavigation({
     dates,
     selectedCell,
-    totalRows: students.length,
+    totalRows: sortedStudents.length,
     moveSelection,
     setAttendance,
-    studentIds: students.map(
-      (s) => s.id
+    studentIds: sortedStudents.map(
+      (student) => student.id
     ),
   });
 
-  // Auto Scroll
   useEffect(() => {
     const cell =
       containerRef.current?.querySelector(
@@ -89,12 +91,6 @@ export default function AttendanceRegister({
     cell.focus();
   }, [selectedCell]);
 
-  const sortedStudents = [...students].sort((a, b) =>
-  a.name.localeCompare(b.name, undefined, {
-    sensitivity: "base",
-  })
-);
-
   return (
     <div
       className="
@@ -105,27 +101,25 @@ export default function AttendanceRegister({
         shadow-xl
       "
     >
-      <div
-        ref={containerRef}
-        className="
-          w-full
-          overflow-x-auto
-          overflow-y-visible
-        "
-      >
-        <table
-          className="
-            w-full
-            table-fixed
-            border-collapse
-          "
-        >
-          {/* Header */}
-
+ <div
+  ref={containerRef}
+  className="
+    w-full
+    overflow-x-auto
+    overflow-y-hidden
+    scrollbar-thin
+    scrollbar-thumb-slate-700
+    scrollbar-track-transparent
+  "
+>
+     <table
+  className="
+    min-w-max
+    border-collapse
+  "
+>
           <thead className="sticky top-0 z-40">
             <tr>
-              {/* Roll */}
-
               <th
                 className="
                   sticky
@@ -143,8 +137,6 @@ export default function AttendanceRegister({
               >
                 Roll
               </th>
-
-              {/* Student */}
 
               <th
                 className="
@@ -164,8 +156,6 @@ export default function AttendanceRegister({
               >
                 Student Name
               </th>
-
-              {/* Dates */}
 
               {dates.map((date) => (
                 <th
@@ -197,24 +187,28 @@ export default function AttendanceRegister({
             </tr>
           </thead>
 
-          {/* Body */}
-
-         <tbody>
-  {sortedStudents.map(
-    (student, index) => (
-      <AttendanceRow
-        key={student.id}
-        student={student}
-        rowIndex={index}
-        dates={dates}
-        grid={grid}
-        selectedCell={selectedCell}
-        moveSelection={moveSelection}
-        setAttendance={setAttendance}
-      />
-    )
-  )}
-</tbody>
+          <tbody>
+            {sortedStudents.map(
+              (student, index) => (
+                <AttendanceRow
+                  key={student.id}
+                  student={student}
+                  rowIndex={index}
+                  dates={dates}
+                  grid={grid}
+                  selectedCell={
+                    selectedCell
+                  }
+                  moveSelection={
+                    moveSelection
+                  }
+                  setAttendance={
+                    setAttendance
+                  }
+                />
+              )
+            )}
+          </tbody>
         </table>
       </div>
     </div>

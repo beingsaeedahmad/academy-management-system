@@ -21,8 +21,7 @@ export default function AttendancePage() {
 
   return (
     <div className="min-h-screen bg-[#020817] text-white">
-      <div className="mx-auto max-w-[1900px] space-y-6 p-6">
-
+<div className="w-full space-y-6 px-4 py-6">
         <AttendanceHeader />
 
         <AttendanceOverviewCards />
