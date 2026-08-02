@@ -1,55 +1,37 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import type { AttendanceRecord, Fee, Student } from "@/types";
 
 function normalizeStatus(status?: string | null) {
   return (status ?? "").toUpperCase();
 }
 
-type StudentInsight = Student & {
-  fees?: Fee[];
-  attendance?: AttendanceRecord[];
-  feeSummary: {
-    totalFee: number;
-    paidAmount: number;
-    balance: number;
-    status: string;
-  };
-  attendanceSummary: {
-    present: number;
-    absent: number;
-    late: number;
-    total: number;
-  };
-};
-
-function buildStudentInsight(student: StudentInsight) {
+function buildStudentInsight(student: any) {
   const fees = student.fees ?? [];
   const attendance = student.attendance ?? [];
 
   const totalFee = fees.reduce(
-    (sum: number, fee: Fee) => sum + Number(fee.totalFee ?? 0),
+    (sum: number, fee: any) => sum + Number(fee.totalFee ?? 0),
     0
   );
 
   const paidAmount = fees.reduce(
-    (sum: number, fee: Fee) => sum + Number(fee.paidAmount ?? 0),
+    (sum: number, fee: any) => sum + Number(fee.paidAmount ?? 0),
     0
   );
 
   const balance = Math.max(totalFee - paidAmount, 0);
   const latestFee = fees[0];
 
-  const present = attendance.filter((entry: AttendanceRecord) =>
+  const present = attendance.filter((entry: any) =>
     ["P", "PRESENT", "Present"].includes(normalizeStatus(entry.status))
   ).length;
 
-  const absent = attendance.filter((entry: AttendanceRecord) =>
+  const absent = attendance.filter((entry: any) =>
     ["A", "ABSENT", "Absent"].includes(normalizeStatus(entry.status))
   ).length;
 
-  const late = attendance.filter((entry: AttendanceRecord) =>
+  const late = attendance.filter((entry: any) =>
     ["L", "LATE", "Late"].includes(normalizeStatus(entry.status))
   ).length;
 
@@ -118,67 +100,48 @@ export async function globalSearch(query: string) {
   });
 
   const notes = await prisma.note.findMany({
-
     where: {
-
       OR: [
-
         {
           title: {
             contains: value,
             mode: "insensitive",
           },
         },
-
         {
           subject: {
             contains: value,
             mode: "insensitive",
           },
         },
-
       ],
-
     },
-
     take: 5,
-
   });
 
   const fees = await prisma.fee.findMany({
-
     where: {
-
       student: {
-
         OR: [
-
           {
             name: {
               contains: value,
               mode: "insensitive",
             },
           },
-
           {
             rollNumber: {
               contains: value,
               mode: "insensitive",
             },
           },
-
         ],
-
       },
-
     },
-
     include: {
       student: true,
     },
-
     take: 5,
-
   });
 
   return {
@@ -186,5 +149,4 @@ export async function globalSearch(query: string) {
     notes,
     fees,
   };
-
 }

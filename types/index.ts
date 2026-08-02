@@ -21,6 +21,15 @@ export interface Fee {
   updatedAt: Date;
 }
 
+export interface AttendanceRecord {
+  id: string;
+  studentId: string;
+  date: Date;
+  status: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface Student {
   id: string;
 
@@ -48,6 +57,7 @@ export interface Student {
   status: string;
 
   fees?: Fee[];
+  attendance?: AttendanceRecord[];
 
   createdAt: Date;
   updatedAt: Date;

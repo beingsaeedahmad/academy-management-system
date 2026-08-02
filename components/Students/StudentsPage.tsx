@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Search,
   UserPlus,
@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import { Student } from "@/types";
+import { getStudentById } from "@/actions/studentActions";
 
 import StudentCard from "./StudentCard";
 import StudentTable from "./StudentTable";
@@ -17,6 +18,7 @@ import StudentProfile from "./StudentProfile";
 
 export default function StudentsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [selectedStudent, setSelectedStudent] =
     useState<Student | null>(null);
@@ -39,7 +41,41 @@ export default function StudentsPage() {
   const closeProfile = () => {
     setProfileOpen(false);
     setSelectedStudent(null);
+
+    if (searchParams.get("studentId")) {
+      router.replace("/students");
+    }
   };
+
+  useEffect(() => {
+    const studentId = searchParams.get("studentId");
+
+    if (!studentId) {
+      return;
+    }
+
+    const id = studentId;
+    let active = true;
+
+    async function loadStudent() {
+      try {
+        const student = await getStudentById(id);
+
+        if (active && student) {
+          setSelectedStudent(student as Student);
+          setProfileOpen(true);
+        }
+      } catch (error) {
+        console.error("FAILED TO LOAD SEARCHED STUDENT:", error);
+      }
+    }
+
+    loadStudent();
+
+    return () => {
+      active = false;
+    };
+  }, [searchParams]);
 
   return (
     <div className="min-h-screen bg-[#020817] p-6 space-y-6">

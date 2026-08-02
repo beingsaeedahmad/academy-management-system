@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import FeesSummaryCards from "./FeesSummaryCards";
 import FeesTable from "./FeesTable";
 import useFees from "./useFees";
@@ -20,6 +21,9 @@ const months = [
 ];
 
 export default function FeesPage() {
+  const searchParams = useSearchParams();
+  const selectedStudentId = searchParams.get("studentId");
+
   const {
     fees,
     summary,
@@ -137,7 +141,7 @@ export default function FeesPage() {
       {/* Fees Table */}
 
       <FeesTable
-        fees={fees}
+        fees={selectedStudentId ? fees.filter((fee) => fee.name === fees.find((item) => item.id === selectedStudentId)?.name || fee.id === selectedStudentId) : fees}
         onPayment={updatePayment}
       />
     </div>

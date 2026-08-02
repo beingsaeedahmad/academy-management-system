@@ -1,6 +1,6 @@
 "use client";
 
-import { X, Phone, User, School, Calendar } from "lucide-react";
+import { X, Phone, User, School, Calendar, Wallet, CircleCheckBig, CircleX, Clock3 } from "lucide-react";
 import { Student } from "@/types";
 
 interface Props {
@@ -15,6 +15,45 @@ export default function StudentProfile({
   onClose,
 }: Props) {
   if (!open || !student) return null;
+
+  const totalFee = (student.fees ?? []).reduce(
+    (sum, fee) => sum + Number(fee.totalFee ?? 0),
+    0
+  );
+
+  const paidAmount = (student.fees ?? []).reduce(
+    (sum, fee) => sum + Number(fee.paidAmount ?? 0),
+    0
+  );
+
+  const balance = Math.max(totalFee - paidAmount, 0);
+
+  const present = (student.attendance ?? []).filter(
+    (entry) => ["P", "PRESENT", "Present"].includes((entry.status ?? "").toUpperCase())
+  ).length;
+
+  const absent = (student.attendance ?? []).filter(
+    (entry) => ["A", "ABSENT", "Absent"].includes((entry.status ?? "").toUpperCase())
+  ).length;
+
+  const late = (student.attendance ?? []).filter(
+    (entry) => ["L", "LATE", "Late"].includes((entry.status ?? "").toUpperCase())
+  ).length;
+
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0,
+    }).format(value);
+
+  const formatDate = (value: Date | string | null | undefined) => {
+    if (!value) return "N/A";
+
+    const dateValue = typeof value === "string" ? new Date(value) : value;
+
+    return dateValue.toLocaleDateString();
+  };
 
   return (
     <>
@@ -97,9 +136,39 @@ export default function StudentProfile({
             <Info
               icon={<Calendar size={18} />}
               title="Admission Date"
-              value={student.admissionDate.toLocaleDateString()}
+              value={formatDate(student.admissionDate)}
             />
 
+          </div>
+
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
+            <div className="mb-4 flex items-center gap-2 text-blue-400">
+              <Wallet size={18} />
+              <h3 className="font-semibold text-white">Fee Overview</h3>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <InfoMini title="Total Fee" value={formatCurrency(totalFee)} />
+              <InfoMini title="Paid" value={formatCurrency(paidAmount)} />
+              <InfoMini title="Balance" value={formatCurrency(balance)} />
+              <InfoMini title="Status" value={student.fees?.[0]?.status ?? "Pending"} />
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
+            <div className="mb-4 flex items-center gap-2 text-blue-400">
+              <Calendar size={18} />
+              <h3 className="font-semibold text-white">Attendance Summary</h3>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-3">
+              <InfoMini title="Present" value={`${present}`} icon={<CircleCheckBig size={16} />} />
+              <InfoMini title="Absent" value={`${absent}`} icon={<CircleX size={16} />} />
+              <InfoMini title="Late" value={`${late}`} icon={<Clock3 size={16} />} />
+            </div>
+            <p className="mt-3 text-sm text-slate-400">
+              {student.attendance?.length ?? 0} attendance records available
+            </p>
           </div>
 
         </div>
@@ -115,7 +184,7 @@ function Info({
 }: {
   icon: React.ReactNode;
   title: string;
-  value: any;
+  value: string | number | null | undefined;
 }) {
   return (
     <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
@@ -127,6 +196,26 @@ function Info({
       <p className="text-lg text-white">
         {value}
       </p>
+    </div>
+  );
+}
+
+function InfoMini({
+  title,
+  value,
+  icon,
+}: {
+  title: string;
+  value: string;
+  icon?: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-3">
+      <div className="mb-2 flex items-center gap-2 text-sm text-slate-400">
+        {icon}
+        <span>{title}</span>
+      </div>
+      <p className="text-base font-semibold text-white">{value}</p>
     </div>
   );
 }

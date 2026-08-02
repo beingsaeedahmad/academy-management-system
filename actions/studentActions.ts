@@ -244,6 +244,25 @@ orderBy: [
 
 
 
+export async function getStudentById(id: string) {
+  try {
+    const student = await prisma.student.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        fees: true,
+        attendance: true,
+      },
+    });
+
+    return student;
+  } catch (error) {
+    console.error("GET STUDENT BY ID ERROR:", error);
+    throw error;
+  }
+}
+
 // DELETE STUDENT
 
 export async function deleteStudent(

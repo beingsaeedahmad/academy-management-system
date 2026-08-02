@@ -12,11 +12,13 @@ import { Student } from "@/types";
 interface Props {
   month: number;
   year: number;
+  selectedStudentId?: string | null;
 }
 
 export default function AttendanceRegister({
   month,
   year,
+  selectedStudentId,
 }: Props) {
   const [students, setStudents] = useState<Student[]>([]);
 
@@ -47,7 +49,10 @@ export default function AttendanceRegister({
     async function loadStudents() {
       try {
         const data = await getStudents();
-        setStudents(data);
+        const filtered = selectedStudentId
+          ? data.filter((student) => student.id === selectedStudentId)
+          : data;
+        setStudents(filtered);
       } catch (error) {
         console.error(
           "LOAD STUDENTS ERROR:",

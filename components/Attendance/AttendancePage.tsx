@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import AttendanceHeader from "./AttendanceHeader";
@@ -9,6 +10,9 @@ import AttendanceLegend from "./AttendanceLegend";
 import AttendanceOverviewCards from "./AttendanceOverviewCards";
 
 export default function AttendancePage() {
+  const searchParams = useSearchParams();
+  const selectedStudentId = searchParams.get("studentId");
+
   const today = new Date();
 
   const [month, setMonth] = useState(
@@ -38,6 +42,7 @@ export default function AttendancePage() {
         <AttendanceRegister
           month={month}
           year={year}
+          selectedStudentId={selectedStudentId}
         />
 
         <AttendanceLegend />
