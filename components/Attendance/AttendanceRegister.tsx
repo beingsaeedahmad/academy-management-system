@@ -77,6 +77,7 @@ export default function AttendanceRegister({
     studentIds: sortedStudents.map(
       (student) => student.id
     ),
+    grid,
   });
 
   useEffect(() => {

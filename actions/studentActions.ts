@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import type { Student } from "@/types";
 
 
 interface CreateStudentData {
@@ -184,7 +185,7 @@ export async function createStudent(
 
 // GET ALL STUDENTS
 
-export async function getStudents() {
+export async function getStudents(): Promise<Student[]> {
 
 
   try {

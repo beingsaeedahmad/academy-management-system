@@ -4,9 +4,17 @@ import { useEffect } from "react";
 
 import {
   AttendanceColumn,
+  AttendanceGrid,
   AttendanceStatus,
   SelectedCell,
 } from "./attendanceTypes";
+
+const ATTENDANCE_SPACE_CYCLE: AttendanceStatus[] = [
+  "",
+  "P",
+  "A",
+  "L",
+];
 
 interface Props {
   dates: AttendanceColumn[];
@@ -27,6 +35,8 @@ interface Props {
   ) => void;
 
   studentIds: string[];
+
+  grid: AttendanceGrid;
 }
 
 export default function useKeyboardNavigation({
@@ -36,6 +46,7 @@ export default function useKeyboardNavigation({
   moveSelection,
   setAttendance,
   studentIds,
+  grid,
 }: Props) {
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -159,10 +170,19 @@ export default function useKeyboardNavigation({
           e.preventDefault();
 
           if (!dates[column].isSunday) {
+            const studentId = studentIds[row];
+            const currentStatus =
+              grid?.[studentId]?.[dates[column].date] ?? "";
+            const nextIndex =
+              (ATTENDANCE_SPACE_CYCLE.indexOf(currentStatus) + 1) %
+              ATTENDANCE_SPACE_CYCLE.length;
+            const nextStatus =
+              ATTENDANCE_SPACE_CYCLE[nextIndex];
+
             setAttendance(
-              studentIds[row],
+              studentId,
               dates[column].date,
-              ""
+              nextStatus
             );
           }
 
@@ -212,5 +232,6 @@ export default function useKeyboardNavigation({
     moveSelection,
     setAttendance,
     studentIds,
+    grid,
   ]);
 }
