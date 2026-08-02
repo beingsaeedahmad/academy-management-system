@@ -124,10 +124,10 @@ export default function Sidebar() {
   className={`
     relative
     flex
-    h-screen
-    overflow-hidden
-    overflow-hidden
+    h-full
+    min-h-screen
     flex-col
+    overflow-hidden
     border-r
     border-slate-800
     bg-[#020617]
@@ -207,7 +207,7 @@ export default function Sidebar() {
 
       {/* Navigation */}
 
-      <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide px-4 py-6">
+      <div className="flex-1 min-h-0 overflow-y-auto px-4 py-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
 
         {menu.map((section) => (
 
