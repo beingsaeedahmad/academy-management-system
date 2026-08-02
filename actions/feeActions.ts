@@ -11,7 +11,8 @@ export type FeeWithStudent = Fee & {
 
 export async function getFees(
   month?: number,
-  year?: number
+  year?: number,
+  studentId?: string | null
 ): Promise<FeeWithStudent[]> {
   const today = new Date();
 
@@ -63,10 +64,11 @@ export async function getFees(
     }
   }
 
-  return prisma.fee.findMany({
+  const fees = await prisma.fee.findMany({
     where: {
       month: selectedMonth,
       year: selectedYear,
+      ...(studentId ? { studentId } : {}),
     },
 
     include: {
@@ -79,6 +81,23 @@ export async function getFees(
       },
     },
   });
+
+  if (studentId && fees.length === 0) {
+    return prisma.fee.findMany({
+      where: {
+        studentId,
+      },
+      include: {
+        student: true,
+      },
+      orderBy: [
+        { year: "desc" },
+        { month: "desc" },
+      ],
+    });
+  }
+
+  return fees;
 }
 
 // ================= GENERATE MONTHLY FEES =================

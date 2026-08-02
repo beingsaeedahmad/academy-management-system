@@ -18,7 +18,9 @@ import {
   type FeeWithStudent,
 } from "@/actions/feeActions";
 
-export default function useFees() {
+export default function useFees(
+  selectedStudentId?: string | null
+) {
   const today = new Date();
 
   const [fees, setFees] =
@@ -45,13 +47,15 @@ export default function useFees() {
     try {
       const feeData = await getFees(
         month,
-        year
+        year,
+        selectedStudentId
       );
 
       const data: StudentFee[] =
         feeData.map(
           (fee: FeeWithStudent) => ({
             id: fee.id,
+            studentId: fee.student.id,
 
             rollNo:
               fee.student.rollNumber,
@@ -105,6 +109,7 @@ export default function useFees() {
   }, [
     selectedMonth,
     selectedYear,
+    selectedStudentId,
   ]);
 
   const filteredFees =

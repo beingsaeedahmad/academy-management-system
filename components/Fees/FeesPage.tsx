@@ -32,7 +32,7 @@ export default function FeesPage() {
     selectedYear,
     setSelectedYear,
     updatePayment,
-  } = useFees();
+  } = useFees(selectedStudentId);
 
   return (
     <div
@@ -141,7 +141,7 @@ export default function FeesPage() {
       {/* Fees Table */}
 
       <FeesTable
-        fees={selectedStudentId ? fees.filter((fee) => fee.name === fees.find((item) => item.id === selectedStudentId)?.name || fee.id === selectedStudentId) : fees}
+        fees={fees}
         onPayment={updatePayment}
       />
     </div>

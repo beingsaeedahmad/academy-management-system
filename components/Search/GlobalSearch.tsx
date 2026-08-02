@@ -5,7 +5,6 @@ import {
   Users,
   Wallet,
   BookOpen,
-  CalendarCheck2,
 } from "lucide-react";
 
 import {
@@ -46,6 +45,7 @@ type SearchFeeResult = {
   id: string;
   status: string;
   student: {
+    id: string;
     name: string;
   };
 };
@@ -242,28 +242,29 @@ export default function GlobalSearch() {
 
                   {results.students.map((student: SearchStudentResult) => (
 
-                    <button
+                    <div
                       key={student.id}
-                      onClick={() => {
-
-                        router.push(`/students?studentId=${student.id}&view=student`);
-
-                        setOpen(false);
-
-                      }}
                       className="
                         flex
                         w-full
                         flex-col
                         items-start
                         gap-3
+                        border-b
+                        border-slate-800
                         p-4
                         text-left
-                        hover:bg-slate-800
+                        hover:bg-slate-800/70
                       "
                     >
 
-                      <div className="flex w-full items-start justify-between gap-3">
+                      <div
+                        onClick={() => {
+                          router.push(`/students?studentId=${student.id}&view=student`);
+                          setOpen(false);
+                        }}
+                        className="flex w-full cursor-pointer items-start justify-between gap-3"
+                      >
 
                         <div className="flex items-center gap-3">
 
@@ -299,59 +300,47 @@ export default function GlobalSearch() {
 
                       </div>
 
-                      <div className="grid w-full gap-2 sm:grid-cols-2">
+                      <div className="flex flex-wrap gap-2">
 
-                        <div className="rounded-xl border border-slate-800 bg-slate-800/70 p-2.5">
+                        <button
+                          type="button"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            router.push(`/students?studentId=${student.id}&view=student`);
+                            setOpen(false);
+                          }}
+                          className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-sm text-white hover:border-blue-500"
+                        >
+                          Student Data
+                        </button>
 
-                          <div className="text-[11px] uppercase tracking-wide text-slate-500">
+                        <button
+                          type="button"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            router.push(`/fees?studentId=${student.id}`);
+                            setOpen(false);
+                          }}
+                          className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-sm text-white hover:border-yellow-500"
+                        >
+                          Fees
+                        </button>
 
-                            Fee
-
-                          </div>
-
-                          <div className="mt-1 text-sm text-white">
-
-                            {student.feeSummary.balance > 0
-                              ? `Due ${student.feeSummary.balance}`
-                              : "Fee cleared"}
-
-                          </div>
-
-                          <div className="text-xs text-slate-400">
-
-                            Paid {student.feeSummary.paidAmount} / {student.feeSummary.totalFee}
-
-                          </div>
-
-                        </div>
-
-                        <div className="rounded-xl border border-slate-800 bg-slate-800/70 p-2.5">
-
-                          <div className="flex items-center gap-2 text-[11px] uppercase tracking-wide text-slate-500">
-
-                            <CalendarCheck2 size={12} />
-
-                            Attendance
-
-                          </div>
-
-                          <div className="mt-1 text-sm text-white">
-
-                            {student.attendanceSummary.present}P • {student.attendanceSummary.absent}A • {student.attendanceSummary.late}L
-
-                          </div>
-
-                          <div className="text-xs text-slate-400">
-
-                            {student.attendanceSummary.total} records
-
-                          </div>
-
-                        </div>
+                        <button
+                          type="button"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            router.push(`/attendance?studentId=${student.id}`);
+                            setOpen(false);
+                          }}
+                          className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-sm text-white hover:border-cyan-500"
+                        >
+                          Attendance
+                        </button>
 
                       </div>
 
-                    </button>
+                    </div>
 
                   ))}
 
@@ -375,7 +364,7 @@ export default function GlobalSearch() {
                       key={note.id}
                       onClick={() => {
 
-                        router.push(`/notes?studentId=${student.id}`);
+                        router.push("/notes");
 
                         setOpen(false);
 

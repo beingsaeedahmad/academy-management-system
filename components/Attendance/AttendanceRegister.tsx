@@ -62,7 +62,7 @@ export default function AttendanceRegister({
     }
 
     loadStudents();
-  }, []);
+  }, [selectedStudentId]);
 
   useEffect(() => {
     changeMonth(month, year);
