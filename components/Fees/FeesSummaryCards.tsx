@@ -52,48 +52,40 @@ export default function FeesSummaryCards({
 }:Props){
 
 
-  const cards:CardItem[] = [
-
-    {
-      title:"Total Fees",
-      value:summary.total,
-      icon:Wallet,
-      color:
-      "border-blue-500/30 from-blue-500/20 to-blue-900/20",
-      status:null,
-    },
-
-
-    {
-      title:"Paid",
-      value:summary.paid,
-      icon:CheckCircle,
-      color:
-      "border-green-500/30 from-green-500/20 to-green-900/20",
-      status:"Paid",
-    },
-
-
-    {
-      title:"Pending",
-      value:summary.pending,
-      icon:Clock,
-      color:
-      "border-yellow-500/30 from-yellow-500/20 to-yellow-900/20",
-      status:"Pending",
-    },
-
-
-    {
-      title:"Overdue",
-      value:summary.overdue,
-      icon:AlertCircle,
-      color:
-      "border-red-500/30 from-red-500/20 to-red-900/20",
-      status:"Overdue",
-    },
-
-  ];
+const cards: CardItem[] = [
+  {
+    title: "Total Fees",
+    value: summary.total,
+    icon: Wallet,
+    color:
+      "from-blue-500/20 via-blue-500/10 to-slate-900 border-blue-500/30 shadow-blue-500/20",
+    status: null,
+  },
+  {
+    title: "Paid",
+    value: summary.paid,
+    icon: CheckCircle,
+    color:
+      "from-emerald-500/20 via-emerald-500/10 to-slate-900 border-emerald-500/30 shadow-emerald-500/20",
+    status: "Paid",
+  },
+  {
+    title: "Pending",
+    value: summary.pending,
+    icon: Clock,
+    color:
+      "from-amber-500/20 via-amber-500/10 to-slate-900 border-amber-500/30 shadow-amber-500/20",
+    status: "Pending",
+  },
+  {
+    title: "Overdue",
+    value: summary.overdue,
+    icon: AlertCircle,
+    color:
+      "from-rose-500/20 via-rose-500/10 to-slate-900 border-rose-500/30 shadow-rose-500/20",
+    status: "Overdue",
+  },
+];
 
 
 
@@ -123,7 +115,7 @@ export default function FeesSummaryCards({
             type="button"
             onClick={() => onCardClick?.(card.status)}
             className={`
-            rounded-3xl
+            rounded-0xl
             border
             bg-gradient-to-br
             ${card.color}
@@ -210,7 +202,7 @@ export default function FeesSummaryCards({
 
                 justify-center
 
-                rounded-2xl
+                rounded-0xl
 
                 bg-white/10
 

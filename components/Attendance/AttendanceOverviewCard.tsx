@@ -18,7 +18,7 @@ export default function AttendanceOverviewCard({
   return (
     <div
       className={`
-      rounded-3xl
+      rounded-0xl
       border
       ${color}
       bg-gradient-to-br
@@ -57,7 +57,7 @@ export default function AttendanceOverviewCard({
           w-14
           items-center
           justify-center
-          rounded-2xl
+          rounded-0xl
           bg-white/10
           backdrop-blur-md
           shadow-inner

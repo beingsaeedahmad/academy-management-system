@@ -41,7 +41,7 @@ export default function FeesPage() {
       className="
         min-h-screen
         space-y-6
-        rounded-2xl
+        rounded-0xl
         border
         border-slate-800
         bg-[#020817]

@@ -60,46 +60,42 @@ export default function StudentCard({
     loadStats();
   }, []);
 
-  const cards: (CardItem & {
-    filterValue:
-      | "all"
-      | "active"
-      | "new"
-      | "defaulters";
-  })[] = [
-    {
-      title: "Total Students",
-      value: stats.totalStudents,
-      icon: Users,
-      filterValue: "all",
-      color:
-        "border-blue-500/30 from-blue-500/20 to-blue-900/20",
-    },
-    {
-      title: "Active Students",
-      value: stats.activeStudents,
-      icon: UserCheck,
-      filterValue: "active",
-      color:
-        "border-green-500/30 from-green-500/20 to-green-900/20",
-    },
-    {
-      title: "New Admissions",
-      value: stats.newAdmissions,
-      icon: UserPlus,
-      filterValue: "new",
-      color:
-        "border-cyan-500/30 from-cyan-500/20 to-cyan-900/20",
-    },
-    {
-      title: "Fee Defaulters",
-      value: stats.feeDefaulters,
-      icon: Wallet,
-      filterValue: "defaulters",
-      color:
-        "border-red-500/30 from-red-500/20 to-red-900/20",
-    },
-  ];
+const cards: (CardItem & {
+  filterValue: "all" | "active" | "new" | "defaulters";
+})[] = [
+  {
+    title: "Total Students",
+    value: stats.totalStudents,
+    icon: Users,
+    filterValue: "all",
+    color:
+      "from-blue-500/20 via-blue-500/10 to-slate-900 border-blue-500/30 shadow-blue-500/20",
+  },
+  {
+    title: "Active Students",
+    value: stats.activeStudents,
+    icon: UserCheck,
+    filterValue: "active",
+    color:
+      "from-emerald-500/20 via-emerald-500/10 to-slate-900 border-emerald-500/30 shadow-emerald-500/20",
+  },
+  {
+    title: "New Admissions",
+    value: stats.newAdmissions,
+    icon: UserPlus,
+    filterValue: "new",
+    color:
+      "from-cyan-500/20 via-cyan-500/10 to-slate-900 border-cyan-500/30 shadow-cyan-500/20",
+  },
+  {
+    title: "Fee Defaulters",
+    value: stats.feeDefaulters,
+    icon: Wallet,
+    filterValue: "defaulters",
+    color:
+      "from-rose-500/20 via-rose-500/10 to-slate-900 border-rose-500/30 shadow-rose-500/20",
+  },
+];
 
   return (
     <div
@@ -129,7 +125,7 @@ export default function StudentCard({
   }
 }}
             className={`
-              rounded-3xl
+              rounded-0xl
               border
               bg-gradient-to-br
               ${card.color}
@@ -167,7 +163,7 @@ export default function StudentCard({
                   w-14
                   items-center
                   justify-center
-                  rounded-2xl
+                  rounded-0xl
                   bg-white/10
                   backdrop-blur-md
                   shadow-inner
