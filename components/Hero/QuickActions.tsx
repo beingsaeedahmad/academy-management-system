@@ -72,7 +72,7 @@ export default function QuickActions() {
 
           return (
             <Link
-              key={action.title}
+              key={action.title} 
               href={action.href}
               className="
                 group
