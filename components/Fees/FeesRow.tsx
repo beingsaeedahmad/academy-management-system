@@ -1,5 +1,4 @@
 import FeeStatusBadge from "./FeeStatusBadge";
-
 import { StudentFee } from "./feesTypes";
 
 import {
@@ -10,15 +9,15 @@ import {
 interface Props {
   fee: StudentFee;
 
-  onPayment: (
-    id: string,
+  onCollect: (
+    fee: StudentFee,
     amount: number
   ) => void;
 }
 
 export default function FeesRow({
   fee,
-  onPayment,
+  onCollect,
 }: Props) {
   const remaining = calculateRemaining(
     fee.totalFee,
@@ -148,9 +147,7 @@ export default function FeesRow({
       {/* Status */}
 
       <td className="px-2 py-4 text-center">
-        <FeeStatusBadge
-          status={fee.status}
-        />
+        <FeeStatusBadge status={fee.status} />
       </td>
 
       {/* Action */}
@@ -158,23 +155,10 @@ export default function FeesRow({
       <td className="px-2 py-4 text-center">
         <button
           onClick={() => {
-            if (remaining <= 0) {
-              alert(
-                "Fee already paid."
-              );
-              return;
-            }
+            if (remaining <= 0) return;
 
-            if (
-              !confirm(
-                `Collect remaining fee from ${fee.name}?`
-              )
-            ) {
-              return;
-            }
-
-            onPayment(
-              fee.id,
+            onCollect(
+              fee,
               remaining
             );
           }}

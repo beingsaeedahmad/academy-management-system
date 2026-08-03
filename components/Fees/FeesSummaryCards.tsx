@@ -21,6 +21,8 @@ import {
 interface Props {
 
   summary: FeesSummary;
+  activeStatus?: string | null;
+  onCardClick?: (status: string | null) => void;
 
 }
 
@@ -36,6 +38,8 @@ interface CardItem {
 
   color:string;
 
+  status:string | null;
+
 }
 
 
@@ -43,6 +47,8 @@ interface CardItem {
 
 export default function FeesSummaryCards({
   summary,
+  activeStatus,
+  onCardClick,
 }:Props){
 
 
@@ -54,6 +60,7 @@ export default function FeesSummaryCards({
       icon:Wallet,
       color:
       "border-blue-500/30 from-blue-500/20 to-blue-900/20",
+      status:null,
     },
 
 
@@ -63,6 +70,7 @@ export default function FeesSummaryCards({
       icon:CheckCircle,
       color:
       "border-green-500/30 from-green-500/20 to-green-900/20",
+      status:"Paid",
     },
 
 
@@ -72,6 +80,7 @@ export default function FeesSummaryCards({
       icon:Clock,
       color:
       "border-yellow-500/30 from-yellow-500/20 to-yellow-900/20",
+      status:"Pending",
     },
 
 
@@ -81,6 +90,7 @@ export default function FeesSummaryCards({
       icon:AlertCircle,
       color:
       "border-red-500/30 from-red-500/20 to-red-900/20",
+      status:"Overdue",
     },
 
   ];
@@ -108,34 +118,24 @@ export default function FeesSummaryCards({
       {
         cards.map((card)=>(
 
-          <div
-
+          <button
             key={card.title}
-
+            type="button"
+            onClick={() => onCardClick?.(card.status)}
             className={`
-            
             rounded-3xl
-
             border
-
             bg-gradient-to-br
-
             ${card.color}
-
             p-5
-
+            text-left
             backdrop-blur-xl
-
             shadow-[0_0_25px_rgba(37,99,235,0.12)]
-
             transition-all
-
             duration-300
-
             hover:-translate-y-1
-
             hover:shadow-[0_0_35px_rgba(37,99,235,0.25)]
-
+            ${activeStatus === card.status ? "border-white bg-white/10 shadow-[0_0_35px_rgba(255,255,255,0.18)]" : "hover:border-blue-400"}
             `}
           >
 
@@ -240,7 +240,7 @@ export default function FeesSummaryCards({
             </div>
 
 
-          </div>
+          </button>
 
 
         ))

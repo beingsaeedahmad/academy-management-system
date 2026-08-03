@@ -31,6 +31,8 @@ export default function FeesPage() {
     setSelectedMonth,
     selectedYear,
     setSelectedYear,
+    statusFilter,
+    setStatusFilter,
     updatePayment,
   } = useFees(selectedStudentId);
 
@@ -136,7 +138,11 @@ export default function FeesPage() {
 
       {/* Summary */}
 
-      <FeesSummaryCards summary={summary} />
+      <FeesSummaryCards
+        summary={summary}
+        activeStatus={statusFilter}
+        onCardClick={setStatusFilter}
+      />
 
       {/* Fees Table */}
 

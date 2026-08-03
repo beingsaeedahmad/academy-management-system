@@ -4,11 +4,6 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
 import {
-  Bell,
-  Settings,
-  Maximize2,
-  Moon,
-  Sun,
   UserCircle2,
   ChevronDown,
   ArrowRight,
@@ -151,74 +146,13 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="relative">
-              <button
-                type="button"
-                onClick={openNotifications}
-                className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-700 bg-slate-900 text-slate-300 transition-all duration-300 hover:border-blue-500 hover:text-white hover:shadow-[0_0_25px_rgba(37,99,235,.30)]"
-                aria-label="Notifications"
-              >
-                <Bell size={20} />
-              </button>
+           
 
-              {notificationsOpen && (
-                <div className="absolute right-0 top-full z-50 mt-3 w-80 rounded-3xl border border-slate-800 bg-slate-950 p-4 shadow-2xl">
-                  <div className="mb-3 flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-semibold text-white">Notifications</p>
-                      <p className="text-xs text-slate-500">Latest activity updates</p>
-                    </div>
-                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-400">
-                      <AlertCircle size={16} />
-                    </span>
-                  </div>
+           
 
-                  <div className="space-y-2">
-                    {notifications.map((item) => (
-                      <button
-                        key={item.id}
-                        type="button"
-                        className="w-full rounded-2xl border border-slate-800 bg-slate-900 p-3 text-left transition-all duration-200 hover:border-blue-500 hover:bg-slate-800"
-                        onClick={() => {
-                          router.push("/dashboard");
-                          setNotificationsOpen(false);
-                        }}
-                      >
-                        <p className="text-sm font-semibold text-white">{item.title}</p>
-                        <p className="mt-1 text-xs text-slate-400">{item.description}</p>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+           
 
-            <button
-              type="button"
-              onClick={toggleFullscreen}
-              className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-700 bg-slate-900 text-slate-300 transition-all duration-300 hover:border-blue-500 hover:text-white hover:shadow-[0_0_25px_rgba(37,99,235,.30)]"
-              aria-label="Toggle fullscreen"
-            >
-              <Maximize2 size={20} />
-            </button>
-
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-700 bg-slate-900 text-slate-300 transition-all duration-300 hover:border-blue-500 hover:text-white hover:shadow-[0_0_25px_rgba(37,99,235,.30)]"
-              aria-label="Toggle theme"
-            >
-              {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
-
-            <button
-              type="button"
-              onClick={goToSettings}
-              className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-700 bg-slate-900 text-slate-300 transition-all duration-300 hover:border-blue-500 hover:text-white hover:shadow-[0_0_25px_rgba(37,99,235,.30)]"
-              aria-label="Settings"
-            >
-              <Settings size={20} />
-            </button>
+           
           </div>
 
           <div className="relative">

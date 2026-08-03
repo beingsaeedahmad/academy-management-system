@@ -17,13 +17,13 @@ export default function Hero() {
         <Sidebar />
 
         {/* Content */}
-        <div className="flex flex-1 flex-col">
+        <div className="flex flex-1 flex-col min-h-0">
 
           {/* Navbar */}
           <Navbar />
 
           {/* Dashboard */}
-          <main className="flex-1 p-6">
+          <main className="flex-1 min-h-0 overflow-y-auto scrollbar-hide p-6">
 
             <div className="space-y-6">
 

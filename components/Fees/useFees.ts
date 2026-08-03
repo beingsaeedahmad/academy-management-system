@@ -40,6 +40,9 @@ export default function useFees(
   const [selectedYear, setSelectedYear] =
     useState(today.getFullYear());
 
+  const [statusFilter, setStatusFilter] =
+    useState<string | null>(null);
+
   async function loadFees(
     month = selectedMonth,
     year = selectedYear
@@ -127,15 +130,21 @@ export default function useFees(
           item.className ===
             selectedClass;
 
+        const matchStatus =
+          statusFilter === null ||
+          item.status === statusFilter;
+
         return (
           matchSearch &&
-          matchClass
+          matchClass &&
+          matchStatus
         );
       });
     }, [
       fees,
       search,
       selectedClass,
+      statusFilter,
     ]);
 
   const summary =
@@ -177,6 +186,9 @@ export default function useFees(
 
     selectedClass,
     setSelectedClass,
+
+    statusFilter,
+    setStatusFilter,
 
     selectedMonth,
     setSelectedMonth,
