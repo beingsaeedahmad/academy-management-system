@@ -100,6 +100,7 @@ export default function AttendanceRegister({
   return (
     <div
       className="
+        w-full
         rounded-xl
         border
         border-slate-800
@@ -120,10 +121,22 @@ export default function AttendanceRegister({
 >
      <table
   className="
-    min-w-max
+    w-full
+    table-fixed
     border-collapse
   "
 >
+          <colgroup>
+            <col className="w-[72px]" />
+            <col className="w-20" />
+            <col className="w-36" />
+            {dates.map((date) => (
+              <col key={date.date} />
+            ))}
+            <col className="w-16" />
+            <col className="w-16" />
+          </colgroup>
+
           <thead className="sticky top-0 z-40">
             <tr>
               <th
@@ -131,8 +144,6 @@ export default function AttendanceRegister({
                   sticky
                   left-0
                   z-50
-                  w-14
-                  min-w-[56px]
                   border
                   border-slate-700
                   bg-[#0F172A]
@@ -141,20 +152,35 @@ export default function AttendanceRegister({
                   font-bold
                 "
               >
-                Roll
+                Roll No
               </th>
 
               <th
                 className="
                   sticky
-                  left-14
+                  left-[72px]
                   z-50
-                  w-44
-                  min-w-[176px]
                   border
                   border-slate-700
                   bg-[#0F172A]
-                  px-3
+                  px-2
+                  text-left
+                  text-xs
+                  font-bold
+                "
+              >
+                Class
+              </th>
+
+              <th
+                className="
+                  sticky
+                  left-[152px]
+                  z-50
+                  border
+                  border-slate-700
+                  bg-[#0F172A]
+                  px-2
                   text-left
                   text-xs
                   font-bold
@@ -167,8 +193,6 @@ export default function AttendanceRegister({
                 <th
                   key={date.date}
                   className={`
-                    w-8
-                    min-w-[32px]
                     h-8
                     border
                     border-slate-700
@@ -190,6 +214,34 @@ export default function AttendanceRegister({
                   {date.day}
                 </th>
               ))}
+
+              <th
+                className="
+                  border
+                  border-slate-700
+                  bg-[#0F172A]
+                  py-2
+                  text-xs
+                  font-bold
+                  text-green-400
+                "
+              >
+                Present
+              </th>
+
+              <th
+                className="
+                  border
+                  border-slate-700
+                  bg-[#0F172A]
+                  py-2
+                  text-xs
+                  font-bold
+                  text-red-400
+                "
+              >
+                Absent
+              </th>
             </tr>
           </thead>
 

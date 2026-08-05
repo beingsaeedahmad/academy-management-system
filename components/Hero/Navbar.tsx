@@ -7,36 +7,15 @@ import {
   UserCircle2,
   ChevronDown,
   ArrowRight,
-  CheckCircle,
-  AlertCircle,
+  Settings,
+  LogOut,
 } from "lucide-react";
 
 import GlobalSearch from "@/components/Search/GlobalSearch";
 
-const notifications = [
-  {
-    id: 1,
-    title: "New admission completed",
-    description: "Ali Hassan was admitted to Class 8",
-  },
-  {
-    id: 2,
-    title: "Fee payment received",
-    description: "Ayesha paid July fee",
-  },
-  {
-    id: 3,
-    title: "Attendance updated",
-    description: "Class 10 attendance status saved",
-  },
-];
-
 export default function Navbar() {
   const router = useRouter();
   const [currentTime, setCurrentTime] = useState("");
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
 
   const applyTheme = useCallback((dark: boolean) => {
@@ -72,10 +51,11 @@ export default function Navbar() {
     };
 
     const storedTheme = localStorage.getItem("academy-theme");
-    const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+    const prefersDark = window.matchMedia?.(
+      "(prefers-color-scheme: dark)"
+    ).matches;
     const initialDark = storedTheme ? storedTheme === "dark" : prefersDark;
 
-    setIsDarkMode(initialDark);
     applyTheme(initialDark);
 
     updateTime();
@@ -85,129 +65,84 @@ export default function Navbar() {
   }, [applyTheme]);
 
   useEffect(() => {
-    function handleFullscreenChange() {
-      setIsFullscreen(Boolean(document.fullscreenElement));
+    function handleClickOutside(event: MouseEvent) {
+      const target = event.target as HTMLElement;
+      if (!target.closest("[data-profile-menu]")) {
+        setProfileOpen(false);
+      }
     }
 
-    window.addEventListener("fullscreenchange", handleFullscreenChange);
-
-    return () => {
-      window.removeEventListener("fullscreenchange", handleFullscreenChange);
-    };
-  }, []);
-
-  function toggleTheme() {
-    setIsDarkMode((current) => {
-      const next = !current;
-      applyTheme(next);
-      return next;
-    });
-  }
-
-  async function toggleFullscreen() {
-    if (!document.fullscreenElement) {
-      await document.documentElement.requestFullscreen();
-    } else {
-      await document.exitFullscreen();
+    if (profileOpen) {
+      document.addEventListener("click", handleClickOutside);
     }
-  }
 
-  function openNotifications() {
-    setNotificationsOpen((open) => !open);
-    setProfileOpen(false);
-  }
-
-  function openProfileMenu() {
-    setProfileOpen((open) => !open);
-    setNotificationsOpen(false);
-  }
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [profileOpen]);
 
   function goToSettings() {
     router.push("/settings");
-  }
-
-  function goToProfile() {
-    router.push("/settings");
+    setProfileOpen(false);
   }
 
   function logOut() {
-    router.push("/dashboard");
+    router.push("/");
+    setProfileOpen(false);
   }
 
   return (
-    <header className="sticky top-0 z-40 h-20 border-b border-slate-800 bg-[#020817]/80 backdrop-blur-xl">
-      <div className="flex h-full items-center justify-between px-8">
+    <header className="sticky top-0 z-40 border-b border-slate-800/80 bg-[#020817]/90 backdrop-blur-xl">
+      <div className="flex h-[72px] items-center justify-between gap-6 px-6 lg:px-8">
         <GlobalSearch />
 
-        <div className="flex items-center gap-4">
-          <div className="hidden lg:block text-right">
-            <p className="text-sm font-medium text-white">{currentTime}</p>
-            <p className="text-xs text-slate-400">Academy Dashboard</p>
+        <div className="flex items-center gap-5">
+          <div className="hidden text-right lg:block">
+            <p className="text-sm font-medium tabular-nums text-white">
+              {currentTime}
+            </p>
+            <p className="text-xs text-slate-500">Academy Dashboard</p>
           </div>
 
-          <div className="flex items-center gap-2">
-           
-
-           
-
-           
-
-           
-          </div>
-
-          <div className="relative">
+          <div className="relative" data-profile-menu>
             <button
               type="button"
-              onClick={openProfileMenu}
-              className="flex items-center gap-3 rounded-2xl border border-slate-700 bg-slate-900 px-4 py-2 transition-all duration-300 hover:border-blue-500 hover:shadow-[0_0_25px_rgba(37,99,235,.25)]"
+              onClick={() => setProfileOpen((open) => !open)}
+              className="flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/60 px-3 py-2 transition-colors hover:border-slate-700 hover:bg-slate-900"
               aria-label="Profile menu"
+              aria-expanded={profileOpen}
             >
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 text-white shadow-[0_0_20px_rgba(37,99,235,.35)]">
-                <UserCircle2 size={24} />
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 text-white">
+                <UserCircle2 size={20} />
               </div>
-              <div className="hidden xl:block text-left">
-                <h3 className="text-sm font-semibold text-white">Administrator</h3>
-                <p className="text-xs text-slate-400">Super Admin</p>
+              <div className="hidden text-left xl:block">
+                <p className="text-sm font-medium text-white">Administrator</p>
+                <p className="text-xs text-slate-500">Super Admin</p>
               </div>
-              <ChevronDown size={18} className="hidden xl:block text-slate-400" />
+              <ChevronDown
+                size={16}
+                className={`hidden text-slate-500 transition-transform xl:block ${profileOpen ? "rotate-180" : ""}`}
+              />
             </button>
 
             {profileOpen && (
-              <div className="absolute right-0 top-full z-50 mt-3 w-56 rounded-3xl border border-slate-800 bg-slate-950 p-3 shadow-2xl">
-                <button
-                  type="button"
-                  onClick={goToProfile}
-                  className="flex w-full items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-900 px-4 py-3 text-left transition-all duration-200 hover:border-blue-500 hover:bg-slate-800"
-                >
-                  <span>
-                    <p className="text-sm font-semibold text-white">My Profile</p>
-                    <p className="text-xs text-slate-400">Account settings</p>
-                  </span>
-                  <CheckCircle size={18} className="text-blue-400" />
-                </button>
-
+              <div className="absolute right-0 top-full z-50 mt-2 w-52 overflow-hidden rounded-xl border border-slate-800 bg-slate-950 shadow-2xl">
                 <button
                   type="button"
                   onClick={goToSettings}
-                  className="mt-3 flex w-full items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-900 px-4 py-3 text-left transition-all duration-200 hover:border-blue-500 hover:bg-slate-800"
+                  className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-slate-300 transition-colors hover:bg-slate-900 hover:text-white"
                 >
-                  <span>
-                    <p className="text-sm font-semibold text-white">Settings</p>
-                    <p className="text-xs text-slate-400">App configuration</p>
-                  </span>
-                  <AlertCircle size={18} className="text-amber-400" />
+                  <Settings size={16} className="text-slate-500" />
+                  Settings
                 </button>
+
+                <div className="border-t border-slate-800" />
 
                 <button
                   type="button"
                   onClick={logOut}
-                  className="mt-3 flex w-full items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-900 px-4 py-3 text-left transition-all duration-200 hover:border-red-500 hover:bg-red-950"
+                  className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-slate-300 transition-colors hover:bg-slate-900 hover:text-white"
                 >
-                  <span>
-                    <p className="text-sm font-semibold text-white">Logout</p>
-                    <p className="text-xs text-slate-400">Return to dashboard</p>
-                  </span>
-                  <ArrowRight size={18} className="text-red-400" />
+                  <LogOut size={16} className="text-red-400" />
+                  Logout
                 </button>
               </div>
             )}

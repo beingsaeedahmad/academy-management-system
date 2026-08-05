@@ -77,8 +77,6 @@ export default function AttendanceCell({
       onDoubleClick={handleDoubleClick}
       className={`
         relative
-        w-7
-        min-w-[28px]
         h-8
         border
         border-slate-700

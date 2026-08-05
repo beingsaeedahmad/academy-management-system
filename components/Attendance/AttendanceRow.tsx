@@ -42,6 +42,16 @@ export default function AttendanceRow({
   moveSelection,
   setAttendance,
 }: Props) {
+  const studentGrid = grid[student.id] ?? {};
+
+  const presentCount = dates.filter(
+    (date) => studentGrid[date.date] === "P"
+  ).length;
+
+  const absentCount = dates.filter(
+    (date) => studentGrid[date.date] === "A"
+  ).length;
+
   return (
     <tr
       className={`
@@ -62,9 +72,6 @@ export default function AttendanceRow({
           left-0
           z-20
 
-          w-14
-          min-w-[56px]
-
           border
           border-slate-700
 
@@ -78,16 +85,38 @@ export default function AttendanceRow({
         {student.rollNumber}
       </td>
 
+      {/* Class */}
+
+      <td
+        className="
+          sticky
+          left-[72px]
+          z-20
+
+          border
+          border-slate-700
+
+          bg-[#020817]
+
+          px-2
+
+          text-center
+          text-xs
+          font-medium
+
+          truncate
+        "
+      >
+        {student.className}
+      </td>
+
       {/* Student Name */}
 
       <td
         className="
           sticky
-          left-14
+          left-[152px]
           z-20
-
-          w-40
-          min-w-[160px]
 
           border
           border-slate-700
@@ -99,7 +128,7 @@ export default function AttendanceRow({
           text-xs
           font-medium
 
-          whitespace-nowrap
+          truncate
         "
       >
         {student.name}
@@ -134,6 +163,34 @@ export default function AttendanceRow({
           }
         />
       ))}
+
+      <td
+        className="
+          border
+          border-slate-700
+          bg-[#020817]
+          text-center
+          text-xs
+          font-bold
+          text-green-400
+        "
+      >
+        {presentCount}
+      </td>
+
+      <td
+        className="
+          border
+          border-slate-700
+          bg-[#020817]
+          text-center
+          text-xs
+          font-bold
+          text-red-400
+        "
+      >
+        {absentCount}
+      </td>
     </tr>
   );
 }

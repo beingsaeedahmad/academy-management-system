@@ -10,7 +10,8 @@ import {
   CalendarCheck2,
   FileText,
   BookOpen,
-  ArrowRight,
+  ArrowUpRight,
+  Zap,
 } from "lucide-react";
 
 const actions = [
@@ -19,121 +20,106 @@ const actions = [
     description: "Register a new student",
     href: "/admissions",
     icon: UserPlus,
-    color: "from-blue-500 to-cyan-500",
+    iconBg: "bg-blue-500/10",
+    iconColor: "text-blue-400",
+    hoverBorder: "hover:border-blue-500/30",
   },
   {
     title: "Add Student",
     description: "Create student profile",
     href: "/students",
     icon: GraduationCap,
-    color: "from-indigo-500 to-blue-500",
+    iconBg: "bg-indigo-500/10",
+    iconColor: "text-indigo-400",
+    hoverBorder: "hover:border-indigo-500/30",
   },
   {
     title: "Collect Fee",
-    description: "Receive student fee",
+    description: "Receive student payment",
     href: "/fees",
     icon: Wallet,
-    color: "from-emerald-500 to-green-500",
+    iconBg: "bg-emerald-500/10",
+    iconColor: "text-emerald-400",
+    hoverBorder: "hover:border-emerald-500/30",
   },
   {
     title: "Attendance",
     description: "Mark today's attendance",
     href: "/attendance",
     icon: CalendarCheck2,
-    color: "from-amber-500 to-orange-500",
+    iconBg: "bg-amber-500/10",
+    iconColor: "text-amber-400",
+    hoverBorder: "hover:border-amber-500/30",
   },
   {
     title: "Reports",
     description: "Generate academy reports",
     href: "/reports",
     icon: FileText,
-    color: "from-violet-500 to-fuchsia-500",
+    iconBg: "bg-violet-500/10",
+    iconColor: "text-violet-400",
+    hoverBorder: "hover:border-violet-500/30",
   },
   {
     title: "Upload Notes",
-    description: "Upload class notes",
+    description: "Share class materials",
     href: "/notes",
     icon: BookOpen,
-    color: "from-cyan-500 to-sky-500",
+    iconBg: "bg-cyan-500/10",
+    iconColor: "text-cyan-400",
+    hoverBorder: "hover:border-cyan-500/30",
   },
 ];
 
 export default function QuickActions() {
   return (
     <Card
+      hover={false}
       title="Quick Actions"
       subtitle="Frequently used shortcuts"
+      icon={<Zap size={20} />}
     >
-      <div className="grid gap-4 sm:grid-cols-2">
-
+      <div className="grid gap-3 sm:grid-cols-2">
         {actions.map((action) => {
-
           const Icon = action.icon;
 
           return (
             <Link
-              key={action.title} 
+              key={action.title}
               href={action.href}
-              className="
-                group
-                rounded-2xl
-                border
-                border-slate-800
-                bg-slate-900/60
-                p-5
-                transition-all
-                duration-300
-                hover:-translate-y-1
-                hover:border-blue-500/40
-                hover:shadow-[0_0_25px_rgba(37,99,235,.20)]
-              "
+              className={`
+                group flex items-center gap-4 rounded-xl
+                border border-slate-800/80
+                bg-slate-900/30
+                p-4
+                transition-all duration-200
+                hover:-translate-y-0.5
+                hover:bg-slate-900/60
+                ${action.hoverBorder}
+              `}
             >
-
-              <div className="flex items-start justify-between">
-
-                <div
-                  className={`
-                    flex
-                    h-14
-                    w-14
-                    items-center
-                    justify-center
-                    rounded-2xl
-                    bg-gradient-to-br
-                    ${action.color}
-                    text-white
-                    shadow-lg
-                  `}
-                >
-                  <Icon size={26} />
-                </div>
-
-                <ArrowRight
-                  size={18}
-                  className="
-                    text-slate-500
-                    transition-transform
-                    duration-300
-                    group-hover:translate-x-1
-                    group-hover:text-blue-400
-                  "
-                />
-
+              <div
+                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${action.iconBg}`}
+              >
+                <Icon size={20} className={action.iconColor} />
               </div>
 
-              <h3 className="mt-5 text-lg font-semibold text-white">
-                {action.title}
-              </h3>
+              <div className="min-w-0 flex-1">
+                <h3 className="text-sm font-semibold text-white">
+                  {action.title}
+                </h3>
+                <p className="mt-0.5 text-xs text-slate-500">
+                  {action.description}
+                </p>
+              </div>
 
-              <p className="mt-2 text-sm text-slate-400">
-                {action.description}
-              </p>
-
+              <ArrowUpRight
+                size={16}
+                className="shrink-0 text-slate-600 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-blue-400"
+              />
             </Link>
           );
-
         })}
-
       </div>
     </Card>
   );

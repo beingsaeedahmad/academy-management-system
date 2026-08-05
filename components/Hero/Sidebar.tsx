@@ -17,303 +17,164 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
-  Circle,
 } from "lucide-react";
 
 import { usePathname } from "next/navigation";
 
 const menu = [
   {
-    title: "MAIN",
+    title: "Main",
     items: [
-      {
-        icon: LayoutDashboard,
-        title: "Dashboard",
-        href: "/",
-      },
-      {
-        icon: ClipboardPenLine,
-        title: "Admissions",
-        href: "/admissions",
-      },
-      {
-        icon: GraduationCap,
-        title: "Students",
-        href: "/students",
-      },
+      { icon: LayoutDashboard, title: "Dashboard", href: "/" },
+      { icon: ClipboardPenLine, title: "Admissions", href: "/admissions" },
+      { icon: GraduationCap, title: "Students", href: "/students" },
     ],
   },
-
   {
-    title: "ACADEMICS",
+    title: "Academics",
     items: [
-      {
-        icon: CalendarCheck2,
-        title: "Attendance",
-        href: "/attendance",
-      },
-      {
-        icon: BarChart3,
-        title: "Results",
-        href: "/results",
-      },
-      {
-        icon: BookOpen,
-        title: "Notes",
-        href: "/notes",
-      },
+      { icon: CalendarCheck2, title: "Attendance", href: "/attendance" },
+      { icon: BarChart3, title: "Results", href: "/results" },
+      { icon: BookOpen, title: "Notes", href: "/notes" },
     ],
   },
-
   {
-    title: "FINANCE",
+    title: "Finance",
     items: [
-      {
-        icon: Wallet,
-        title: "Fees",
-        href: "/fees",
-      },
-      {
-        icon: FileText,
-        title: "Reports",
-        href: "/reports",
-      },
+      { icon: Wallet, title: "Fees", href: "/fees" },
+      { icon: FileText, title: "Reports", href: "/reports" },
     ],
   },
-
   {
-    title: "MANAGEMENT",
+    title: "Management",
     items: [
-      {
-        icon: Users,
-        title: "Teachers",
-        href: "/teachers",
-      },
-      {
-        icon: School,
-        title: "Classes",
-        href: "/classes",
-      },
-      {
-        icon: BookCopy,
-        title: "Subjects",
-        href: "/subjects",
-      },
+      { icon: Users, title: "Teachers", href: "/teachers" },
+      { icon: School, title: "Classes", href: "/classes" },
+      { icon: BookCopy, title: "Subjects", href: "/subjects" },
     ],
   },
-
   {
-    title: "SYSTEM",
-    items: [
-      {
-        icon: Settings,
-        title: "Settings",
-        href: "/settings",
-      },
-    ],
+    title: "System",
+    items: [{ icon: Settings, title: "Settings", href: "/settings" }],
   },
 ];
 
+function isActive(pathname: string, href: string) {
+  if (href === "/") return pathname === "/" || pathname === "/dashboard";
+  return pathname.startsWith(href);
+}
+
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
-
   const pathname = usePathname();
 
   return (
-<aside
-  className={`
-    relative
-    flex
-    h-full
-    min-h-screen
-    flex-col
-    overflow-hidden
-    border-r
-    border-slate-800
-    bg-[#020617]
-    transition-all
-    duration-300
-    ${collapsed ? "w-24" : "w-[300px]"}
-  `}
->
-      {/* Logo */}
-
-      <div className="border-b border-slate-800 p-6">
-        <div className="flex items-center justify-between">
-
-          <div className="flex items-center gap-4">
-
-            <div
-              className="
-                flex
-                h-14
-                w-14
-                items-center
-                justify-center
-                rounded-2xl
-                bg-gradient-to-br
-                from-blue-500
-                to-cyan-500
-                text-xl
-                font-bold
-                text-white
-                shadow-[0_0_30px_rgba(37,99,235,.45)]
-              "
-            >
+    <aside
+      className={`
+        sticky top-0 flex h-screen shrink-0 flex-col
+        border-r border-slate-800/80 bg-[#020617]/95 backdrop-blur-xl
+        transition-all duration-300
+        ${collapsed ? "w-[72px]" : "w-[260px]"}
+      `}
+    >
+      <div className="border-b border-slate-800/80 p-5">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 text-sm font-bold text-white">
               SA
             </div>
 
             {!collapsed && (
-              <div>
-                <h2 className="text-lg font-bold text-white">
+              <div className="min-w-0">
+                <h2 className="truncate text-sm font-semibold text-white">
                   Academy ERP
                 </h2>
-
-                <p className="text-sm text-slate-400">
+                <p className="truncate text-xs text-slate-500">
                   Management System
                 </p>
               </div>
             )}
-
           </div>
 
           <button
-            onClick={() =>
-              setCollapsed(!collapsed)
-            }
-            className="
-              rounded-xl
-              border
-              border-slate-700
-              bg-slate-900
-              p-2
-              text-slate-300
-              transition-all
-              duration-300
-              hover:border-blue-500
-              hover:text-white
-              hover:shadow-[0_0_20px_rgba(37,99,235,.35)]
-            "
+            onClick={() => setCollapsed(!collapsed)}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-800 text-slate-400 transition-colors hover:border-slate-700 hover:bg-slate-900 hover:text-white"
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            {collapsed ? (
-              <ChevronRight size={18} />
-            ) : (
-              <ChevronLeft size={18} />
-            )}
+            {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
           </button>
-
         </div>
       </div>
 
-      {/* Navigation */}
-
-      <div className="flex-1 min-h-0 overflow-y-auto px-4 py-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-
+      <nav className="flex-1 overflow-y-auto px-3 py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {menu.map((section) => (
-
-          <div
-            key={section.title}
-            className="mb-6"
-          >
-
+          <div key={section.title} className="mb-5">
             {!collapsed && (
-              <h3 className="mb-3 px-3 text-xs font-bold tracking-widest text-slate-500">
+              <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-600">
                 {section.title}
-              </h3>
+              </p>
             )}
 
-            <div className="space-y-2">
-
+            <div className="space-y-0.5">
               {section.items.map((item) => {
-
                 const Icon = item.icon;
+                const active = isActive(pathname, item.href);
 
                 return (
                   <Link
                     key={item.title}
                     href={item.href}
-                 className={`
-  group
-  relative
-  flex
-  items-center
-  gap-4
-  rounded-2xl
-  border
-  px-4
-  py-2.5
-  transition-all
-  duration-300
-
-  ${
-    pathname === item.href
-      ? "border-blue-500/40 bg-blue-600/10 text-white shadow-[0_0_25px_rgba(37,99,235,.25)]"
-      : "border-transparent text-slate-300 hover:border-blue-500/30 hover:bg-slate-900 hover:text-white hover:shadow-[0_0_20px_rgba(37,99,235,.18)]"
-  }
-`}
-
-
+                    title={collapsed ? item.title : undefined}
+                    className={`
+                      flex items-center gap-3 rounded-xl px-3 py-2.5
+                      text-sm font-medium transition-all duration-200
+                      ${
+                        active
+                          ? "bg-blue-500/10 text-white"
+                          : "text-slate-400 hover:bg-slate-800/50 hover:text-white"
+                      }
+                      ${collapsed ? "justify-center" : ""}
+                    `}
                   >
                     <Icon
-                      size={22}
-                      className="text-blue-400"
+                      size={18}
+                      className={active ? "text-blue-400" : "text-slate-500"}
                     />
 
-                    {!collapsed && (
-                      <span className="font-medium">
-                        {item.title}
-                      </span>
+                    {!collapsed && <span>{item.title}</span>}
+
+                    {active && !collapsed && (
+                      <span className="ml-auto h-1.5 w-1.5 rounded-full bg-blue-400" />
                     )}
                   </Link>
                 );
-
               })}
-
             </div>
-
           </div>
-
         ))}
+      </nav>
 
-      </div>
-
-      <div className="border-t border-slate-800 p-4">
-  <div className="rounded-3xl border border-slate-800 bg-slate-900 p-4 shadow-[0_0_25px_rgba(37,99,235,.08)]">
-
-    <div className="flex items-center gap-3">
-
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 font-bold text-white shadow-[0_0_20px_rgba(37,99,235,.35)]">
-        SA
-      </div>
-
-      {!collapsed && (
-        <div className="flex-1">
-
-          <h4 className="font-semibold text-white">
-            Administrator
-          </h4>
-
-          <div className="mt-1 flex items-center gap-2">
-
-            <Circle
-              size={8}
-              fill="#22C55E"
-              className="text-green-500"
-            />
-
-            <span className="text-xs text-slate-400">
-              Online
-            </span>
-
+      <div className="border-t border-slate-800/80 p-4">
+        <div
+          className={`flex items-center gap-3 rounded-xl border border-slate-800/80 bg-slate-900/40 p-3 ${collapsed ? "justify-center" : ""}`}
+        >
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 text-xs font-bold text-white">
+            SA
           </div>
 
+          {!collapsed && (
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium text-white">
+                Administrator
+              </p>
+              <div className="mt-0.5 flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                <span className="text-xs text-slate-500">Online</span>
+              </div>
+            </div>
+          )}
         </div>
-      )}
-
-    </div>
-
-  </div>
-</div>
+      </div>
     </aside>
   );
 }
