@@ -47,6 +47,9 @@ export default function EditNoteModal({
 
   if (!open || !note) return null;
 
+  // ✅ Fix: create a guaranteed non-null reference
+  const selectedNote = note;
+
   function handleChange(
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -69,7 +72,7 @@ export default function EditNoteModal({
     try {
       setLoading(true);
 
-      await updateNote(note.id, {
+      await updateNote(selectedNote.id, {
         title: form.title,
         description: form.description,
         subject: form.subject,
@@ -81,8 +84,10 @@ export default function EditNoteModal({
 
       onSuccess?.();
       onClose();
+
     } catch (error) {
-      console.error(error);
+      console.error("Failed to update note:", error);
+
     } finally {
       setLoading(false);
     }
@@ -90,25 +95,31 @@ export default function EditNoteModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+
       <div className="w-full max-w-xl rounded-2xl border border-slate-800 bg-slate-900 p-6">
 
         <div className="mb-6 flex items-center justify-between">
+
           <h2 className="text-2xl font-bold text-white">
             Edit Note
           </h2>
 
           <button
+            type="button"
             onClick={onClose}
             className="rounded-lg p-2 text-slate-400 hover:bg-slate-800"
           >
             <X size={20} />
           </button>
+
         </div>
+
 
         <form
           onSubmit={handleSubmit}
           className="space-y-4"
         >
+
           <input
             name="title"
             value={form.title}
@@ -116,6 +127,7 @@ export default function EditNoteModal({
             placeholder="Title"
             className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white"
           />
+
 
           <textarea
             rows={4}
@@ -126,6 +138,7 @@ export default function EditNoteModal({
             className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white"
           />
 
+
           <input
             name="subject"
             value={form.subject}
@@ -133,6 +146,7 @@ export default function EditNoteModal({
             placeholder="Subject"
             className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white"
           />
+
 
           <input
             name="className"
@@ -142,6 +156,7 @@ export default function EditNoteModal({
             className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white"
           />
 
+
           <input
             name="category"
             value={form.category}
@@ -149,6 +164,7 @@ export default function EditNoteModal({
             placeholder="Category"
             className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white"
           />
+
 
           <input
             name="uploadedBy"
@@ -158,15 +174,23 @@ export default function EditNoteModal({
             className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white"
           />
 
+
           <select
             name="isPublished"
             value={String(form.isPublished)}
             onChange={handleChange}
             className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white"
           >
-            <option value="true">Published</option>
-            <option value="false">Hidden</option>
+            <option value="true">
+              Published
+            </option>
+
+            <option value="false">
+              Hidden
+            </option>
+
           </select>
+
 
           <button
             type="submit"
@@ -175,8 +199,11 @@ export default function EditNoteModal({
           >
             {loading ? "Updating..." : "Update Note"}
           </button>
+
         </form>
+
       </div>
+
     </div>
   );
 }
