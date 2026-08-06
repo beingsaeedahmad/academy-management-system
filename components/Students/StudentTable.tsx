@@ -398,44 +398,83 @@ export default function StudentTable({
                     </button>
 
                     <button
-                      onClick={async () => {
+  type="button"
+  onClick={async () => {
 
-                        const ok = confirm(
-                          "Delete this student?"
-                        );
+    console.log(
+      "DELETE CLICKED:",
+      student.id
+    );
 
-                        if (!ok) return;
 
-                        await deleteStudent(
-                          student.id
-                        );
+    const ok = window.confirm(
+      `Delete ${student.name}?`
+    );
 
-                        const data =
-  await getStudents();
 
-setStudents(
+    if (!ok) {
+      console.log("DELETE CANCELLED");
+      return;
+    }
 
-  data.sort(
-    (a: Student, b: Student) =>
-      a.name.localeCompare(
-        b.name
-      )
-  )
 
-);
+    try {
 
-router.refresh();
+      console.log(
+        "CALLING SERVER ACTION..."
+      );
 
-                      }}
-                      className="
-                        rounded-lg
-                        bg-red-500/10
-                        p-2
-                        text-red-400
-                      "
-                    >
-                      <Trash2 size={18} />
-                    </button>
+
+      const result =
+        await deleteStudent(student.id);
+
+
+      console.log(
+        "DELETE RESULT:",
+        result
+      );
+
+
+
+      setStudents((prev) =>
+        prev.filter(
+          (s) =>
+            s.id !== student.id
+        )
+      );
+
+
+
+    } catch(error) {
+
+
+      console.error(
+        "DELETE FAILED:",
+        error
+      );
+
+
+      alert(
+        "Delete failed. Check console"
+      );
+
+    }
+
+  }}
+  className="
+    rounded-lg
+    bg-red-500/10
+    p-2
+    text-red-400
+    hover:bg-red-500/20
+  "
+>
+  <Trash2
+    size={18}
+    className="pointer-events-none"
+  />
+</button>
+
 
                   </div>
 

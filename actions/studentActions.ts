@@ -264,80 +264,65 @@ export async function getStudentById(id: string) {
   }
 }
 
-// DELETE STUDENT
+export async function deleteStudent(id:string){
 
-export async function deleteStudent(
-  id: string
-) {
+  console.log(
+    "SERVER DELETE START:",
+    id
+  );
 
 
   try {
 
 
+    await prisma.attendance.deleteMany({
+      where:{
+        studentId:id
+      }
+    });
 
-    // Delete related fees first
 
     await prisma.fee.deleteMany({
-
-      where: {
-
-        studentId: id,
-
-      },
-
+      where:{
+        studentId:id
+      }
     });
 
 
 
-
-
-    await prisma.student.delete({
-
-      where: {
-
-        id,
-
-      },
-
-    });
+    const deleted =
+      await prisma.student.delete({
+        where:{
+          id
+        }
+      });
 
 
 
-
-
-    return {
-
-      success: true,
-
-    };
-
-
-
-  } catch (error) {
-
-
-    console.error(
-
-      "DELETE STUDENT ERROR:",
-
-      error
-
+    console.log(
+      "SERVER DELETE DONE:",
+      deleted.id
     );
 
 
-    throw error;
+    return {
+      success:true,
+      id:deleted.id
+    };
 
+
+  } catch(error){
+
+    console.error(
+      "SERVER DELETE ERROR:",
+      error
+    );
+
+    throw error;
 
   }
 
 }
-
-
-
-
-
-
-
 // UPDATE STUDENT
 
 export async function updateStudent(
