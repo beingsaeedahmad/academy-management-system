@@ -2,11 +2,13 @@
 
 import { LucideIcon } from "lucide-react";
 
-interface AttendanceOverviewCardProps {
+interface Props {
   title: string;
   value: number;
   icon: LucideIcon;
   color: string;
+  bg: string;
+  border: string;
 }
 
 export default function AttendanceOverviewCard({
@@ -14,66 +16,50 @@ export default function AttendanceOverviewCard({
   value,
   icon: Icon,
   color,
-}: AttendanceOverviewCardProps) {
+  bg,
+  border,
+}: Props) {
   return (
     <div
       className={`
-      rounded-0xl
-      border
-      ${color}
-      bg-gradient-to-br
-      p-5
-      backdrop-blur-xl
-      shadow-[0_0_25px_rgba(37,99,235,0.12)]
-      transition-all
-      duration-300
-      hover:-translate-y-1
-      hover:shadow-[0_0_35px_rgba(37,99,235,0.25)]
+        rounded-2xl
+        border
+        ${border}
+        bg-slate-900
+        p-6
+        transition-all
+        duration-300
+        hover:-translate-y-1
+        hover:shadow-xl
       `}
     >
-
       <div className="flex items-center justify-between">
-
         <div>
           <p className="text-sm text-slate-400">
             {title}
           </p>
 
-          <h2 className="
-            mt-2
-            text-3xl
-            font-bold
-            text-white
-          ">
+          <h2 className="mt-3 text-3xl font-bold text-white">
             {value}
           </h2>
         </div>
 
-
         <div
-          className="
-          flex
-          h-14
-          w-14
-          items-center
-          justify-center
-          rounded-0xl
-          bg-white/10
-          backdrop-blur-md
-          shadow-inner
-          "
+          className={`
+            ${bg}
+            flex
+            h-14
+            w-14
+            items-center
+            justify-center
+            rounded-xl
+          `}
         >
-          <Icon 
-            className="
-            h-7
-            w-7
-            text-white
-            "
+          <Icon
+            className={`${color} h-7 w-7`}
           />
         </div>
-
       </div>
-
     </div>
   );
 }

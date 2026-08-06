@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
 import {
   Users,
   UserCheck,
@@ -11,6 +10,12 @@ import {
 } from "lucide-react";
 
 import { getStudentStats } from "@/actions/studentActions";
+
+type FilterType =
+  | "all"
+  | "active"
+  | "new"
+  | "defaulters";
 
 interface StudentStats {
   totalStudents: number;
@@ -23,16 +28,16 @@ interface CardItem {
   title: string;
   value: number;
   icon: LucideIcon;
+  filterValue: FilterType;
   color: string;
+  bg: string;
+  border: string;
 }
 
 interface Props {
-  filter: "all" | "active" | "new" | "defaulters";
-
+  filter: FilterType;
   setFilter: React.Dispatch<
-    React.SetStateAction<
-      "all" | "active" | "new" | "defaulters"
-    >
+    React.SetStateAction<FilterType>
   >;
 }
 
@@ -60,89 +65,70 @@ export default function StudentCard({
     loadStats();
   }, []);
 
-const cards: (CardItem & {
-  filterValue: "all" | "active" | "new" | "defaulters";
-})[] = [
-  {
-    title: "Total Students",
-    value: stats.totalStudents,
-    icon: Users,
-    filterValue: "all",
-    color:
-      "from-blue-500/20 via-blue-500/10 to-slate-900 border-blue-500/30 shadow-blue-500/20",
-  },
-  {
-    title: "Active Students",
-    value: stats.activeStudents,
-    icon: UserCheck,
-    filterValue: "active",
-    color:
-      "from-emerald-500/20 via-emerald-500/10 to-slate-900 border-emerald-500/30 shadow-emerald-500/20",
-  },
-  {
-    title: "New Admissions",
-    value: stats.newAdmissions,
-    icon: UserPlus,
-    filterValue: "new",
-    color:
-      "from-cyan-500/20 via-cyan-500/10 to-slate-900 border-cyan-500/30 shadow-cyan-500/20",
-  },
-  {
-    title: "Fee Defaulters",
-    value: stats.feeDefaulters,
-    icon: Wallet,
-    filterValue: "defaulters",
-    color:
-      "from-rose-500/20 via-rose-500/10 to-slate-900 border-rose-500/30 shadow-rose-500/20",
-  },
-];
+  const cards: CardItem[] = [
+    {
+      title: "Total Students",
+      value: stats.totalStudents,
+      icon: Users,
+      filterValue: "all",
+      color: "text-blue-400",
+      bg: "bg-blue-500/10",
+      border: "border-blue-500/30",
+    },
+    {
+      title: "Active Students",
+      value: stats.activeStudents,
+      icon: UserCheck,
+      filterValue: "active",
+      color: "text-emerald-400",
+      bg: "bg-emerald-500/10",
+      border: "border-emerald-500/30",
+    },
+    {
+      title: "New Admissions",
+      value: stats.newAdmissions,
+      icon: UserPlus,
+      filterValue: "new",
+      color: "text-violet-400",
+      bg: "bg-violet-500/10",
+      border: "border-violet-500/30",
+    },
+    {
+      title: "Fee Defaulters",
+      value: stats.feeDefaulters,
+      icon: Wallet,
+      filterValue: "defaulters",
+      color: "text-rose-400",
+      bg: "bg-rose-500/10",
+      border: "border-rose-500/30",
+    },
+  ];
 
   return (
-    <div
-      className="
-        grid
-        grid-cols-1
-        gap-5
-        sm:grid-cols-2
-        xl:grid-cols-4
-      "
-    >
+    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
       {cards.map((card) => {
         const Icon = card.icon;
-
-        const active =
-          filter === card.filterValue;
+        const active = filter === card.filterValue;
 
         return (
           <button
             key={card.title}
             type="button"
-            onClick={() => {
-  if (filter === card.filterValue) {
-    setFilter("all");
-  } else {
-    setFilter(card.filterValue);
-  }
-}}
+            onClick={() =>
+              setFilter(active ? "all" : card.filterValue)
+            }
             className={`
-              rounded-0xl
+              rounded-2xl
               border
-              bg-gradient-to-br
-              ${card.color}
-              p-5
+              ${card.border}
+              bg-slate-900
+              p-6
               text-left
-              backdrop-blur-xl
-              shadow-[0_0_25px_rgba(37,99,235,0.12)]
               transition-all
               duration-300
               hover:-translate-y-1
-              hover:shadow-[0_0_35px_rgba(37,99,235,0.25)]
-              ${
-                active
-                  ? "ring-2 ring-blue-500 scale-[1.02]"
-                  : ""
-              }
-              cursor-pointer
+              hover:shadow-xl
+              ${active ? "ring-2 ring-blue-500" : ""}
             `}
           >
             <div className="flex items-center justify-between">
@@ -151,30 +137,24 @@ const cards: (CardItem & {
                   {card.title}
                 </p>
 
-                <h2 className="mt-2 text-3xl font-bold text-white">
+                <h2 className="mt-3 text-3xl font-bold text-white">
                   {card.value}
                 </h2>
               </div>
 
               <div
-                className="
+                className={`
+                  ${card.bg}
                   flex
                   h-14
                   w-14
                   items-center
                   justify-center
-                  rounded-0xl
-                  bg-white/10
-                  backdrop-blur-md
-                  shadow-inner
-                "
+                  rounded-xl
+                `}
               >
                 <Icon
-                  className="
-                    h-7
-                    w-7
-                    text-white
-                  "
+                  className={`${card.color} h-7 w-7`}
                 />
               </div>
             </div>

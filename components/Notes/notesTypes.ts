@@ -1,22 +1,9 @@
-export type NoteFileType =
-  | "pdf"
-  | "doc"
-  | "docx"
-  | "ppt"
-  | "pptx"
-  | "xls"
-  | "xlsx"
-  | "jpg"
-  | "jpeg"
-  | "png"
-  | "other";
-
 export interface Note {
   id: string;
 
   title: string;
 
-  description: string | null;
+  description: string;
 
   subject: string;
 
@@ -24,11 +11,11 @@ export interface Note {
 
   category: string | null;
 
-  uploadedBy: string | null;
-
-  fileName: string;
+  uploadedBy: string;
 
   fileUrl: string;
+
+  fileName: string;
 
   fileType: string;
 
@@ -43,7 +30,7 @@ export interface Note {
   updatedAt: Date;
 }
 
-export interface CreateNoteFormData {
+export interface CreateNoteData {
   title: string;
 
   description: string;
@@ -52,23 +39,43 @@ export interface CreateNoteFormData {
 
   className: string;
 
-  category: string;
+  category?: string;
 
   uploadedBy: string;
 
-  file: File | null;
+  fileUrl: string;
+
+  fileName: string;
+
+  fileType: string;
+
+  fileSize: number;
 }
 
-export interface NotesFilter {
-  search: string;
+export interface UpdateNoteData {
+  title?: string;
 
-  className: string;
+  description?: string;
 
-  subject: string;
+  subject?: string;
 
-  category: string;
+  className?: string;
 
-  publishedOnly: boolean;
+  category?: string;
+
+  uploadedBy?: string;
+
+  fileUrl?: string;
+
+  fileName?: string;
+
+  fileType?: string;
+
+  fileSize?: number;
+
+  downloads?: number;
+
+  isPublished?: boolean;
 }
 
 export interface NotesStats {
@@ -79,28 +86,4 @@ export interface NotesStats {
   publishedNotes: number;
 
   hiddenNotes: number;
-}
-
-export interface NotesTableProps {
-  notes: Note[];
-}
-
-export interface NotesRowProps {
-  note: Note;
-}
-
-export interface NoteCardProps {
-  note: Note;
-}
-
-export interface NoteRowProps {
-  note: Note;
-}
-
-export interface NoteCardProps {
-  note: Note;
-}
-
-export interface NotesTableProps {
-  notes: Note[];
 }

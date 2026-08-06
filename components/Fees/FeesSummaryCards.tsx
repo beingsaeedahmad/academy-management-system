@@ -27,21 +27,15 @@ interface Props {
 }
 
 
-
 interface CardItem {
-
-  title:string;
-
-  value:number;
-
-  icon:LucideIcon;
-
-  color:string;
-
-  status:string | null;
-
+  title: string;
+  value: number;
+  icon: LucideIcon;
+  color: string;
+  bg: string;
+  border: string;
+  status: string | null;
 }
-
 
 
 
@@ -52,40 +46,44 @@ export default function FeesSummaryCards({
 }:Props){
 
 
-const cards: CardItem[] = [
-  {
-    title: "Total Fees",
-    value: summary.total,
-    icon: Wallet,
-    color:
-      "from-blue-500/20 via-blue-500/10 to-slate-900 border-blue-500/30 shadow-blue-500/20",
-    status: null,
-  },
-  {
-    title: "Paid",
-    value: summary.paid,
-    icon: CheckCircle,
-    color:
-      "from-emerald-500/20 via-emerald-500/10 to-slate-900 border-emerald-500/30 shadow-emerald-500/20",
-    status: "Paid",
-  },
-  {
-    title: "Pending",
-    value: summary.pending,
-    icon: Clock,
-    color:
-      "from-amber-500/20 via-amber-500/10 to-slate-900 border-amber-500/30 shadow-amber-500/20",
-    status: "Pending",
-  },
-  {
-    title: "Overdue",
-    value: summary.overdue,
-    icon: AlertCircle,
-    color:
-      "from-rose-500/20 via-rose-500/10 to-slate-900 border-rose-500/30 shadow-rose-500/20",
-    status: "Overdue",
-  },
-];
+  const cards: CardItem[] = [
+    {
+      title: "Total Fees",
+      value: summary.total,
+      icon: Wallet,
+      color: "text-blue-400",
+      bg: "bg-blue-500/10",
+      border: "border-blue-500/30",
+      status: null,
+    },
+    {
+      title: "Paid",
+      value: summary.paid,
+      icon: CheckCircle,
+      color: "text-emerald-400",
+      bg: "bg-emerald-500/10",
+      border: "border-emerald-500/30",
+      status: "Paid",
+    },
+    {
+      title: "Pending",
+      value: summary.pending,
+      icon: Clock,
+      color: "text-amber-400",
+      bg: "bg-amber-500/10",
+      border: "border-amber-500/30",
+      status: "Pending",
+    },
+    {
+      title: "Overdue",
+      value: summary.overdue,
+      icon: AlertCircle,
+      color: "text-rose-400",
+      bg: "bg-rose-500/10",
+      border: "border-rose-500/30",
+      status: "Overdue",
+    },
+  ];
 
 
 
@@ -111,128 +109,55 @@ const cards: CardItem[] = [
         cards.map((card)=>(
 
           <button
-            key={card.title}
-            type="button"
-            onClick={() => onCardClick?.(card.status)}
-            className={`
-            rounded-0xl
+          key={card.title}
+          type="button"
+          onClick={() => onCardClick?.(card.status)}
+          className={`
+            rounded-2xl
             border
-            bg-gradient-to-br
-            ${card.color}
-            p-5
+            ${card.border}
+            bg-slate-900
+            p-6
             text-left
-            backdrop-blur-xl
-            shadow-[0_0_25px_rgba(37,99,235,0.12)]
             transition-all
             duration-300
             hover:-translate-y-1
-            hover:shadow-[0_0_35px_rgba(37,99,235,0.25)]
-            ${activeStatus === card.status ? "border-white bg-white/10 shadow-[0_0_35px_rgba(255,255,255,0.18)]" : "hover:border-blue-400"}
-            `}
-          >
-
-
-            <div
-
-              className="
-              flex
-
-              items-center
-
-              justify-between
-              "
-
-            >
-
-
-
-              <div>
-
-                <p
-
-                  className="
-                  text-sm
-
-                  text-slate-400
-                  "
-
-                >
-
-                  {card.title}
-
-                </p>
-
-
-
-                <h2
-
-                  className="
-                  mt-2
-
-                  text-2xl
-
-                  font-bold
-
-                  text-white
-                  "
-
-                >
-
-                  {formatCurrency(card.value)}
-
-                </h2>
-
-
-              </div>
-
-
-
-
-
-              <div
-
-                className="
-                flex
-
-                h-14
-
-                w-14
-
-                items-center
-
-                justify-center
-
-                rounded-0xl
-
-                bg-white/10
-
-                backdrop-blur-md
-
-                shadow-inner
-                "
-
-              >
-
-                <card.icon
-
-                  className="
-                  h-7
-
-                  w-7
-
-                  text-white
-                  "
-
-                />
-
-              </div>
-
-
-
+            hover:shadow-xl
+            ${
+              activeStatus === card.status
+                ? "ring-2 ring-blue-500"
+                : ""
+            }
+          `}
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-slate-400">
+                {card.title}
+              </p>
+        
+              <h2 className="mt-3 text-3xl font-bold text-white">
+                {formatCurrency(card.value)}
+              </h2>
             </div>
-
-
-          </button>
+        
+            <div
+              className={`
+                ${card.bg}
+                flex
+                h-14
+                w-14
+                items-center
+                justify-center
+                rounded-xl
+              `}
+            >
+              <card.icon
+                className={`${card.color} h-7 w-7`}
+              />
+            </div>
+          </div>
+        </button>
 
 
         ))

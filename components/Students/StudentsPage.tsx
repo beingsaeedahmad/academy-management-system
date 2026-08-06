@@ -33,56 +33,62 @@ export default function StudentsPage() {
     "all" | "active" | "new" | "defaulters"
   >("all");
 
-  const openProfile = (student: Student) => {
+  function openProfile(student: Student) {
     setSelectedStudent(student);
     setProfileOpen(true);
-  };
+  }
 
-  const closeProfile = () => {
+  function closeProfile() {
     setProfileOpen(false);
     setSelectedStudent(null);
 
     if (searchParams.get("studentId")) {
       router.replace("/students");
     }
-  };
+  }
 
   useEffect(() => {
     const studentId = searchParams.get("studentId");
 
-    if (!studentId) {
-      return;
-    }
+    if (studentId === null) return;
 
-    const id = studentId;
-    let active = true;
+    let mounted = true;
 
-    async function loadStudent() {
+    async function loadStudent(id: string) {
       try {
         const student = await getStudentById(id);
 
-        if (active && student) {
+        if (!mounted) return;
+
+        if (student) {
           setSelectedStudent(student as Student);
           setProfileOpen(true);
         }
       } catch (error) {
-        console.error("FAILED TO LOAD SEARCHED STUDENT:", error);
+        console.error("Failed to load student:", error);
       }
     }
 
-    loadStudent();
+    loadStudent(studentId);
 
     return () => {
-      active = false;
+      mounted = false;
     };
   }, [searchParams]);
 
+  if (profileOpen && selectedStudent) {
+    return (
+      <StudentProfile
+        student={selectedStudent}
+        onClose={closeProfile}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#020817] p-6 space-y-6">
-
       {/* Header */}
       <div className="flex items-center justify-between">
-
         <div>
           <h1 className="text-3xl font-bold text-white">
             Students
@@ -94,36 +100,15 @@ export default function StudentsPage() {
         </div>
 
         <div className="flex gap-3">
-
           <button
-            className="
-              flex
-              items-center
-              gap-2
-              rounded-xl
-              bg-slate-800
-              px-4
-              py-2
-              text-white
-              hover:bg-slate-700
-            "
+            className="flex items-center gap-2 rounded-xl bg-slate-800 px-4 py-2 text-white hover:bg-slate-700"
           >
             <Download size={18} />
             Export
           </button>
 
           <button
-            className="
-              flex
-              items-center
-              gap-2
-              rounded-xl
-              bg-slate-800
-              px-4
-              py-2
-              text-white
-              hover:bg-slate-700
-            "
+            className="flex items-center gap-2 rounded-xl bg-slate-800 px-4 py-2 text-white hover:bg-slate-700"
           >
             <Printer size={18} />
             Print
@@ -131,40 +116,19 @@ export default function StudentsPage() {
 
           <button
             onClick={() => router.push("/admissions")}
-            className="
-              flex
-              items-center
-              gap-2
-              rounded-xl
-              bg-blue-600
-              px-4
-              py-2
-              text-white
-              hover:bg-blue-700
-              transition-all
-            "
+            className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
           >
             <UserPlus size={18} />
             Add Student
           </button>
-
         </div>
-
       </div>
 
       {/* Search */}
-
       <div className="relative">
-
         <Search
           size={18}
-          className="
-            absolute
-            left-4
-            top-1/2
-            -translate-y-1/2
-            text-slate-500
-          "
+          className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
         />
 
         <input
@@ -172,46 +136,22 @@ export default function StudentsPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by Name, Admission No, Roll No or Phone..."
-          className="
-            h-12
-            w-full
-            rounded-2xl
-            border
-            border-slate-700
-            bg-slate-900
-            pl-11
-            pr-4
-            text-white
-            outline-none
-            focus:border-blue-500
-          "
+          className="h-12 w-full rounded-2xl border border-slate-700 bg-slate-900 pl-11 pr-4 text-white outline-none focus:border-blue-500"
         />
-
       </div>
 
-      {/* Cards */}
-
+      {/* Statistics */}
       <StudentCard
-  filter={filter}
-  setFilter={setFilter}
-/>
-
-      {/* Table */}
-
-    <StudentTable
-  onView={openProfile}
-  search={search}
-  filter={filter}
-/>
-
-      {/* Profile Drawer */}
-
-      <StudentProfile
-        student={selectedStudent}
-        open={profileOpen}
-        onClose={closeProfile}
+        filter={filter}
+        setFilter={setFilter}
       />
 
+      {/* Students Table */}
+      <StudentTable
+        search={search}
+        filter={filter}
+        onView={openProfile}
+      />
     </div>
   );
 }

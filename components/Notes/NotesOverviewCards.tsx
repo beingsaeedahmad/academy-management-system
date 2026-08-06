@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  FileText,
+  BookOpen,
   Download,
   Eye,
   EyeOff,
@@ -24,44 +24,52 @@ export default function NotesOverviewCards({
     {
       title: "Total Notes",
       value: totalNotes,
-      icon: FileText,
-      iconColor: "text-blue-400",
-      iconBg: "bg-blue-500/15",
+      icon: BookOpen,
+      color: "text-blue-400",
+      bg: "bg-blue-500/10",
+      border: "border-blue-500/30",
     },
     {
       title: "Downloads",
       value: totalDownloads,
       icon: Download,
-      iconColor: "text-green-400",
-      iconBg: "bg-green-500/15",
+      color: "text-emerald-400",
+      bg: "bg-emerald-500/10",
+      border: "border-emerald-500/30",
     },
     {
       title: "Published",
       value: publishedNotes,
       icon: Eye,
-      iconColor: "text-emerald-400",
-      iconBg: "bg-emerald-500/15",
+      color: "text-violet-400",
+      bg: "bg-violet-500/10",
+      border: "border-violet-500/30",
     },
     {
       title: "Hidden",
       value: hiddenNotes,
       icon: EyeOff,
-      iconColor: "text-red-400",
-      iconBg: "bg-red-500/15",
+      color: "text-rose-400",
+      bg: "bg-rose-500/10",
+      border: "border-rose-500/30",
     },
   ];
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+    <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
       {cards.map((card) => {
         const Icon = card.icon;
 
         return (
           <div
             key={card.title}
-            className="rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-lg transition-all duration-300 hover:border-blue-500/40 hover:shadow-blue-500/10"
+            className={`group relative overflow-hidden rounded-2xl border ${card.border} bg-slate-900/70 p-6 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl`}
           >
-            <div className="flex items-center justify-between">
+            <div
+              className={`absolute inset-0 opacity-10 blur-3xl ${card.bg}`}
+            />
+
+            <div className="relative flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-400">
                   {card.title}
@@ -73,10 +81,11 @@ export default function NotesOverviewCards({
               </div>
 
               <div
-                className={`flex h-14 w-14 items-center justify-center rounded-xl ${card.iconBg}`}
+                className={`rounded-2xl p-4 ${card.bg}`}
               >
                 <Icon
-                  className={`h-7 w-7 ${card.iconColor}`}
+                  size={28}
+                  className={card.color}
                 />
               </div>
             </div>
