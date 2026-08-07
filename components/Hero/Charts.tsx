@@ -123,42 +123,70 @@ export default function Charts() {
       </Card>
 
       <Card
-        hover={false}
-        title="Fee Collection"
-        subtitle="Amount collected over the last 6 months"
-        icon={<Wallet size={20} />}
+  hover={false}
+  title="Fee Collection"
+  subtitle="Amount collected over the last 6 months"
+  icon={<Wallet size={20} />}
+>
+  {loading ? (
+    <ChartSkeleton />
+  ) : (
+    <ResponsiveContainer width="100%" height={280}>
+      <BarChart
+        data={data}
+        margin={{
+          top: 8,
+          right: 8,
+          left: -8,
+          bottom: 0,
+        }}
       >
-        {loading ? (
-          <ChartSkeleton />
-        ) : (
-          <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={data} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-              <XAxis
-                dataKey="month"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: "#64748b", fontSize: 12 }}
-              />
-              <YAxis
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: "#64748b", fontSize: 12 }}
-                tickFormatter={(value) =>
-                  value >= 1000 ? `${Math.round(value / 1000)}k` : String(value)
-                }
-              />
-              <Tooltip content={<ChartTooltip valuePrefix="Rs. " />} />
-              <Bar
-                dataKey="fees"
-                fill="#06b6d4"
-                radius={[6, 6, 0, 0]}
-                maxBarSize={48}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        )}
-      </Card>
+        <CartesianGrid
+          strokeDasharray="3 3"
+          stroke="#1e293b"
+          vertical={false}
+        />
+
+        <XAxis
+          dataKey="month"
+          axisLine={false}
+          tickLine={false}
+          tick={{
+            fill: "#64748b",
+            fontSize: 12,
+          }}
+        />
+
+        <YAxis
+          axisLine={false}
+          tickLine={false}
+          tick={{
+            fill: "#64748b",
+            fontSize: 12,
+          }}
+          tickFormatter={(value) =>
+            value >= 1000
+              ? `${Math.round(value / 1000)}k`
+              : String(value)
+          }
+        />
+
+        <Tooltip
+          cursor={false}
+          content={<ChartTooltip valuePrefix="Rs. " />}
+        />
+
+        <Bar
+          dataKey="fees"
+          fill="#06b6d4"
+          radius={[6, 6, 0, 0]}
+          maxBarSize={48}
+          activeBar={false}
+        />
+      </BarChart>
+    </ResponsiveContainer>
+  )}
+</Card>
     </div>
   );
 }

@@ -9,7 +9,6 @@ import Button from "../UI/Button";
 
 interface AdmissionFormData {
   studentName: string;
-  gender: string;
   className: string;
   fatherName: string;
   mobile: string;
@@ -29,7 +28,6 @@ export default function AdmissionForm() {
   } = useForm<AdmissionFormData>({
     defaultValues: {
       studentName: "",
-      gender: "",
       className: "",
       fatherName: "",
       mobile: "",
@@ -62,8 +60,6 @@ export default function AdmissionForm() {
   name: data.studentName,
 
   fatherName: data.fatherName,
-
-  gender: data.gender,
 
   className: data.className,
 
@@ -103,47 +99,7 @@ export default function AdmissionForm() {
           })}
         />
 
-        {/* Gender */}
-
-        <div>
-
-          <label className="mb-2 block text-sm text-slate-400">
-            Gender
-          </label>
-
-          <select
-            autoComplete="off"
-            {...register("gender")}
-            className="
-            h-12
-            w-full
-            rounded-2xl
-            border
-            border-slate-700
-            bg-slate-900
-            px-4
-            text-white
-            outline-none
-            transition
-            focus:border-blue-500
-          "
-          >
-            <option value="">
-              Select Gender
-            </option>
-
-            <option value="Male">
-              Male
-            </option>
-
-            <option value="Female">
-              Female
-            </option>
-
-          </select>
-
-        </div>
-
+  
         {/* Photo */}
 
         <div>

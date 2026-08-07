@@ -5,6 +5,7 @@ import { Eye, Pencil, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import EditStudentModal from "./EditStudentModal";
+import DeleteStudentModal from "./DeleteStudentModal";
 
 import {
   getStudents,
@@ -37,6 +38,15 @@ export default function StudentTable({
   const [editStudent, setEditStudent] =
     useState<Student | null>(null);
 
+  const [selectedStudent, setSelectedStudent] =
+    useState<Student | null>(null);
+
+  const [deleteModal, setDeleteModal] =
+    useState(false);
+
+  const [deleting, setDeleting] =
+    useState(false);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -48,11 +58,12 @@ export default function StudentTable({
         const data =
           await getStudents();
 
-  setStudents(
-  data.sort((a: Student, b: Student) =>
-    a.name.localeCompare(b.name)
-  )
-);
+        setStudents(
+          data.sort(
+            (a: Student, b: Student) =>
+              a.name.localeCompare(b.name)
+          )
+        );
 
       } catch (error) {
 
@@ -177,106 +188,139 @@ export default function StudentTable({
     .sort((a, b) =>
       a.name.localeCompare(b.name)
     );
-    return (
 
-  <div
-    className="
-      overflow-hidden
-      rounded-2xl
-      border
-      border-slate-800
-      bg-slate-900
-      shadow-xl
-    "
-  >
+  const handleDelete = async () => {
 
-    <div className="overflow-x-auto">
+    if (!selectedStudent) return;
 
-      <table className="w-full">
+    try {
 
-        <thead
-          className="
-            bg-slate-950
-            border-b
-            border-slate-800
-          "
-        >
+      setDeleting(true);
 
-          <tr
+      await deleteStudent(
+        selectedStudent.id
+      );
+
+      setStudents((prev) =>
+        prev.filter(
+          (student) =>
+            student.id !==
+            selectedStudent.id
+        )
+      );
+
+      setDeleteModal(false);
+
+      setSelectedStudent(null);
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        "Failed to delete student."
+      );
+
+    } finally {
+
+      setDeleting(false);
+
+    }
+
+  };
+
+  return (
+
+    <>
+      <div className="overflow-x-auto">
+
+        <table className="w-full">
+
+          <thead
             className="
-              text-left
-              text-sm
-              font-semibold
-              text-slate-300
+              border-b
+              border-slate-800
+              bg-slate-950
             "
           >
 
-            <th className="px-6 py-4">Photo</th>
+            <tr
+              className="
+                text-left
+                text-sm
+                font-semibold
+                text-slate-300
+              "
+            >
 
-            <th className="px-6 py-4">
-              Admission No
-            </th>
+              <th className="px-6 py-4">
+                Photo
+              </th>
 
-            <th className="px-6 py-4">
-              Roll No
-            </th>
+              <th className="px-6 py-4">
+                Admission No
+              </th>
 
-            <th className="px-6 py-4">
-              Student Name
-            </th>
+              <th className="px-6 py-4">
+                Roll No
+              </th>
 
-            <th className="px-6 py-4">
-              Father Name
-            </th>
+              <th className="px-6 py-4">
+                Student Name
+              </th>
 
-            <th className="px-6 py-4">
-              Class
-            </th>
+              <th className="px-6 py-4">
+                Father Name
+              </th>
 
-            <th className="px-6 py-4">
-              Phone
-            </th>
+              <th className="px-6 py-4">
+                Class
+              </th>
 
-            <th className="px-6 py-4">
-              Status
-            </th>
+              <th className="px-6 py-4">
+                Phone
+              </th>
 
-            <th className="px-6 py-4 text-center">
-              Actions
-            </th>
+              <th className="px-6 py-4">
+                Status
+              </th>
 
-          </tr>
-
-        </thead>
-
-        <tbody>
-
-          {filteredStudents.length === 0 ? (
-
-            <tr>
-
-              <td
-                colSpan={9}
-                className="
-                  py-16
-                  text-center
-                  text-slate-500
-                "
-              >
-                No students found.
-              </td>
+              <th className="px-6 py-4 text-center">
+                Actions
+              </th>
 
             </tr>
 
-          ) : (
+          </thead>
 
-            filteredStudents.map((student) => (
+          <tbody>
 
-              <tr
+            {filteredStudents.length === 0 ? (
+
+              <tr>
+
+                <td
+                  colSpan={9}
+                  className="
+                    py-16
+                    text-center
+                    text-slate-500
+                  "
+                >
+                  No students found.
+                </td>
+
+              </tr>
+
+            ) : (
+
+              filteredStudents.map((student) => (
+                <tr
                 key={student.id}
                 className="
                   border-b
                   border-slate-800
+                  transition
                   hover:bg-slate-800/60
                 "
               >
@@ -307,6 +351,7 @@ export default function StudentTable({
                         justify-center
                         rounded-full
                         bg-blue-600
+                        font-semibold
                         text-white
                       "
                     >
@@ -349,6 +394,7 @@ export default function StudentTable({
                       px-3
                       py-1
                       text-xs
+                      font-medium
                       ${
                         student.status === "Active"
                           ? "bg-green-500/20 text-green-400"
@@ -366,6 +412,7 @@ export default function StudentTable({
                   <div
                     className="
                       flex
+                      items-center
                       justify-center
                       gap-2
                     "
@@ -378,6 +425,8 @@ export default function StudentTable({
                         bg-blue-500/10
                         p-2
                         text-blue-400
+                        transition
+                        hover:bg-blue-500/20
                       "
                     >
                       <Eye size={18} />
@@ -392,89 +441,35 @@ export default function StudentTable({
                         bg-yellow-500/10
                         p-2
                         text-yellow-400
+                        transition
+                        hover:bg-yellow-500/20
                       "
                     >
                       <Pencil size={18} />
                     </button>
 
                     <button
-  type="button"
-  onClick={async () => {
+                      type="button"
+                      onClick={() => {
 
-    console.log(
-      "DELETE CLICKED:",
-      student.id
-    );
+                        setSelectedStudent(
+                          student
+                        );
 
+                        setDeleteModal(true);
 
-    const ok = window.confirm(
-      `Delete ${student.name}?`
-    );
-
-
-    if (!ok) {
-      console.log("DELETE CANCELLED");
-      return;
-    }
-
-
-    try {
-
-      console.log(
-        "CALLING SERVER ACTION..."
-      );
-
-
-      const result =
-        await deleteStudent(student.id);
-
-
-      console.log(
-        "DELETE RESULT:",
-        result
-      );
-
-
-
-      setStudents((prev) =>
-        prev.filter(
-          (s) =>
-            s.id !== student.id
-        )
-      );
-
-
-
-    } catch(error) {
-
-
-      console.error(
-        "DELETE FAILED:",
-        error
-      );
-
-
-      alert(
-        "Delete failed. Check console"
-      );
-
-    }
-
-  }}
-  className="
-    rounded-lg
-    bg-red-500/10
-    p-2
-    text-red-400
-    hover:bg-red-500/20
-  "
->
-  <Trash2
-    size={18}
-    className="pointer-events-none"
-  />
-</button>
-
+                      }}
+                      className="
+                        rounded-lg
+                        bg-red-500/10
+                        p-2
+                        text-red-400
+                        transition
+                        hover:bg-red-500/20
+                      "
+                    >
+                      <Trash2 size={18} />
+                    </button>
 
                   </div>
 
@@ -492,39 +487,55 @@ export default function StudentTable({
 
     </div>
     {editStudent && (
+        <EditStudentModal
+          student={editStudent}
+          open={true}
+          onClose={() =>
+            setEditStudent(null)
+          }
+          onUpdated={async () => {
 
-  <EditStudentModal
-    student={editStudent}
-    open={true}
+            const data =
+              await getStudents();
 
-    onClose={() =>
-      setEditStudent(null)
-    }
+            setStudents(
+              (data as Student[]).sort(
+                (
+                  a: Student,
+                  b: Student
+                ) =>
+                  a.name.localeCompare(
+                    b.name
+                  )
+              )
+            );
 
-    onUpdated={async () => {
+            setEditStudent(null);
 
-      const data =
-        await getStudents();
+            router.refresh();
 
-    setStudents(
-  (data as Student[]).sort(
-    (a: Student, b: Student) =>
-      a.name.localeCompare(b.name)
-  )
-);
+          }}
+        />
+      )}
 
-      setEditStudent(null);
+<DeleteStudentModal
+  open={deleteModal}
+  loading={deleting}
+  studentName={selectedStudent?.name ?? ""}
+  admissionNo={selectedStudent?.admissionNo ?? ""}
+  rollNumber={selectedStudent?.rollNumber ?? ""}
+  className={selectedStudent?.className ?? ""}
+  onClose={() => {
+    if (deleting) return;
 
-      router.refresh();
+    setDeleteModal(false);
+    setSelectedStudent(null);
+  }}
+  onConfirm={handleDelete}
+/>
 
-    }}
+    </>
 
-  />
-
-)}
-
-  </div>
-
-);
+  );
 
 }

@@ -80,14 +80,14 @@ export default function Sidebar() {
       <div className="border-b border-slate-800/80 p-5">
         <div className="flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 text-sm font-bold text-white">
-              SA
-            </div>
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-700 bg-slate-900 text-sm font-semibold tracking-wide text-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.12)]">
+  SA
+</div>
 
             {!collapsed && (
               <div className="min-w-0">
                 <h2 className="truncate text-sm font-semibold text-white">
-                  Academy ERP
+                  SAEED ACADEMY
                 </h2>
                 <p className="truncate text-xs text-slate-500">
                   Management System

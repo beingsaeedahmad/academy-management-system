@@ -116,10 +116,10 @@ export default function DashboardCards() {
           Overview
         </div>
         <h1 className="mt-2 text-3xl font-bold tracking-tight text-white">
-          Dashboard
+          SAEED EDUCATIONAL ACADEMY
         </h1>
         <p className="mt-1.5 text-slate-400">
-          Welcome back to your Academy Management System.
+          WELCOME TO MY ACADEMY SYSTEM
         </p>
       </div>
 

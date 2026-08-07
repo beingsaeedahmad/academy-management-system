@@ -38,17 +38,17 @@ export default function AttendanceCell({
   function getBackground() {
     switch (status) {
       case "P":
-        return "bg-green-600 text-white";
-
+        return "bg-[#064E3B] text-[#34D399] border border-[#10B981]";
+  
       case "A":
-        return "bg-red-600 text-white";
-
+        return "bg-[#4C0519] text-[#FB7185] border border-[#F43F5E]";
+  
       case "L":
-        return "bg-yellow-400 text-black";
-
+        return "bg-[#78350F] text-[#FBBF24] border border-[#F59E0B]";
+  
       case "H":
-        return "bg-blue-600 text-white";
-
+        return "bg-[#172554] text-[#60A5FA] border border-[#3B82F6]";
+  
       default:
         return "";
     }
