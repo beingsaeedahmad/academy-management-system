@@ -17,8 +17,6 @@ interface AdmissionFormData {
 }
 
 export default function AdmissionForm() {
-
-
   const [photo, setPhoto] = useState("");
 
   const {
@@ -52,44 +50,39 @@ export default function AdmissionForm() {
     reader.readAsDataURL(file);
   };
 
-  const onSubmit = async (
-  data: AdmissionFormData
-) => {
-   await createStudent({
+  const onSubmit = async (data: AdmissionFormData) => {
+    try {
+      await createStudent({
+        name: data.studentName,
+        fatherName: data.fatherName,
+        className: data.className,
+        phone: data.mobile,
+        address: data.address,
+        monthlyFees: Number(data.monthlyFees),
+        photo,
+      });
 
-  name: data.studentName,
+      // Notify AdmissionTable that a new student has been added
+      window.dispatchEvent(new Event("student-added"));
 
-  fatherName: data.fatherName,
-
-  className: data.className,
-
-  phone: data.mobile,
-
-  address: data.address,
-
-  monthlyFees: Number(data.monthlyFees),
-
-  photo,
-
-});
-
-    reset();
-
-    setPhoto("");
+      // Reset form after successful save
+      reset();
+      setPhoto("");
+    } catch (error) {
+      console.error("CREATE STUDENT ERROR:", error);
+    }
   };
 
   return (
     <Card
       title="New Admission"
-      subtitle="Register New Student"
+      subtitle="Add a new student to the academy"
     >
       <form
-        autoComplete="off"
         onSubmit={handleSubmit(onSubmit)}
-        className="space-y-6"
+        className="space-y-5"
       >
         {/* Student Name */}
-
         <Input
           label="Student Name"
           placeholder="Enter Student Name"
@@ -99,64 +92,15 @@ export default function AdmissionForm() {
           })}
         />
 
-  
-        {/* Photo */}
-
-        <div>
-
-          <label className="mb-2 block text-sm text-slate-400">
-            Student Photo
-          </label>
-
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handlePhoto}
-            className="
-              w-full
-              rounded-2xl
-              border
-              border-slate-700
-              bg-slate-900
-              p-3
-              text-slate-300
-            "
-          />
-
-          {photo && (
-
-            <div className="mt-5 flex justify-center">
-
-              <img
-                src={photo}
-                alt="Preview"
-                className="
-                  h-32
-                  w-32
-                  rounded-full
-                  border-4
-                  border-blue-600
-                  object-cover
-                "
-              />
-
-            </div>
-
-          )}
-
-        </div>
-
         {/* Class */}
-
         <Input
           label="Class"
-          placeholder="Example : Class 5"
+          placeholder="Enter Class"
           autoComplete="off"
           {...register("className")}
         />
 
-        {/* Father */}
-
+        {/* Father Name */}
         <Input
           label="Father Name"
           placeholder="Enter Father Name"
@@ -165,7 +109,6 @@ export default function AdmissionForm() {
         />
 
         {/* Mobile */}
-
         <Input
           label="Mobile Number"
           placeholder="03XXXXXXXXX"
@@ -174,9 +117,7 @@ export default function AdmissionForm() {
         />
 
         {/* Address */}
-
         <div>
-
           <label className="mb-2 block text-sm text-slate-400">
             Address
           </label>
@@ -199,25 +140,22 @@ export default function AdmissionForm() {
               focus:border-blue-500
             "
           />
-
         </div>
 
         {/* Monthly Fee */}
-
         <Input
           label="Monthly Fee"
           placeholder="Enter Monthly Fee"
           autoComplete="off"
           {...register("monthlyFees")}
         />
-
+        {/* Submit */}
         <Button
           type="submit"
           fullWidth
         >
           Save Admission
         </Button>
-
       </form>
     </Card>
   );

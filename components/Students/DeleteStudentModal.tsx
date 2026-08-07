@@ -12,12 +12,10 @@ import {
 interface Props {
   open: boolean;
   loading: boolean;
-
   studentName: string;
   admissionNo?: string;
   rollNumber?: string;
   className?: string;
-
   onClose: () => void;
   onConfirm: () => void;
 }
@@ -32,314 +30,305 @@ export default function DeleteStudentModal({
   onClose,
   onConfirm,
 }: Props) {
-
   useEffect(() => {
-
     if (!open) return;
 
-    const handleKeyDown = (
-      e: KeyboardEvent
-    ) => {
-
-      if (
-        e.key === "Escape" &&
-        !loading
-      ) {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !loading) {
         onClose();
       }
-
     };
 
-    window.addEventListener(
-      "keydown",
-      handleKeyDown
-    );
+    document.addEventListener("keydown", handleEscape);
 
-    return () =>
-      window.removeEventListener(
-        "keydown",
-        handleKeyDown
-      );
-
-  }, [
-    open,
-    loading,
-    onClose,
-  ]);
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [open, loading, onClose]);
 
   if (!open) return null;
 
   return (
-
     <div
-      onClick={() => {
-        if (!loading) onClose();
-      }}
       className="
         fixed
         inset-0
-        z-[999]
+        z-50
         flex
         items-center
         justify-center
         bg-black/70
-        backdrop-blur-md
-        p-5
+        p-4
+        backdrop-blur-sm
       "
-    >
-
-      <div
-        onClick={(e) =>
-          e.stopPropagation()
+      onMouseDown={(event) => {
+        if (
+          event.target === event.currentTarget &&
+          !loading
+        ) {
+          onClose();
         }
+      }}
+    >
+      <div
         className="
-          relative
           w-full
           max-w-md
           overflow-hidden
-          rounded-[28px]
+          rounded-2xl
           border
-          border-white/10
-          bg-slate-900
-          shadow-[0_30px_100px_rgba(0,0,0,.60)]
+          border-slate-700
+          bg-slate-950
+          shadow-2xl
         "
       >
-
-        {/* top glow */}
-
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-red-500 via-orange-500 to-red-500" />
-
-        {/* close */}
-
-        <button
-          disabled={loading}
-          onClick={onClose}
+        {/* Header */}
+        <div
           className="
-            absolute
-            right-4
-            top-4
-            rounded-xl
-            p-2
-            text-slate-400
-            transition
-            hover:bg-slate-800
-            hover:text-white
+            flex
+            items-center
+            justify-between
+            border-b
+            border-slate-800
+            bg-slate-900/80
+            px-6
+            py-5
           "
         >
-          <X size={18} />
-        </button>
+          <div className="flex items-center gap-4">
+            <div
+              className="
+                flex
+                h-11
+                w-11
+                items-center
+                justify-center
+                rounded-xl
+                bg-red-500/10
+                text-red-400
+              "
+            >
+              <Trash2 size={21} />
+            </div>
 
-        <div className="p-8">
+            <div>
+              <h2 className="text-lg font-semibold text-white">
+                Delete Student
+              </h2>
 
-          {/* icon */}
+              <p className="mt-0.5 text-sm text-slate-400">
+                Remove this student permanently
+              </p>
+            </div>
+          </div>
 
-          <div
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={loading}
             className="
-              mx-auto
               flex
-              h-20
-              w-20
+              h-9
+              w-9
               items-center
               justify-center
-              rounded-full
-              bg-red-500/10
-              ring-8
-              ring-red-500/5
+              rounded-lg
+              text-slate-400
+              transition
+              hover:bg-slate-800
+              hover:text-white
+              disabled:cursor-not-allowed
+              disabled:opacity-50
+            "
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="px-6 py-6">
+          {/* Warning */}
+          <div
+            className="
+              flex
+              gap-3
+              rounded-xl
+              border
+              border-red-500/20
+              bg-red-500/5
+              p-4
             "
           >
             <AlertTriangle
-              size={38}
-              className="text-red-500"
+              size={20}
+              className="mt-0.5 shrink-0 text-red-400"
             />
+
+            <div>
+              <p className="text-sm font-medium text-red-300">
+                This action cannot be undone.
+              </p>
+
+              <p className="mt-1 text-xs leading-5 text-slate-400">
+                The student and related records will be
+                permanently removed.
+              </p>
+            </div>
           </div>
 
-          {/* title */}
-
-          <h2
-            className="
-              mt-6
-              text-center
-              text-3xl
-              font-bold
-              text-white
-            "
-          >
-            Delete Student
-          </h2>
-
-          <p
-            className="
-              mt-3
-              text-center
-              leading-7
-              text-slate-400
-            "
-          >
-            Are you sure you want to permanently
-            delete this student?
-          </p>
-
-          {/* student card */}
-
+          {/* Student */}
           <div
             className="
-              mt-8
-              rounded-2xl
+              mt-5
+              rounded-xl
               border
-              border-slate-700
-              bg-slate-800/60
-              p-5
+              border-slate-800
+              bg-slate-900
+              p-4
             "
           >
-
-            <div className="flex items-center gap-4">
-
+            <div className="flex items-center gap-3">
               <div
                 className="
                   flex
-                  h-14
-                  w-14
+                  h-11
+                  w-11
+                  shrink-0
                   items-center
                   justify-center
-                  rounded-full
-                  bg-blue-600/20
+                  rounded-lg
+                  bg-blue-600/10
+                  text-blue-400
                 "
               >
-                <User
-                  size={24}
-                  className="text-blue-400"
-                />
+                <User size={21} />
               </div>
 
-              <div>
-
-                <p className="text-xs uppercase tracking-widest text-slate-500">
+              <div className="min-w-0">
+                <p className="text-xs text-slate-500">
                   Student
                 </p>
 
-                <h3 className="text-xl font-semibold text-white">
+                <h3 className="truncate text-base font-semibold text-white">
                   {studentName}
                 </h3>
-
               </div>
-
             </div>
 
-            <div className="mt-6 space-y-3">
+            <div className="mt-4 grid grid-cols-3 gap-3 border-t border-slate-800 pt-4">
+              <div>
+                <p className="text-xs text-slate-500">
+                  Admission
+                </p>
 
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-400">
-                  Admission No
-                </span>
-
-                <span className="font-medium text-white">
-                  {admissionNo || "N/A"}
-                </span>
+                <p className="mt-1 truncate text-sm font-medium text-slate-200">
+                  {admissionNo || "—"}
+                </p>
               </div>
 
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-400">
+              <div>
+                <p className="text-xs text-slate-500">
                   Roll No
-                </span>
+                </p>
 
-                <span className="font-medium text-white">
-                  {rollNumber || "N/A"}
-                </span>
+                <p className="mt-1 truncate text-sm font-medium text-slate-200">
+                  {rollNumber || "—"}
+                </p>
               </div>
 
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-400">
+              <div>
+                <p className="text-xs text-slate-500">
                   Class
-                </span>
+                </p>
 
-                <span className="font-medium text-white">
-                  {className || "N/A"}
-                </span>
+                <p className="mt-1 truncate text-sm font-medium text-slate-200">
+                  {className || "—"}
+                </p>
               </div>
-
             </div>
-
           </div>
-       
+        </div>
 
-          {/* Buttons */}
+        {/* Footer */}
+        <div
+          className="
+            flex
+            flex-col-reverse
+            gap-3
+            border-t
+            border-slate-800
+            bg-slate-900/50
+            px-6
+            py-4
+            sm:flex-row
+            sm:justify-end
+          "
+        >
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={loading}
+            className="
+              rounded-xl
+              border
+              border-slate-700
+              bg-slate-800
+              px-5
+              py-2.5
+              text-sm
+              font-medium
+              text-slate-300
+              transition
+              hover:bg-slate-700
+              hover:text-white
+              disabled:cursor-not-allowed
+              disabled:opacity-50
+            "
+          >
+            Cancel
+          </button>
 
-          <div className="mt-8 flex gap-4">
-
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={loading}
-              className="
-                h-12
-                flex-1
-                rounded-xl
-                border
-                border-slate-700
-                bg-slate-800
-                font-medium
-                text-white
-                transition-all
-                duration-200
-                hover:border-slate-600
-                hover:bg-slate-700
-                disabled:cursor-not-allowed
-                disabled:opacity-50
-              "
-            >
-              Cancel
-            </button>
-
-            <button
-  type="button"
-  onClick={onConfirm}
-  disabled={loading}
-  className="
-    flex
-    h-12
-    flex-1
-    items-center
-    justify-center
-    gap-2
-    rounded-xl
-    border
-    border-rose-500/20
-    bg-rose-500/10
-    font-medium
-    text-rose-400
-    transition-all
-    duration-300
-    hover:bg-rose-500/20
-    hover:text-rose-300
-    hover:border-rose-400/30
-    active:scale-[0.98]
-    disabled:cursor-not-allowed
-    disabled:opacity-50
-  "
->
-  {loading ? (
-    <>
-      <Loader2
-        size={18}
-        className="animate-spin"
-      />
-      Deleting...
-    </>
-  ) : (
-    <>
-      <Trash2 size={18} />
-      Delete Student
-    </>
-  )}
-</button>
-
-          </div>
-          </div>
-
-</div>
-
-</div>
-
-);
-
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={loading}
+            className="
+              flex
+              items-center
+              justify-center
+              gap-2
+              rounded-xl
+              bg-red-600
+              px-5
+              py-2.5
+              text-sm
+              font-semibold
+              text-white
+              shadow-lg
+              shadow-red-600/10
+              transition
+              hover:bg-red-700
+              disabled:cursor-not-allowed
+              disabled:opacity-60
+            "
+          >
+            {loading ? (
+              <>
+                <Loader2
+                  size={17}
+                  className="animate-spin"
+                />
+                Deleting...
+              </>
+            ) : (
+              <>
+                <Trash2 size={17} />
+                Delete Student
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
