@@ -33,16 +33,16 @@ export default function DeleteStudentModal({
   useEffect(() => {
     if (!open) return;
 
-    const handleEscape = (event: KeyboardEvent) => {
+    const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape" && !loading) {
         onClose();
       }
     };
 
-    document.addEventListener("keydown", handleEscape);
+    window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      document.removeEventListener("keydown", handleEscape);
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [open, loading, onClose]);
 
@@ -53,7 +53,7 @@ export default function DeleteStudentModal({
       className="
         fixed
         inset-0
-        z-50
+        z-[999]
         flex
         items-center
         justify-center
@@ -73,7 +73,7 @@ export default function DeleteStudentModal({
       <div
         className="
           w-full
-          max-w-md
+          max-w-[672px]
           overflow-hidden
           rounded-2xl
           border
@@ -81,6 +81,7 @@ export default function DeleteStudentModal({
           bg-slate-950
           shadow-2xl
         "
+        onMouseDown={(event) => event.stopPropagation()}
       >
         {/* Header */}
         <div
@@ -90,7 +91,7 @@ export default function DeleteStudentModal({
             justify-between
             border-b
             border-slate-800
-            bg-slate-900/80
+            bg-slate-900/70
             px-6
             py-5
           "
@@ -104,7 +105,7 @@ export default function DeleteStudentModal({
                 items-center
                 justify-center
                 rounded-xl
-                bg-red-500/10
+                bg-red-600/15
                 text-red-400
               "
             >
@@ -116,8 +117,8 @@ export default function DeleteStudentModal({
                 Delete Student
               </h2>
 
-              <p className="mt-0.5 text-sm text-slate-400">
-                Remove this student permanently
+              <p className="mt-1 text-sm text-slate-400">
+                Remove student information
               </p>
             </div>
           </div>
@@ -141,127 +142,221 @@ export default function DeleteStudentModal({
               disabled:opacity-50
             "
           >
-            <X size={20} />
+            <X size={21} />
           </button>
+        </div>
+
+        {/* Student Identification */}
+        <div
+          className="
+            mx-6
+            mt-4
+            rounded-xl
+            border
+            border-slate-800
+            bg-slate-900/30
+            px-4
+            py-4
+          "
+        >
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <p className="text-xs uppercase tracking-wide text-slate-500">
+                Admission No
+              </p>
+
+              <p className="mt-1 text-sm font-semibold text-slate-200">
+                {admissionNo || "—"}
+              </p>
+            </div>
+
+            <div className="text-right">
+              <p className="text-xs uppercase tracking-wide text-slate-500">
+                Roll No
+              </p>
+
+              <p className="mt-1 text-sm font-semibold text-slate-200">
+                {rollNumber || "—"}
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Content */}
         <div className="px-6 py-6">
-          {/* Warning */}
-          <div
-            className="
-              flex
-              gap-3
-              rounded-xl
-              border
-              border-red-500/20
-              bg-red-500/5
-              p-4
-            "
-          >
-            <AlertTriangle
-              size={20}
-              className="mt-0.5 shrink-0 text-red-400"
-            />
-
+          {/* Student Information */}
+          <div className="grid grid-cols-2 gap-5">
             <div>
-              <p className="text-sm font-medium text-red-300">
-                This action cannot be undone.
-              </p>
+              <div className="mb-2 flex items-center gap-2">
+                <User
+                  size={16}
+                  className="text-blue-400"
+                />
 
-              <p className="mt-1 text-xs leading-5 text-slate-400">
-                The student and related records will be
-                permanently removed.
-              </p>
-            </div>
-          </div>
+                <label className="text-sm text-slate-300">
+                  Student Name
+                </label>
+              </div>
 
-          {/* Student */}
-          <div
-            className="
-              mt-5
-              rounded-xl
-              border
-              border-slate-800
-              bg-slate-900
-              p-4
-            "
-          >
-            <div className="flex items-center gap-3">
               <div
                 className="
                   flex
-                  h-11
-                  w-11
-                  shrink-0
+                  h-[46px]
                   items-center
-                  justify-center
-                  rounded-lg
-                  bg-blue-600/10
-                  text-blue-400
+                  rounded-xl
+                  border
+                  border-slate-700
+                  bg-slate-900
+                  px-4
+                  text-sm
+                  text-white
                 "
               >
-                <User size={21} />
-              </div>
-
-              <div className="min-w-0">
-                <p className="text-xs text-slate-500">
-                  Student
-                </p>
-
-                <h3 className="truncate text-base font-semibold text-white">
-                  {studentName}
-                </h3>
+                {studentName}
               </div>
             </div>
 
-            <div className="mt-4 grid grid-cols-3 gap-3 border-t border-slate-800 pt-4">
-              <div>
-                <p className="text-xs text-slate-500">
-                  Admission
-                </p>
+            <div>
+              <div className="mb-2 flex items-center gap-2">
+                <User
+                  size={16}
+                  className="text-blue-400"
+                />
 
-                <p className="mt-1 truncate text-sm font-medium text-slate-200">
-                  {admissionNo || "—"}
-                </p>
-              </div>
-
-              <div>
-                <p className="text-xs text-slate-500">
-                  Roll No
-                </p>
-
-                <p className="mt-1 truncate text-sm font-medium text-slate-200">
-                  {rollNumber || "—"}
-                </p>
-              </div>
-
-              <div>
-                <p className="text-xs text-slate-500">
+                <label className="text-sm text-slate-300">
                   Class
-                </p>
+                </label>
+              </div>
 
-                <p className="mt-1 truncate text-sm font-medium text-slate-200">
-                  {className || "—"}
+              <div
+                className="
+                  flex
+                  h-[46px]
+                  items-center
+                  rounded-xl
+                  border
+                  border-slate-700
+                  bg-slate-900
+                  px-4
+                  text-sm
+                  text-white
+                "
+              >
+                {className || "—"}
+              </div>
+            </div>
+          </div>
+
+          {/* Warning */}
+          <div
+            className="
+              mt-6
+              rounded-xl
+              border
+              border-red-500/20
+              bg-red-500/[0.05]
+              p-5
+            "
+          >
+            <div className="flex items-start gap-4">
+              <div
+                className="
+                  flex
+                  h-10
+                  w-10
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-xl
+                  bg-red-500/10
+                  text-red-400
+                "
+              >
+                <AlertTriangle size={20} />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-semibold text-red-300">
+                  Delete this student?
+                </h3>
+
+                <p className="mt-1 text-sm leading-6 text-slate-400">
+                  This action cannot be undone. The student
+                  profile and all related records will be
+                  permanently deleted.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Records */}
+          <div className="mt-5">
+            <p className="mb-3 text-xs uppercase tracking-wide text-slate-500">
+              Records that will be deleted
+            </p>
+
+            <div className="grid grid-cols-3 gap-3">
+              <div
+                className="
+                  rounded-xl
+                  border
+                  border-slate-800
+                  bg-slate-900
+                  px-3
+                  py-3
+                  text-center
+                "
+              >
+                <p className="text-sm font-medium text-slate-300">
+                  Profile
+                </p>
+              </div>
+
+              <div
+                className="
+                  rounded-xl
+                  border
+                  border-slate-800
+                  bg-slate-900
+                  px-3
+                  py-3
+                  text-center
+                "
+              >
+                <p className="text-sm font-medium text-slate-300">
+                  Fees
+                </p>
+              </div>
+
+              <div
+                className="
+                  rounded-xl
+                  border
+                  border-slate-800
+                  bg-slate-900
+                  px-3
+                  py-3
+                  text-center
+                "
+              >
+                <p className="text-sm font-medium text-slate-300">
+                  Attendance
                 </p>
               </div>
             </div>
           </div>
         </div>
-
         {/* Footer */}
         <div
           className="
             flex
-            flex-col-reverse
+            justify-end
             gap-3
             border-t
             border-slate-800
-            bg-slate-900/50
+            bg-slate-900/60
             px-6
             py-4
-            sm:flex-row
-            sm:justify-end
           "
         >
           <button
@@ -274,7 +369,7 @@ export default function DeleteStudentModal({
               border-slate-700
               bg-slate-800
               px-5
-              py-2.5
+              py-3
               text-sm
               font-medium
               text-slate-300
@@ -289,44 +384,49 @@ export default function DeleteStudentModal({
           </button>
 
           <button
-            type="button"
-            onClick={onConfirm}
-            disabled={loading}
-            className="
-              flex
-              items-center
-              justify-center
-              gap-2
-              rounded-xl
-              bg-red-600
-              px-5
-              py-2.5
-              text-sm
-              font-semibold
-              text-white
-              shadow-lg
-              shadow-red-600/10
-              transition
-              hover:bg-red-700
-              disabled:cursor-not-allowed
-              disabled:opacity-60
-            "
-          >
-            {loading ? (
-              <>
-                <Loader2
-                  size={17}
-                  className="animate-spin"
-                />
-                Deleting...
-              </>
-            ) : (
-              <>
-                <Trash2 size={17} />
-                Delete Student
-              </>
-            )}
-          </button>
+  type="button"
+  onClick={onConfirm}
+  disabled={loading}
+  className="
+    flex
+    min-w-[155px]
+    items-center
+    justify-center
+    gap-2
+    rounded-xl
+    border
+    border-red-500/20
+    bg-red-500/10
+    px-5
+    py-3
+    text-sm
+    font-semibold
+    text-red-400
+    transition
+    duration-200
+    hover:border-red-500/30
+    hover:bg-red-500/15
+    hover:text-red-400
+    active:scale-[0.98]
+    disabled:cursor-not-allowed
+    disabled:opacity-50
+  "
+>
+  {loading ? (
+    <>
+      <Loader2
+        size={17}
+        className="animate-spin"
+      />
+      Deleting...
+    </>
+  ) : (
+    <>
+      <Trash2 size={17} />
+      Delete Student
+    </>
+  )}
+</button>
         </div>
       </div>
     </div>

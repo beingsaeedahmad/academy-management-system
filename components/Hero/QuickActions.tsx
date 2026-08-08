@@ -61,9 +61,9 @@ const actions = [
     hoverBorder: "hover:border-violet-500/30",
   },
   {
-    title: "Upload Notes",
+    title: "Subjects",
     description: "Share class materials",
-    href: "/notes",
+    href: "/subjects",
     icon: BookOpen,
     iconBg: "bg-cyan-500/10",
     iconColor: "text-cyan-400",

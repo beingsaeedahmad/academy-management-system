@@ -34,9 +34,7 @@ const menu = [
     title: "Academics",
     items: [
       { icon: CalendarCheck2, title: "Attendance", href: "/attendance" },
-      { icon: BarChart3, title: "Results", href: "/results" },
-      { icon: BookOpen, title: "Notes", href: "/notes" },
-    ],
+      { icon: BarChart3, title: "Results", href: "/results" },    ],
   },
   {
     title: "Finance",

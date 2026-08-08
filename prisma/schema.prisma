@@ -80,34 +80,41 @@ model Attendance {
 
   @@unique([studentId, date])
 }
+model Subject {
+  id String @id @default(cuid())
+
+  name String
+  code String @unique
+
+  chapter String
+  className String
+  teacherName String?
+
+  fileName String
+  fileType String
+  fileSize Int
+  fileUrl String
+
+  status String @default("Active")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 model Note {
-  id          String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  title       String
-
+  title String
   description String?
 
-  subject     String
+  fileName String
+  fileType String
+  fileSize Int
 
-  className   String
+  fileUrl String?
 
-  category    String?
+  subject String?
+  className String?
 
-  uploadedBy  String?
-
-  fileName    String
-
-  fileUrl     String
-
-  fileType    String
-
-  fileSize    Int      @default(0)
-
-  downloads   Int      @default(0)
-
-  isPublished Boolean  @default(true)
-
-  createdAt   DateTime @default(now())
-
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
