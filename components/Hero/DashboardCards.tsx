@@ -14,6 +14,7 @@ import {
   BarChart3,
   BookOpen,
   Settings,
+  TrendingUp,
 } from "lucide-react";
 
 type Stats = Awaited<ReturnType<typeof getDashboardStats>>;
@@ -139,6 +140,21 @@ const cardThemes: CardTheme[] = [
       "group-hover:shadow-[0_8px_32px_rgba(148,163,184,0.10)]",
     getValue: () => "Settings",
     getMeta: () => "Configure academy system",
+  },
+
+  {
+    title: "Analytics",
+    subtitle: "Academy performance",
+    icon: TrendingUp,
+    href: "/analytics",
+    accent: "from-amber-500 to-orange-600",
+    iconBg: "bg-amber-500/10",
+    iconColor: "text-amber-400",
+    borderHover: "hover:border-amber-500/30",
+    glow:
+      "group-hover:shadow-[0_8px_32px_rgba(245,158,11,0.12)]",
+    getValue: () => "Analytics",
+    getMeta: () => "View academy performance",
   },
 ];
 

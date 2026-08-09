@@ -17,6 +17,7 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
+  TrendingUp,
 } from "lucide-react";
 
 import { usePathname } from "next/navigation";
@@ -34,7 +35,8 @@ const menu = [
     title: "Academics",
     items: [
       { icon: CalendarCheck2, title: "Attendance", href: "/attendance" },
-      { icon: BarChart3, title: "Results", href: "/results" },    ],
+      { icon: BarChart3, title: "Results", href: "/results" },
+    ],
   },
   {
     title: "Finance",
@@ -52,8 +54,24 @@ const menu = [
     ],
   },
   {
+    title: "Analytics",
+    items: [
+      {
+        icon: TrendingUp,
+        title: "Analytics",
+        href: "/analytics",
+      },
+    ],
+  },
+  {
     title: "System",
-    items: [{ icon: Settings, title: "Settings", href: "/settings" }],
+    items: [
+      {
+        icon: Settings,
+        title: "Settings",
+        href: "/settings",
+      },
+    ],
   },
 ];
 

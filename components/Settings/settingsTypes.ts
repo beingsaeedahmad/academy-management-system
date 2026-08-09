@@ -17,12 +17,8 @@ export type SettingsSection =
 /* -------------------------------------------------------------------------- */
 
 export interface GeneralSettings {
-  academyName: string;
-  academyEmail: string;
-  academyPhone: string;
-  academyAddress: string;
-  timezone: string;
   language: string;
+  timezone: string;
   dateFormat: string;
   currency: string;
 }
@@ -74,42 +70,20 @@ export interface AppearanceSettings {
 /* -------------------------------------------------------------------------- */
 
 export interface NotificationSettings {
-  enabled: boolean;
-
   emailNotifications: boolean;
-  pushNotifications: boolean;
-  smsNotifications: boolean;
-
   attendanceAlerts: boolean;
-  feeAlerts: boolean;
-  admissionAlerts: boolean;
-  systemAlerts: boolean;
+  feeReminders: boolean;
+  admissionNotifications: boolean;
+  resultNotifications: boolean;
 }
 
 /* -------------------------------------------------------------------------- */
 /* Security Settings                                                          */
 /* -------------------------------------------------------------------------- */
 
-export type SessionTimeout =
-  | "15 minutes"
-  | "30 minutes"
-  | "1 hour"
-  | "4 hours"
-  | "Never";
-
-export type LoginProtection =
-  | "Standard"
-  | "Enhanced"
-  | "Strict";
-
 export interface SecuritySettings {
-  newPassword: string;
-  confirmPassword: string;
-
   twoFactorEnabled: boolean;
-
-  sessionTimeout: SessionTimeout;
-  loginProtection: LoginProtection;
+  sessionTimeout: number;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -129,9 +103,9 @@ export interface AccountSettings {
 /* -------------------------------------------------------------------------- */
 
 export type BackupFrequency =
-  | "Daily"
-  | "Weekly"
-  | "Monthly";
+  | "daily"
+  | "weekly"
+  | "monthly";
 
 export type BackupRetention =
   | "7 days"
@@ -141,18 +115,23 @@ export type BackupRetention =
 
 export interface BackupSettings {
   automaticBackup: boolean;
-
   frequency: BackupFrequency;
   retention: BackupRetention;
-
   lastBackupDate: string;
+}
+/* -------------------------------------------------------------------------- */
+/* Danger Zone                                                                */
+/* -------------------------------------------------------------------------- */
+
+export interface DangerSettings {
+  confirmBeforeDelete: boolean;
 }
 
 /* -------------------------------------------------------------------------- */
-/* Complete Settings Data                                                     */
+/* Complete Application Settings                                              */
 /* -------------------------------------------------------------------------- */
 
-export interface SettingsData {
+export interface AppSettings {
   general: GeneralSettings;
   academy: AcademySettings;
   appearance: AppearanceSettings;
@@ -160,4 +139,11 @@ export interface SettingsData {
   security: SecuritySettings;
   account: AccountSettings;
   backup: BackupSettings;
+  danger: DangerSettings;
 }
+
+/* -------------------------------------------------------------------------- */
+/* Backward Compatible Settings Data                                          */
+/* -------------------------------------------------------------------------- */
+
+export type SettingsData = AppSettings;
