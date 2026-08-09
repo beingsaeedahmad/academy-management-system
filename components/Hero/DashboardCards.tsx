@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -8,14 +9,45 @@ import {
   GraduationCap,
   CalendarCheck2,
   Wallet,
-  AlertCircle,
+  UserPlus,
   ArrowUpRight,
-  TrendingUp,
+  BarChart3,
+  BookOpen,
+  Settings,
 } from "lucide-react";
 
 type Stats = Awaited<ReturnType<typeof getDashboardStats>>;
 
-const cardThemes = [
+type CardTheme = {
+  title: string;
+  subtitle: string;
+  icon: React.ElementType;
+  href: string;
+  accent: string;
+  iconBg: string;
+  iconColor: string;
+  borderHover: string;
+  glow: string;
+  getValue: (stats: Stats) => string;
+  getMeta: (stats: Stats) => string;
+};
+
+const cardThemes: CardTheme[] = [
+  {
+    title: "Admissions",
+    subtitle: "Student admissions",
+    icon: UserPlus,
+    href: "/admissions",
+    accent: "from-violet-500 to-purple-600",
+    iconBg: "bg-violet-500/10",
+    iconColor: "text-violet-400",
+    borderHover: "hover:border-violet-500/30",
+    glow:
+      "group-hover:shadow-[0_8px_32px_rgba(139,92,246,0.12)]",
+    getValue: (stats) => stats.totalStudents.toLocaleString(),
+    getMeta: () => "Manage admissions",
+  },
+
   {
     title: "Students",
     subtitle: "Registered students",
@@ -25,10 +57,12 @@ const cardThemes = [
     iconBg: "bg-blue-500/10",
     iconColor: "text-blue-400",
     borderHover: "hover:border-blue-500/30",
-    glow: "group-hover:shadow-[0_8px_32px_rgba(59,130,246,0.12)]",
-    getValue: (stats: Stats) => stats.totalStudents.toLocaleString(),
+    glow:
+      "group-hover:shadow-[0_8px_32px_rgba(59,130,246,0.12)]",
+    getValue: (stats) => stats.totalStudents.toLocaleString(),
     getMeta: () => "Total enrolled",
   },
+
   {
     title: "Attendance",
     subtitle: "Present today",
@@ -38,11 +72,14 @@ const cardThemes = [
     iconBg: "bg-emerald-500/10",
     iconColor: "text-emerald-400",
     borderHover: "hover:border-emerald-500/30",
-    glow: "group-hover:shadow-[0_8px_32px_rgba(16,185,129,0.12)]",
-    getValue: (stats: Stats) => stats.presentStudents.toLocaleString(),
-    getMeta: (stats: Stats) =>
+    glow:
+      "group-hover:shadow-[0_8px_32px_rgba(16,185,129,0.12)]",
+    getValue: (stats) =>
+      stats.presentStudents.toLocaleString(),
+    getMeta: (stats) =>
       `${stats.absentStudents} absent · ${stats.totalStudents} total`,
   },
+
   {
     title: "Fees Collected",
     subtitle: "This month",
@@ -52,40 +89,86 @@ const cardThemes = [
     iconBg: "bg-cyan-500/10",
     iconColor: "text-cyan-400",
     borderHover: "hover:border-cyan-500/30",
-    glow: "group-hover:shadow-[0_8px_32px_rgba(6,182,212,0.12)]",
-    getValue: (stats: Stats) => `Rs. ${stats.collectedFee.toLocaleString()}`,
+    glow:
+      "group-hover:shadow-[0_8px_32px_rgba(6,182,212,0.12)]",
+    getValue: (stats) =>
+      `Rs. ${stats.collectedFee.toLocaleString()}`,
     getMeta: () => "Monthly collection",
   },
+
   {
-    title: "Pending Fees",
-    subtitle: "Outstanding balance",
-    icon: AlertCircle,
-    href: "/fees",
-    accent: "from-amber-500 to-orange-500",
-    iconBg: "bg-amber-500/10",
-    iconColor: "text-amber-400",
-    borderHover: "hover:border-amber-500/30",
-    glow: "group-hover:shadow-[0_8px_32px_rgba(245,158,11,0.12)]",
-    getValue: (stats: Stats) => `Rs. ${stats.pendingFees.toLocaleString()}`,
-    getMeta: (stats: Stats) =>
-      stats.overdueFees > 0
-        ? `Rs. ${stats.overdueFees.toLocaleString()} overdue`
-        : "No overdue fees",
+    title: "Reports",
+    subtitle: "Academy analytics",
+    icon: BarChart3,
+    href: "/reports",
+    accent: "from-fuchsia-500 to-pink-600",
+    iconBg: "bg-fuchsia-500/10",
+    iconColor: "text-fuchsia-400",
+    borderHover: "hover:border-fuchsia-500/30",
+    glow:
+      "group-hover:shadow-[0_8px_32px_rgba(217,70,239,0.12)]",
+    getValue: () => "Reports",
+    getMeta: () => "View academy analytics",
+  },
+
+  {
+    title: "Subjects",
+    subtitle: "Academic subjects",
+    icon: BookOpen,
+    href: "/subjects",
+    accent: "from-sky-500 to-blue-600",
+    iconBg: "bg-sky-500/10",
+    iconColor: "text-sky-400",
+    borderHover: "hover:border-sky-500/30",
+    glow:
+      "group-hover:shadow-[0_8px_32px_rgba(14,165,233,0.12)]",
+    getValue: () => "Subjects",
+    getMeta: () => "Manage academic subjects",
+  },
+
+  {
+    title: "Settings",
+    subtitle: "System configuration",
+    icon: Settings,
+    href: "/settings",
+    accent: "from-slate-400 to-slate-600",
+    iconBg: "bg-slate-500/10",
+    iconColor: "text-slate-300",
+    borderHover: "hover:border-slate-500/30",
+    glow:
+      "group-hover:shadow-[0_8px_32px_rgba(148,163,184,0.10)]",
+    getValue: () => "Settings",
+    getMeta: () => "Configure academy system",
   },
 ];
 
 function StatCardSkeleton() {
   return (
-    <div className="animate-pulse rounded-2xl border border-slate-800/80 bg-slate-900/50 p-6">
-      <div className="flex items-start justify-between">
-        <div className="space-y-3">
-          <div className="h-4 w-20 rounded bg-slate-800" />
-          <div className="h-9 w-24 rounded bg-slate-800" />
-          <div className="h-3 w-32 rounded bg-slate-800/70" />
+    <article
+      className="
+        relative overflow-hidden rounded-2xl
+        border border-slate-800/80
+        bg-slate-900/40
+        p-6
+        backdrop-blur-sm
+      "
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0 flex-1">
+          <div className="h-4 w-24 animate-pulse rounded bg-slate-800" />
+
+          <div className="mt-3 h-9 w-32 animate-pulse rounded bg-slate-800" />
+
+          <div className="mt-2 h-3 w-28 animate-pulse rounded bg-slate-800" />
+
+          <div className="mt-4 h-3 w-36 animate-pulse rounded bg-slate-800" />
         </div>
-        <div className="h-12 w-12 rounded-xl bg-slate-800" />
+
+        <div className="h-12 w-12 shrink-0 animate-pulse rounded-xl bg-slate-800" />
       </div>
-    </div>
+
+      <div className="mt-5 h-3 w-24 animate-pulse rounded bg-slate-800" />
+    </article>
   );
 }
 
@@ -94,103 +177,175 @@ export default function DashboardCards() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
     async function loadDashboard() {
       try {
         const data = await getDashboardStats();
-        setStats(data);
+
+        if (mounted) {
+          setStats(data);
+        }
       } catch (error) {
-        console.error(error);
+        console.error("Failed to load dashboard stats:", error);
       } finally {
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     }
 
     loadDashboard();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   return (
-    <section>
-      <div className="mb-8">
-        <div className="flex items-center gap-2 text-sm font-medium text-blue-400">
-          <TrendingUp size={16} />
+    <section className="space-y-6">
+      {/* Header */}
+      <div>
+        <p className="text-sm font-medium uppercase tracking-[0.18em] text-blue-400">
           Overview
-        </div>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight text-white">
+        </p>
+
+        <h1 className="mt-2 text-2xl font-bold tracking-tight text-white sm:text-3xl">
           SAEED EDUCATIONAL ACADEMY
         </h1>
-        <p className="mt-1.5 text-slate-400">
-          WELCOME TO MY ACADEMY SYSTEM
+
+        <p className="mt-2 text-sm text-slate-400">
+          Welcome to my academy system
         </p>
       </div>
 
+      {/* Cards */}
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-        {loading
-          ? Array.from({ length: 4 }).map((_, index) => (
-              <StatCardSkeleton key={index} />
-            ))
-          : stats &&
-            cardThemes.map((card) => {
-              const Icon = card.icon;
+        {loading ? (
+          Array.from({ length: 4 }).map((_, index) => (
+            <StatCardSkeleton key={index} />
+          ))
+        ) : stats ? (
+          cardThemes.map((card) => {
+            const Icon = card.icon;
 
-              return (
-                <Link
-                  key={card.title}
-                  href={card.href}
-                  className={`group block ${card.glow}`}
+            return (
+              <Link
+                key={card.title}
+                href={card.href}
+                className={`group block ${card.glow}`}
+              >
+                <article
+                  className={`
+                    relative overflow-hidden rounded-2xl
+                    border border-slate-800/80
+                    bg-slate-900/40
+                    p-6
+                    backdrop-blur-sm
+                    transition-all duration-300
+                    hover:-translate-y-1
+                    ${card.borderHover}
+                  `}
                 >
-                  <article
+                  {/* Top Gradient Line */}
+                  <div
                     className={`
-                      relative overflow-hidden rounded-2xl
-                      border border-slate-800/80
-                      bg-slate-900/40
-                      p-6
-                      backdrop-blur-sm
-                      transition-all duration-300
-                      hover:-translate-y-0.5
-                      ${card.borderHover}
+                      absolute inset-x-0 top-0 h-px
+                      bg-gradient-to-r
+                      ${card.accent}
+                      opacity-60
                     `}
-                  >
-                    <div
-                      className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r ${card.accent} opacity-60`}
-                    />
+                  />
 
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-slate-400">
-                          {card.title}
-                        </p>
+                  {/* Card Content */}
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-slate-400">
+                        {card.title}
+                      </p>
 
-                        <p className="mt-2 text-3xl font-bold tabular-nums tracking-tight text-white">
-                          {card.getValue(stats)}
-                        </p>
+                      <p className="mt-2 text-3xl font-bold tabular-nums tracking-tight text-white">
+                        {card.getValue(stats)}
+                      </p>
 
-                        <p className="mt-1 text-xs text-slate-500">
-                          {card.subtitle}
-                        </p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        {card.subtitle}
+                      </p>
 
-                        <p className="mt-3 text-xs font-medium text-slate-400">
-                          {card.getMeta(stats)}
-                        </p>
-                      </div>
-
-                      <div
-                        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${card.iconBg}`}
-                      >
-                        <Icon size={22} className={card.iconColor} />
-                      </div>
+                      <p className="mt-3 text-xs font-medium text-slate-400">
+                        {card.getMeta(stats)}
+                      </p>
                     </div>
 
-                    <div className="mt-5 flex items-center gap-1.5 text-xs font-medium text-slate-500 transition-colors group-hover:text-blue-400">
-                      View details
-                      <ArrowUpRight
-                        size={14}
-                        className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                    {/* Icon */}
+                    <div
+                      className={`
+                        flex h-12 w-12 shrink-0
+                        items-center justify-center
+                        rounded-xl
+                        ${card.iconBg}
+                      `}
+                    >
+                      <Icon
+                        size={22}
+                        strokeWidth={1.8}
+                        className={card.iconColor}
                       />
                     </div>
-                  </article>
-                </Link>
-              );
-            })}
+                  </div>
+
+                  {/* View Details */}
+                  <div
+                    className="
+                      mt-5 flex items-center gap-1.5
+                      text-xs font-medium text-slate-500
+                      transition-colors
+                      group-hover:text-blue-400
+                    "
+                  >
+                    <span>View details</span>
+
+                    <ArrowUpRight
+                      size={14}
+                      className="
+                        transition-transform duration-200
+                        group-hover:translate-x-0.5
+                        group-hover:-translate-y-0.5
+                      "
+                    />
+                  </div>
+
+                  {/* Subtle Glow */}
+                  <div
+                    className="
+                      pointer-events-none
+                      absolute -right-16 -top-16
+                      h-32 w-32
+                      rounded-full
+                      bg-white/[0.02]
+                      blur-3xl
+                      opacity-0
+                      transition-opacity duration-300
+                      group-hover:opacity-100
+                    "
+                  />
+                </article>
+              </Link>
+            );
+          })
+        ) : (
+          <div
+            className="
+              col-span-full rounded-2xl
+              border border-red-500/20
+              bg-red-500/5
+              p-6 text-sm text-red-400
+            "
+          >
+            Unable to load dashboard statistics.
+            Please try again.
+          </div>
+        )}
       </div>
     </section>
   );

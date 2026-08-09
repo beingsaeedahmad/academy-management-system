@@ -3,14 +3,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
-import {
-  UserCircle2,
-  ChevronDown,
-  ArrowRight,
-  Settings,
-  LogOut,
-} from "lucide-react";
-
 import GlobalSearch from "@/components/Search/GlobalSearch";
 
 export default function Navbar() {
