@@ -19,59 +19,217 @@ export default function AnalyticsHeader({
   onExport,
 }: AnalyticsHeaderProps) {
   return (
-    <header className="relative overflow-hidden">
-      {/* Background Glow */}
-      <div className="pointer-events-none absolute -left-24 -top-24 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl" />
+    <header
+      className="
+        relative
+        mb-6
+        overflow-hidden
+        rounded-2xl
+        border border-white/[0.06]
+        bg-slate-950/70
+        backdrop-blur-xl
+        shadow-[0_20px_60px_-35px_rgba(37,99,235,0.35)]
+      "
+    >
+      {/* ========================================= */}
+      {/* Background Effects */}
+      {/* ========================================= */}
 
-      <div className="pointer-events-none absolute -right-24 -top-16 h-64 w-64 rounded-full bg-violet-500/10 blur-3xl" />
+      <div
+        className="
+          pointer-events-none
+          absolute
+          -right-24
+          -top-24
+          h-56
+          w-56
+          rounded-full
+          bg-blue-500/[0.08]
+          blur-3xl
+        "
+      />
 
-      <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-        {/* Left Content */}
-        <div>
+      <div
+        className="
+          pointer-events-none
+          absolute
+          -left-20
+          bottom-0
+          h-32
+          w-32
+          rounded-full
+          bg-violet-500/[0.05]
+          blur-3xl
+        "
+      />
+
+      {/* Top accent */}
+      <div
+        className="
+          absolute
+          inset-x-8
+          top-0
+          h-px
+          bg-gradient-to-r
+          from-transparent
+          via-blue-500/50
+          to-transparent
+        "
+      />
+
+      {/* ========================================= */}
+      {/* Main Header */}
+      {/* ========================================= */}
+
+      <div
+        className="
+          relative
+          flex
+          min-h-[122px]
+          flex-col
+          justify-center
+          gap-5
+          px-5
+          py-5
+          sm:px-6
+          lg:flex-row
+          lg:items-center
+          lg:justify-between
+          lg:px-7
+        "
+      >
+        {/* ======================================= */}
+        {/* Left */}
+        {/* ======================================= */}
+
+        <div className="min-w-0">
           {/* Breadcrumb */}
-          <div className="mb-4 flex items-center gap-2 text-xs">
-            <div className="flex items-center gap-1.5 text-slate-600">
-              <BarChart3 size={14} />
+
+          <div className="mb-3 flex items-center gap-2">
+            <div
+              className="
+                flex
+                items-center
+                gap-1.5
+                text-[10px]
+                font-medium
+                text-slate-600
+              "
+            >
+              <BarChart3 size={12} />
+
               <span>Academy</span>
             </div>
 
             <ChevronRight
-              size={13}
+              size={11}
               className="text-slate-700"
             />
 
-            <span className="font-medium text-slate-400">
+            <span
+              className="
+                text-[10px]
+                font-medium
+                text-slate-400
+              "
+            >
               Analytics
             </span>
           </div>
 
-          {/* Title */}
-          <div className="flex items-center gap-3">
+          {/* Title Row */}
+
+          <div className="flex items-center gap-3.5">
+            {/* Icon */}
+
             <div
               className="
-                flex h-12 w-12
+                relative
+                flex
+                h-12
+                w-12
                 shrink-0
-                items-center justify-center
+                items-center
+                justify-center
                 rounded-2xl
-                border border-blue-500/20
-                bg-blue-500/10
-                shadow-lg
-                shadow-blue-500/5
+                border
+                border-blue-500/20
+                bg-gradient-to-br
+                from-blue-500/[0.14]
+                to-indigo-500/[0.06]
+                shadow-[0_0_30px_rgba(37,99,235,0.10)]
               "
             >
+              {/* Icon glow */}
+
+              <div
+                className="
+                  absolute
+                  inset-0
+                  rounded-2xl
+                  bg-blue-500/[0.05]
+                  blur-md
+                "
+              />
+
               <BarChart3
-                size={23}
-                className="text-blue-400"
+                size={22}
                 strokeWidth={1.8}
+                className="
+                  relative
+                  z-10
+                  text-blue-400
+                "
               />
             </div>
 
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
-                Analytics
-              </h1>
+            {/* Text */}
 
-              <p className="mt-1 text-xs text-slate-500 sm:text-sm">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2.5">
+                <h1
+                  className="
+                    text-2xl
+                    font-bold
+                    tracking-tight
+                    text-white
+                    sm:text-[28px]
+                  "
+                >
+                  Analytics
+                </h1>
+
+                <span
+                  className="
+                    hidden
+                    rounded-full
+                    border
+                    border-blue-500/15
+                    bg-blue-500/[0.06]
+                    px-2
+                    py-0.5
+                    text-[9px]
+                    font-semibold
+                    uppercase
+                    tracking-wider
+                    text-blue-400
+                    sm:inline-flex
+                  "
+                >
+                  Overview
+                </span>
+              </div>
+
+              <p
+                className="
+                  mt-1
+                  max-w-xl
+                  text-[11px]
+                  leading-5
+                  text-slate-500
+                  sm:text-xs
+                "
+              >
                 Monitor academy performance, students,
                 attendance, fees and results
               </p>
@@ -79,14 +237,27 @@ export default function AnalyticsHeader({
           </div>
         </div>
 
+        {/* ======================================= */}
         {/* Actions */}
-        <div className="flex items-center gap-2">
+        {/* ======================================= */}
+
+        <div
+          className="
+            flex
+            shrink-0
+            items-center
+            gap-2
+          "
+        >
           {/* Refresh */}
+
           <button
             type="button"
             onClick={onRefresh}
             disabled={loading}
+            aria-label="Refresh analytics"
             className="
+              group
               inline-flex
               h-10
               items-center
@@ -94,71 +265,119 @@ export default function AnalyticsHeader({
               gap-2
               rounded-xl
               border
-              border-slate-800
-              bg-slate-900/50
+              border-white/[0.07]
+              bg-white/[0.025]
               px-3.5
               text-xs
               font-medium
               text-slate-400
-              backdrop-blur-sm
+              shadow-sm
+              backdrop-blur-xl
               transition-all
-              hover:border-slate-700
-              hover:bg-slate-800
+              duration-200
+              hover:border-blue-400/20
+              hover:bg-blue-500/[0.06]
               hover:text-white
+              active:scale-[0.98]
               disabled:cursor-not-allowed
-              disabled:opacity-50
+              disabled:opacity-40
             "
           >
             <RefreshCw
-              size={15}
-              className={
-                loading
-                  ? "animate-spin"
-                  : ""
-              }
+              size={14}
+              strokeWidth={1.8}
+              className={`
+                transition-transform
+                duration-500
+                ${
+                  loading
+                    ? "animate-spin text-blue-400"
+                    : "group-hover:rotate-180"
+                }
+              `}
             />
 
-            <span className="hidden sm:inline">
-              Refresh
-            </span>
+            <span>Refresh</span>
           </button>
 
           {/* Export */}
+
           <button
             type="button"
             onClick={onExport}
+            aria-label="Export analytics"
             className="
+              group
+              relative
               inline-flex
               h-10
               items-center
               justify-center
               gap-2
+              overflow-hidden
               rounded-xl
               border
-              border-blue-500/25
-              bg-blue-600/90
-              px-3.5
+              border-blue-400/20
+              bg-gradient-to-r
+              from-blue-600
+              to-blue-500
+              px-4
               text-xs
               font-semibold
               text-white
-              shadow-lg
-              shadow-blue-500/10
+              shadow-[0_8px_25px_rgba(37,99,235,0.20)]
               transition-all
-              hover:bg-blue-500
-              hover:shadow-blue-500/20
+              duration-200
+              hover:from-blue-500
+              hover:to-indigo-500
+              hover:shadow-[0_10px_30px_rgba(37,99,235,0.30)]
+              active:scale-[0.98]
             "
           >
-            <Download size={15} />
+            {/* Shine */}
 
-            <span className="hidden sm:inline">
+            <span
+              className="
+                pointer-events-none
+                absolute
+                inset-0
+                -translate-x-full
+                bg-gradient-to-r
+                from-transparent
+                via-white/10
+                to-transparent
+                transition-transform
+                duration-700
+                group-hover:translate-x-full
+              "
+            />
+
+            <Download
+              size={14}
+              strokeWidth={2}
+              className="relative z-10"
+            />
+
+            <span className="relative z-10">
               Export
             </span>
           </button>
         </div>
       </div>
 
+      {/* ========================================= */}
       {/* Bottom Divider */}
-      <div className="mt-6 h-px bg-gradient-to-r from-slate-800 via-slate-800/60 to-transparent" />
+      {/* ========================================= */}
+
+      <div
+        className="
+          h-px
+          bg-gradient-to-r
+          from-transparent
+          via-white/[0.06]
+          to-transparent
+        "
+      />
     </header>
   );
 }

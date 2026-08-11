@@ -2,6 +2,10 @@
 
 import { prisma } from "@/lib/prisma";
 
+/* =========================================================
+   TYPES
+========================================================= */
+
 interface StudentRecord {
   id: string;
   className: string | null;
@@ -14,23 +18,35 @@ interface AttendanceRecord {
 }
 
 interface FeeRecord {
+  studentId: string;
   paidAmount: number | null;
   totalFee: number | null;
   status: string;
   paymentDate: Date | null;
+  month: number;
+  year: number;
 }
 
 interface ResultRecord {
-  totalMarks: number | null;
-  obtainedMarks: number | null;
+  totalMarks: number;
+  obtainedMarks: number;
 }
+
+/* =========================================================
+   ANALYTICS DATA
+========================================================= */
 
 export interface AnalyticsData {
   overview: {
     totalStudents: number;
     attendanceRate: number;
     feesCollected: number;
-    averageResult: number;
+    pendingFees: number;
+
+    totalFees: number;
+    presentAttendance: number;
+    absentAttendance: number;
+    feeDefaulters: number;
   };
 
   students: {
@@ -77,13 +93,15 @@ export interface AnalyticsData {
   }[];
 }
 
+/* =========================================================
+   GET ANALYTICS DATA
+========================================================= */
+
 export async function getAnalyticsData(): Promise<AnalyticsData> {
   try {
-    /*
-     * =========================================================
-     * STUDENTS
-     * =========================================================
-     */
+    /* =======================================================
+       STUDENTS
+    ======================================================= */
 
     const students: StudentRecord[] =
       await prisma.student.findMany({
@@ -97,22 +115,20 @@ export async function getAnalyticsData(): Promise<AnalyticsData> {
     const totalStudents = students.length;
 
     const activeStudents = students.filter(
-      (student: StudentRecord) =>
+      (student) =>
         student.status?.toLowerCase() === "active"
     ).length;
 
     const inactiveStudents =
       totalStudents - activeStudents;
 
-    /*
-     * =========================================================
-     * CLASS DISTRIBUTION
-     * =========================================================
-     */
+    /* =======================================================
+       CLASS DISTRIBUTION
+    ======================================================= */
 
     const classMap = new Map<string, number>();
 
-    students.forEach((student: StudentRecord) => {
+    students.forEach((student) => {
       const className =
         student.className?.trim() || "Unknown";
 
@@ -122,27 +138,20 @@ export async function getAnalyticsData(): Promise<AnalyticsData> {
       );
     });
 
-    const classDistribution = Array.from(
-      classMap.entries()
-    )
-      .map(
-        ([className, students]: [string, number]) => ({
+    const classDistribution =
+      Array.from(classMap.entries())
+        .map(([className, studentCount]) => ({
           className,
-          students,
-        })
-      )
-      .sort(
-        (
-          a: { students: number },
-          b: { students: number }
-        ) => b.students - a.students
-      );
+          students: studentCount,
+        }))
+        .sort(
+          (a, b) =>
+            b.students - a.students
+        );
 
-    /*
-     * =========================================================
-     * ATTENDANCE
-     * =========================================================
-     */
+    /* =======================================================
+       ATTENDANCE
+    ======================================================= */
 
     const attendanceRecords: AttendanceRecord[] =
       await prisma.attendance.findMany({
@@ -154,21 +163,21 @@ export async function getAnalyticsData(): Promise<AnalyticsData> {
 
     const presentAttendance =
       attendanceRecords.filter(
-        (record: AttendanceRecord) =>
+        (record) =>
           record.status === "P" ||
           record.status === "Present"
       ).length;
 
     const absentAttendance =
       attendanceRecords.filter(
-        (record: AttendanceRecord) =>
+        (record) =>
           record.status === "A" ||
           record.status === "Absent"
       ).length;
 
     const leaveAttendance =
       attendanceRecords.filter(
-        (record: AttendanceRecord) =>
+        (record) =>
           record.status === "L" ||
           record.status === "Leave"
       ).length;
@@ -180,14 +189,14 @@ export async function getAnalyticsData(): Promise<AnalyticsData> {
 
     const attendanceRate =
       attendanceTotal > 0
-        ? (presentAttendance / attendanceTotal) * 100
+        ? (presentAttendance /
+            attendanceTotal) *
+          100
         : 0;
 
-    /*
-     * =========================================================
-     * MONTHLY ATTENDANCE
-     * =========================================================
-     */
+    /* =======================================================
+       MONTHLY ATTENDANCE
+    ======================================================= */
 
     const attendanceMonthMap = new Map<
       string,
@@ -198,172 +207,274 @@ export async function getAnalyticsData(): Promise<AnalyticsData> {
       }
     >();
 
-    attendanceRecords.forEach(
-      (record: AttendanceRecord) => {
-        const date = new Date(record.date);
+    attendanceRecords.forEach((record) => {
+      const date = new Date(record.date);
 
-        const month = date.toLocaleString("en-US", {
+      const month =
+        date.toLocaleString("en-US", {
           month: "short",
         });
 
-        if (!attendanceMonthMap.has(month)) {
-          attendanceMonthMap.set(month, {
-            present: 0,
-            absent: 0,
-            leave: 0,
-          });
-        }
-
-        const current =
-          attendanceMonthMap.get(month)!;
-
-        if (
-          record.status === "P" ||
-          record.status === "Present"
-        ) {
-          current.present++;
-        } else if (
-          record.status === "A" ||
-          record.status === "Absent"
-        ) {
-          current.absent++;
-        } else if (
-          record.status === "L" ||
-          record.status === "Leave"
-        ) {
-          current.leave++;
-        }
+      if (!attendanceMonthMap.has(month)) {
+        attendanceMonthMap.set(month, {
+          present: 0,
+          absent: 0,
+          leave: 0,
+        });
       }
-    );
+
+      const current =
+        attendanceMonthMap.get(month)!;
+
+      if (
+        record.status === "P" ||
+        record.status === "Present"
+      ) {
+        current.present++;
+      } else if (
+        record.status === "A" ||
+        record.status === "Absent"
+      ) {
+        current.absent++;
+      } else if (
+        record.status === "L" ||
+        record.status === "Leave"
+      ) {
+        current.leave++;
+      }
+    });
 
     const monthlyAttendance =
       Array.from(
         attendanceMonthMap.entries()
-      ).map(
-        (
-          [month, values]: [
-            string,
-            {
-              present: number;
-              absent: number;
-              leave: number;
-            }
-          ]
-        ) => ({
-          month,
-          ...values,
-        })
-      );
+      ).map(([month, values]) => ({
+        month,
+        ...values,
+      }));
 
-    /*
-     * =========================================================
-     * FEES
-     * =========================================================
-     */
+    /* =======================================================
+       FEES
+    ======================================================= */
 
     const fees: FeeRecord[] =
       await prisma.fee.findMany({
         select: {
+          studentId: true,
           paidAmount: true,
           totalFee: true,
           status: true,
           paymentDate: true,
+          month: true,
+          year: true,
         },
       });
 
-    const feesCollected = fees.reduce(
-      (
-        total: number,
-        fee: FeeRecord
-      ) =>
-        total + Number(fee.paidAmount ?? 0),
-      0
+    /* =======================================================
+       CURRENT MONTH
+    ======================================================= */
+
+    const now = new Date();
+
+    const currentMonth =
+      now.getMonth() + 1;
+
+    const currentYear =
+      now.getFullYear();
+
+    const currentMonthFees =
+      fees.filter(
+        (fee) =>
+          fee.month === currentMonth &&
+          fee.year === currentYear
+      );
+
+    /* =======================================================
+       TOTAL FEES - CURRENT MONTH
+    ======================================================= */
+
+    const totalFees =
+      currentMonthFees.reduce(
+        (total, fee) => {
+          return (
+            total +
+            Number(fee.totalFee ?? 0)
+          );
+        },
+        0
+      );
+
+    /* =======================================================
+       FEES COLLECTED - CURRENT MONTH
+    ======================================================= */
+
+    const feesCollected =
+      currentMonthFees.reduce(
+        (total, fee) => {
+          return (
+            total +
+            Number(fee.paidAmount ?? 0)
+          );
+        },
+        0
+      );
+
+    /* =======================================================
+       PENDING FEES - CURRENT MONTH
+       
+       Pending =
+       totalFee - paidAmount
+    ======================================================= */
+
+    const pendingFees =
+      currentMonthFees.reduce(
+        (total, fee) => {
+          const totalFee =
+            Number(
+              fee.totalFee ?? 0
+            );
+
+          const paidAmount =
+            Number(
+              fee.paidAmount ?? 0
+            );
+
+          const outstanding =
+            Math.max(
+              totalFee - paidAmount,
+              0
+            );
+
+          return (
+            total + outstanding
+          );
+        },
+        0
+      );
+
+    /* =======================================================
+       OVERDUE FEES - CURRENT MONTH
+    ======================================================= */
+
+    const overdueFees =
+      currentMonthFees
+        .filter(
+          (fee) =>
+            fee.status?.toLowerCase() ===
+            "overdue"
+        )
+        .reduce(
+          (total, fee) => {
+            const totalFee =
+              Number(
+                fee.totalFee ?? 0
+              );
+
+            const paidAmount =
+              Number(
+                fee.paidAmount ?? 0
+              );
+
+            const outstanding =
+              Math.max(
+                totalFee - paidAmount,
+                0
+              );
+
+            return (
+              total + outstanding
+            );
+          },
+          0
+        );
+
+    /* =======================================================
+       FEE DEFAULTERS - CURRENT MONTH
+
+       A student is a defaulter if their current-month
+       outstanding fee is greater than zero.
+
+       Set is used so one student is counted only once.
+    ======================================================= */
+
+    const feeDefaulterIds =
+      new Set<string>();
+
+    currentMonthFees.forEach(
+      (fee) => {
+        const totalFee =
+          Number(
+            fee.totalFee ?? 0
+          );
+
+        const paidAmount =
+          Number(
+            fee.paidAmount ?? 0
+          );
+
+        const outstanding =
+          Math.max(
+            totalFee - paidAmount,
+            0
+          );
+
+        if (outstanding > 0) {
+          feeDefaulterIds.add(
+            fee.studentId
+          );
+        }
+      }
     );
 
-    const pendingFees = fees
-      .filter(
-        (fee: FeeRecord) =>
-          fee.status === "Pending"
-      )
-      .reduce(
-        (
-          total: number,
-          fee: FeeRecord
-        ) =>
-          total +
-          Math.max(
-            Number(fee.totalFee ?? 0) -
-              Number(fee.paidAmount ?? 0),
-            0
-          ),
-        0
-      );
+    const feeDefaulters =
+      feeDefaulterIds.size;
 
-    const overdueFees = fees
-      .filter(
-        (fee: FeeRecord) =>
-          fee.status === "Overdue"
-      )
-      .reduce(
-        (
-          total: number,
-          fee: FeeRecord
-        ) =>
-          total +
-          Math.max(
-            Number(fee.totalFee ?? 0) -
-              Number(fee.paidAmount ?? 0),
-            0
-          ),
-        0
-      );
+    /* =======================================================
+       MONTHLY FEES
+       
+       Only paid amounts are included.
+    ======================================================= */
 
-    /*
-     * =========================================================
-     * MONTHLY FEES
-     * =========================================================
-     */
+    const monthlyFeeMap =
+      new Map<string, number>();
 
-    const monthlyFeeMap = new Map<
-      string,
-      number
-    >();
+    fees.forEach((fee) => {
+      if (!fee.paymentDate) {
+        return;
+      }
 
-    fees.forEach((fee: FeeRecord) => {
-      if (!fee.paymentDate) return;
+      const date =
+        new Date(fee.paymentDate);
 
-      const date = new Date(
-        fee.paymentDate
-      );
-
-      const month = date.toLocaleString(
-        "en-US",
-        {
-          month: "short",
-        }
-      );
+      const month =
+        date.toLocaleString(
+          "en-US",
+          {
+            month: "short",
+          }
+        );
 
       monthlyFeeMap.set(
         month,
         (monthlyFeeMap.get(month) ?? 0) +
-          Number(fee.paidAmount ?? 0)
+          Number(
+            fee.paidAmount ?? 0
+          )
       );
     });
 
-    const monthlyFees = Array.from(
-      monthlyFeeMap.entries()
-    ).map(
-      ([month, amount]: [string, number]) => ({
-        month,
-        amount,
-      })
-    );
+    const monthlyFees =
+      Array.from(
+        monthlyFeeMap.entries()
+      ).map(
+        ([month, amount]) => ({
+          month,
+          amount,
+        })
+      );
 
-    /*
-     * =========================================================
-     * RESULTS
-     * =========================================================
-     */
+    /* =======================================================
+       RESULTS
+    ======================================================= */
 
     const results: ResultRecord[] =
       await prisma.result.findMany({
@@ -373,63 +484,84 @@ export async function getAnalyticsData(): Promise<AnalyticsData> {
         },
       });
 
-    const totalResults = results.length;
+    const totalResults =
+      results.length;
 
     let totalPercentage = 0;
-    let validResults = 0;
 
     let passedResults = 0;
     let failedResults = 0;
 
-    results.forEach(
-      (result: ResultRecord) => {
-        const totalMarks =
-          Number(result.totalMarks ?? 0);
+    results.forEach((result) => {
+      const totalMarks =
+        Number(
+          result.totalMarks ?? 0
+        );
 
-        const obtainedMarks =
-          Number(result.obtainedMarks ?? 0);
+      const obtainedMarks =
+        Number(
+          result.obtainedMarks ?? 0
+        );
 
-        if (totalMarks <= 0) return;
+      const percentage =
+        totalMarks > 0
+          ? (obtainedMarks /
+              totalMarks) *
+            100
+          : 0;
 
-        const percentage =
-          (obtainedMarks / totalMarks) * 100;
+      totalPercentage +=
+        percentage;
 
-        totalPercentage += percentage;
-        validResults++;
-
-        if (percentage >= 50) {
-          passedResults++;
-        } else {
-          failedResults++;
-        }
+      /*
+       * Passing percentage = 40%
+       */
+      if (percentage >= 40) {
+        passedResults++;
+      } else {
+        failedResults++;
       }
-    );
+    });
 
     const averageResult =
-      validResults > 0
-        ? totalPercentage / validResults
+      totalResults > 0
+        ? totalPercentage /
+          totalResults
         : 0;
 
-    /*
-     * =========================================================
-     * FINAL DATA
-     * =========================================================
-     */
+    /* =======================================================
+       FINAL ANALYTICS DATA
+    ======================================================= */
 
     return {
       overview: {
         totalStudents,
 
-        attendanceRate: Number(
-          attendanceRate.toFixed(1)
-        ),
+        attendanceRate:
+          Number(
+            attendanceRate.toFixed(1)
+          ),
 
         feesCollected,
 
-        averageResult: Number(
-          averageResult.toFixed(1)
-        ),
+        pendingFees,
+
+        /*
+         * New Analytics Cards
+         */
+
+        totalFees,
+
+        presentAttendance,
+
+        absentAttendance,
+
+        feeDefaulters,
       },
+
+      /* =====================================================
+         STUDENTS
+      ===================================================== */
 
       students: {
         total: totalStudents,
@@ -437,36 +569,76 @@ export async function getAnalyticsData(): Promise<AnalyticsData> {
         inactive: inactiveStudents,
       },
 
-      attendance: {
-        present: presentAttendance,
-        absent: absentAttendance,
-        leave: leaveAttendance,
+      /* =====================================================
+         ATTENDANCE
+      ===================================================== */
 
-        rate: Number(
-          attendanceRate.toFixed(1)
-        ),
+      attendance: {
+        present:
+          presentAttendance,
+
+        absent:
+          absentAttendance,
+
+        leave:
+          leaveAttendance,
+
+        rate:
+          Number(
+            attendanceRate.toFixed(1)
+          ),
       },
+
+      /* =====================================================
+         FEES
+      ===================================================== */
 
       fees: {
-        collected: feesCollected,
-        pending: pendingFees,
-        overdue: overdueFees,
+        collected:
+          feesCollected,
+
+        pending:
+          pendingFees,
+
+        overdue:
+          overdueFees,
       },
+
+      /* =====================================================
+         RESULTS
+      ===================================================== */
 
       results: {
-        total: totalResults,
+        total:
+          totalResults,
 
-        averagePercentage: Number(
-          averageResult.toFixed(1)
-        ),
+        averagePercentage:
+          Number(
+            averageResult.toFixed(1)
+          ),
 
-        passed: passedResults,
-        failed: failedResults,
+        passed:
+          passedResults,
+
+        failed:
+          failedResults,
       },
+
+      /* =====================================================
+         CLASS DISTRIBUTION
+      ===================================================== */
 
       classDistribution,
 
+      /* =====================================================
+         MONTHLY FEES
+      ===================================================== */
+
       monthlyFees,
+
+      /* =====================================================
+         MONTHLY ATTENDANCE
+      ===================================================== */
 
       monthlyAttendance,
     };

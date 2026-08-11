@@ -28,64 +28,34 @@ export default function ProfileStats({
     }).format(amount);
 
   return (
-    <section className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-
-      {/* Total Fee */}
-
+    <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
       <StatCard
         title="Total Fee"
         value={formatCurrency(totalFee)}
-        icon={
-          <Wallet
-            className="text-blue-400"
-            size={26}
-          />
-        }
+        icon={<Wallet size={24} />}
         color="blue"
       />
-
-      {/* Paid */}
 
       <StatCard
         title="Paid Fee"
         value={formatCurrency(paidAmount)}
-        icon={
-          <CreditCard
-            className="text-emerald-400"
-            size={26}
-          />
-        }
+        icon={<CreditCard size={24} />}
         color="green"
       />
-
-      {/* Balance */}
 
       <StatCard
         title="Balance"
         value={formatCurrency(balance)}
-        icon={
-          <TrendingUp
-            className="text-red-400"
-            size={26}
-          />
-        }
+        icon={<TrendingUp size={24} />}
         color="red"
       />
-
-      {/* Attendance */}
 
       <StatCard
         title="Attendance"
         value={`${attendancePercentage}%`}
-        icon={
-          <CalendarCheck2
-            className="text-yellow-400"
-            size={26}
-          />
-        }
+        icon={<CalendarCheck2 size={24} />}
         color="yellow"
       />
-
     </section>
   );
 }
@@ -105,74 +75,125 @@ function StatCard({
 }: CardProps) {
   const colors = {
     blue: {
-      border: "border-blue-500/20",
-      bg: "from-blue-600/20 to-blue-900/10",
+      border: "border-blue-500/30",
+      accent: "bg-blue-500",
+      iconBg: "bg-blue-500/10",
+      iconColor: "text-blue-400",
+      glow: "group-hover:shadow-blue-500/10",
     },
 
     green: {
-      border: "border-emerald-500/20",
-      bg: "from-emerald-600/20 to-emerald-900/10",
+      border: "border-emerald-500/30",
+      accent: "bg-emerald-500",
+      iconBg: "bg-emerald-500/10",
+      iconColor: "text-emerald-400",
+      glow: "group-hover:shadow-emerald-500/10",
     },
 
     red: {
-      border: "border-red-500/20",
-      bg: "from-red-600/20 to-red-900/10",
+      border: "border-rose-500/30",
+      accent: "bg-rose-500",
+      iconBg: "bg-rose-500/10",
+      iconColor: "text-rose-400",
+      glow: "group-hover:shadow-rose-500/10",
     },
 
     yellow: {
-      border: "border-yellow-500/20",
-      bg: "from-yellow-600/20 to-yellow-900/10",
+      border: "border-amber-500/30",
+      accent: "bg-amber-500",
+      iconBg: "bg-amber-500/10",
+      iconColor: "text-amber-400",
+      glow: "group-hover:shadow-amber-500/10",
     },
   };
+
+  const theme = colors[color];
 
   return (
     <div
       className={`
         group
-        rounded-3xl
+        relative
+        overflow-hidden
+        rounded-2xl
         border
-        ${colors[color].border}
-        bg-gradient-to-br
-        ${colors[color].bg}
+        ${theme.border}
+        bg-slate-900/90
         p-6
+        text-left
+        shadow-lg
+        shadow-black/20
+        backdrop-blur-sm
         transition-all
         duration-300
         hover:-translate-y-1
         hover:shadow-2xl
+        ${theme.glow}
       `}
     >
-      <div className="flex items-center justify-between">
+      {/* Top Accent */}
+      <div
+        className={`
+          absolute
+          inset-x-0
+          top-0
+          h-px
+          ${theme.accent}
+          opacity-80
+        `}
+      />
 
-        <div>
+      {/* Subtle Glow */}
+      <div
+        className={`
+          pointer-events-none
+          absolute
+          -right-8
+          -top-8
+          h-24
+          w-24
+          rounded-full
+          ${theme.iconBg}
+          opacity-40
+          blur-2xl
+          transition-opacity
+          duration-300
+          group-hover:opacity-70
+        `}
+      />
 
-          <p className="text-sm text-slate-400">
+      <div className="relative flex items-center justify-between">
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-slate-400">
             {title}
           </p>
 
-          <h2 className="mt-3 text-3xl font-bold text-white">
+          <h2 className="mt-3 truncate text-3xl font-bold tracking-tight text-white">
             {value}
           </h2>
-
         </div>
 
         <div
-          className="
+          className={`
             flex
             h-14
             w-14
+            shrink-0
             items-center
             justify-center
-            rounded-2xl
-            bg-slate-900/70
-            transition
-            group-hover:scale-110
-          "
+            rounded-xl
+            ${theme.iconBg}
+            ${theme.iconColor}
+            ring-1
+            ring-white/5
+            transition-all
+            duration-300
+            group-hover:scale-105
+          `}
         >
           {icon}
         </div>
-
       </div>
-
     </div>
   );
 }

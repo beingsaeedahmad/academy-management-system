@@ -18,8 +18,9 @@ function AnalyticsSkeleton() {
   return (
     <div className="space-y-5 animate-pulse">
       {/* Overview Cards */}
+
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {Array.from({ length: 4 }).map((_, index) => (
+        {Array.from({ length: 8 }).map((_, index) => (
           <div
             key={index}
             className="
@@ -34,6 +35,7 @@ function AnalyticsSkeleton() {
       </div>
 
       {/* Charts */}
+
       <div className="grid gap-5 xl:grid-cols-2">
         {Array.from({ length: 4 }).map((_, index) => (
           <div
@@ -50,6 +52,7 @@ function AnalyticsSkeleton() {
       </div>
 
       {/* Performance */}
+
       <div
         className="
           h-72
@@ -144,9 +147,11 @@ export default function AnalyticsPage() {
   const [data, setData] =
     useState<AnalyticsData | null>(null);
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] =
+    useState(true);
 
-  const [error, setError] = useState(false);
+  const [error, setError] =
+    useState(false);
 
   const loadAnalytics = useCallback(
     async () => {
@@ -189,53 +194,117 @@ export default function AnalyticsPage() {
       "
     >
       <div className="mx-auto max-w-[1600px] space-y-6">
-        {/* Header */}
+
+        {/* =====================================================
+            HEADER
+        ====================================================== */}
+
         <AnalyticsHeader
           onRefresh={loadAnalytics}
           loading={loading}
         />
 
-        {/* Loading */}
+        {/* =====================================================
+            LOADING
+        ====================================================== */}
+
         {loading && <AnalyticsSkeleton />}
 
-        {/* Error */}
+        {/* =====================================================
+            ERROR
+        ====================================================== */}
+
         {!loading && error && (
           <AnalyticsError
             onRetry={loadAnalytics}
           />
         )}
 
-        {/* Content */}
-        {!loading && !error && data && (
-          <div className="space-y-5">
-            {/* Overview */}
-            <AnalyticsOverviewCards
-              overview={data.overview}
-            />
+        {/* =====================================================
+            CONTENT
+        ====================================================== */}
 
-            {/* Charts */}
-            <AnalyticsCharts
-              monthlyFees={data.monthlyFees}
-              monthlyAttendance={
-                data.monthlyAttendance
-              }
-              classDistribution={
-                data.classDistribution
-              }
-              averageResult={
-                data.results.averagePercentage
-              }
-            />
+        {!loading &&
+          !error &&
+          data && (
+            <div className="space-y-5">
 
-            {/* Academy Performance */}
-            <AcademyPerformance
-              students={data.students}
-              attendance={data.attendance}
-              fees={data.fees}
-              results={data.results}
-            />
-          </div>
-        )}
+              {/* =================================================
+                  OVERVIEW CARDS
+              ================================================== */}
+
+              <AnalyticsOverviewCards
+                overview={{
+                  ...data.overview,
+
+                  /*
+                   * New Analytics Cards
+                   *
+                   * All four values are coming directly
+                   * from the overview object returned by
+                   * analyticsActions.ts.
+                   */
+
+                  totalFees:
+                    data.overview.totalFees,
+
+                  presentAttendance:
+                    data.overview.presentAttendance,
+
+                  absentAttendance:
+                    data.overview.absentAttendance,
+
+                  feeDefaulters:
+                    data.overview.feeDefaulters,
+                }}
+              />
+
+              {/* =================================================
+                  CHARTS
+              ================================================== */}
+
+              <AnalyticsCharts
+                monthlyFees={
+                  data.monthlyFees
+                }
+
+                monthlyAttendance={
+                  data.monthlyAttendance
+                }
+
+                classDistribution={
+                  data.classDistribution
+                }
+
+                averageResult={
+                  data.results
+                    .averagePercentage
+                }
+              />
+
+              {/* =================================================
+                  ACADEMY PERFORMANCE
+              ================================================== */}
+
+              <AcademyPerformance
+                students={
+                  data.students
+                }
+
+                attendance={
+                  data.attendance
+                }
+
+                fees={
+                  data.fees
+                }
+
+                results={
+                  data.results
+                }
+              />
+            </div>
+          )}
       </div>
     </main>
   );
