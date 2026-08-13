@@ -38,8 +38,7 @@ export default function FeesTable({
   const [remainingAmount, setRemainingAmount] =
     useState(0);
 
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
   const monthName = selectedFee
     ? new Date(
@@ -56,80 +55,142 @@ export default function FeesTable({
         className="
           overflow-hidden
           rounded-2xl
-          border
-          border-slate-800
-          bg-[#0B1120]
-          shadow-xl
+          border border-slate-800/80
+          bg-slate-950/80
+          shadow-[0_20px_60px_-20px_rgba(0,0,0,0.45)]
         "
       >
-        <table className="w-full table-fixed">
-          <thead>
-            <tr className="border-b border-slate-700 bg-[#111827]">
-              <th className="w-24 px-3 py-4 text-left text-[11px] font-bold uppercase tracking-widest text-slate-300">
-                <div className="flex items-center gap-1">
-                  Roll
-                  <ArrowUpDown size={12} />
-                </div>
-              </th>
+        {/* Table Header */}
+        <div className="border-b border-slate-800/80 bg-slate-900/40 px-5 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-semibold text-white">
+                Fee Records
+              </h3>
 
-              <th className="w-56 px-3 py-4 text-left text-[11px] font-bold uppercase tracking-widest text-slate-300">
-                <div className="flex items-center gap-1">
-                  Student
-                  <ArrowUpDown size={12} />
-                </div>
-              </th>
+              <p className="mt-1 text-xs text-slate-500">
+                Student fee collection and payment details
+              </p>
+            </div>
 
-              {headers.map((item) => (
+            <div className="rounded-lg border border-slate-800 bg-slate-900/70 px-3 py-1.5 text-xs font-medium text-slate-400">
+              {fees.length} Records
+            </div>
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[1200px] table-fixed">
+            <thead>
+              <tr className="border-b border-slate-800/80 bg-slate-900/70">
                 <th
-                  key={item}
                   className="
-                    px-2
-                    py-4
-                    text-center
-                    text-[11px]
-                    font-bold
+                    w-24
+                    px-3
+                    py-3.5
+                    text-left
+                    text-[10px]
+                    font-semibold
                     uppercase
-                    tracking-widest
-                    text-slate-300
+                    tracking-[0.12em]
+                    text-slate-500
                   "
                 >
-                  <div className="flex items-center justify-center gap-1">
-                    {item}
-                    <ArrowUpDown size={12} />
+                  <div className="flex items-center gap-1.5">
+                    Roll
+                    <ArrowUpDown
+                      size={11}
+                      className="text-slate-600"
+                    />
                   </div>
                 </th>
-              ))}
-            </tr>
-          </thead>
 
-          <tbody>
-            {fees.length > 0 ? (
-              fees.map((fee) => (
-                <FeesRow
-                  key={fee.id}
-                  fee={fee}
-                  onCollect={(fee, amount) => {
-                    setSelectedFee(fee);
-                    setRemainingAmount(amount);
-                  }}
-                />
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan={11}
+                <th
                   className="
-                    py-16
-                    text-center
-                    text-slate-400
+                    w-56
+                    px-3
+                    py-3.5
+                    text-left
+                    text-[10px]
+                    font-semibold
+                    uppercase
+                    tracking-[0.12em]
+                    text-slate-500
                   "
                 >
-                  No fee records found.
-                </td>
+                  <div className="flex items-center gap-1.5">
+                    Student
+                    <ArrowUpDown
+                      size={11}
+                      className="text-slate-600"
+                    />
+                  </div>
+                </th>
+
+                {headers.map((item) => (
+                  <th
+                    key={item}
+                    className="
+                      px-2
+                      py-3.5
+                      text-center
+                      text-[10px]
+                      font-semibold
+                      uppercase
+                      tracking-[0.12em]
+                      text-slate-500
+                    "
+                  >
+                    <div className="flex items-center justify-center gap-1.5">
+                      {item}
+
+                      <ArrowUpDown
+                        size={11}
+                        className="text-slate-600"
+                      />
+                    </div>
+                  </th>
+                ))}
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody className="divide-y divide-slate-800/60">
+              {fees.length > 0 ? (
+                fees.map((fee) => (
+                  <FeesRow
+                    key={fee.id}
+                    fee={fee}
+                    onCollect={(fee, amount) => {
+                      setSelectedFee(fee);
+                      setRemainingAmount(amount);
+                    }}
+                  />
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={11}
+                    className="py-16 text-center"
+                  >
+                    <div className="flex flex-col items-center">
+                      <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl border border-slate-800 bg-slate-900 text-slate-600">
+                        <span className="text-lg">₹</span>
+                      </div>
+
+                      <p className="text-sm font-medium text-slate-300">
+                        No fee records found
+                      </p>
+
+                      <p className="mt-1 text-xs text-slate-500">
+                        Fee records will appear here.
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <FeeConfirmationModal

@@ -11,11 +11,7 @@ import {
 
 import { getStudentStats } from "@/actions/studentActions";
 
-type FilterType =
-  | "all"
-  | "active"
-  | "new"
-  | "defaulters";
+type FilterType = "all" | "active" | "new" | "defaulters";
 
 interface StudentStats {
   totalStudents: number;
@@ -37,13 +33,13 @@ interface CardItem {
 }
 
 interface Props {
-  filter: FilterType;
-  setFilter: React.Dispatch<React.SetStateAction<FilterType>>;
+  filter?: FilterType;
+  setFilter?: React.Dispatch<React.SetStateAction<FilterType>>;
 }
 
-export default function StudentCard({
-  filter,
-  setFilter,
+export default function FeesSummaryCards({
+  filter: externalFilter,
+  setFilter: externalSetFilter,
 }: Props) {
   const [stats, setStats] = useState<StudentStats>({
     totalStudents: 0,
@@ -52,11 +48,22 @@ export default function StudentCard({
     feeDefaulters: 0,
   });
 
+  const [localFilter, setLocalFilter] =
+    useState<FilterType>("all");
+
+  const filter = externalFilter ?? localFilter;
+
   useEffect(() => {
     async function loadStats() {
       try {
         const data = await getStudentStats();
-        setStats(data);
+
+        setStats({
+          totalStudents: data.totalStudents ?? 0,
+          activeStudents: data.activeStudents ?? 0,
+          newAdmissions: data.newAdmissions ?? 0,
+          feeDefaulters: data.feeDefaulters ?? 0,
+        });
       } catch (error) {
         console.error("LOAD STUDENT STATS ERROR:", error);
       }
@@ -64,6 +71,19 @@ export default function StudentCard({
 
     loadStats();
   }, []);
+
+  const handleFilterChange = (nextFilter: FilterType) => {
+    const newFilter =
+      filter === nextFilter ? "all" : nextFilter;
+
+    // Update parent state
+    if (typeof externalSetFilter === "function") {
+      externalSetFilter(newFilter);
+    }
+
+    // Keep local state synchronized
+    setLocalFilter(newFilter);
+  };
 
   const cards: CardItem[] = [
     {
@@ -74,7 +94,8 @@ export default function StudentCard({
       color: "text-blue-400",
       bg: "bg-blue-500/10",
       accent: "from-blue-500 to-cyan-500",
-      glow: "group-hover:shadow-[0_8px_32px_rgba(59,130,246,0.12)]",
+      glow:
+        "group-hover:shadow-[0_8px_32px_rgba(59,130,246,0.12)]",
       subtitle: "All registered students",
     },
     {
@@ -85,7 +106,8 @@ export default function StudentCard({
       color: "text-emerald-400",
       bg: "bg-emerald-500/10",
       accent: "from-emerald-500 to-teal-500",
-      glow: "group-hover:shadow-[0_8px_32px_rgba(16,185,129,0.12)]",
+      glow:
+        "group-hover:shadow-[0_8px_32px_rgba(16,185,129,0.12)]",
       subtitle: "Currently active",
     },
     {
@@ -96,7 +118,8 @@ export default function StudentCard({
       color: "text-violet-400",
       bg: "bg-violet-500/10",
       accent: "from-violet-500 to-purple-500",
-      glow: "group-hover:shadow-[0_8px_32px_rgba(139,92,246,0.12)]",
+      glow:
+        "group-hover:shadow-[0_8px_32px_rgba(139,92,246,0.12)]",
       subtitle: "Recent admissions",
     },
     {
@@ -107,7 +130,8 @@ export default function StudentCard({
       color: "text-rose-400",
       bg: "bg-rose-500/10",
       accent: "from-rose-500 to-orange-500",
-      glow: "group-hover:shadow-[0_8px_32px_rgba(244,63,94,0.12)]",
+      glow:
+        "group-hover:shadow-[0_8px_32px_rgba(244,63,94,0.12)]",
       subtitle: "Pending fee students",
     },
   ];
@@ -123,7 +147,7 @@ export default function StudentCard({
             key={card.title}
             type="button"
             onClick={() =>
-              setFilter(active ? "all" : card.filterValue)
+              handleFilterChange(card.filterValue)
             }
             className={`
               group

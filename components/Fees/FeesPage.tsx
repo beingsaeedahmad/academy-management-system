@@ -20,13 +20,14 @@ const months = [
   "December",
 ];
 
+type FilterType = "all" | "active" | "new" | "defaulters";
+
 export default function FeesPage() {
   const searchParams = useSearchParams();
   const selectedStudentId = searchParams.get("studentId");
 
   const {
     fees,
-    summary,
     selectedMonth,
     setSelectedMonth,
     selectedYear,
@@ -35,6 +36,39 @@ export default function FeesPage() {
     setStatusFilter,
     updatePayment,
   } = useFees(selectedStudentId);
+
+  /*
+   * FeesSummaryCards uses student-style filter names,
+   * while useFees uses actual fee statuses.
+   *
+   * Mapping:
+   *
+   * all        → null
+   * defaulters → Pending
+   */
+
+  const currentFilter: FilterType =
+    statusFilter === "Pending"
+      ? "defaulters"
+      : "all";
+
+  const handleFilterChange = (
+    nextFilter: React.SetStateAction<FilterType>
+  ) => {
+    const resolvedFilter =
+      typeof nextFilter === "function"
+        ? nextFilter(currentFilter)
+        : nextFilter;
+
+    if (resolvedFilter === "defaulters") {
+      // Fee Defaulters = Pending fees
+      setStatusFilter("Pending");
+      return;
+    }
+
+    // All fees
+    setStatusFilter(null);
+  };
 
   return (
     <div
@@ -49,7 +83,6 @@ export default function FeesPage() {
       "
     >
       {/* Header */}
-
       <div
         className="
           flex
@@ -77,7 +110,6 @@ export default function FeesPage() {
 
         <div className="flex gap-3">
           {/* Month */}
-
           <select
             value={selectedMonth}
             onChange={(e) =>
@@ -92,6 +124,10 @@ export default function FeesPage() {
               py-2
               text-white
               outline-none
+              transition
+              focus:border-blue-500
+              focus:ring-2
+              focus:ring-blue-500/20
             "
           >
             {months.map((month, index) => (
@@ -105,7 +141,6 @@ export default function FeesPage() {
           </select>
 
           {/* Year */}
-
           <select
             value={selectedYear}
             onChange={(e) =>
@@ -120,6 +155,10 @@ export default function FeesPage() {
               py-2
               text-white
               outline-none
+              transition
+              focus:border-blue-500
+              focus:ring-2
+              focus:ring-blue-500/20
             "
           >
             {[2025, 2026, 2027, 2028, 2029, 2030].map(
@@ -136,16 +175,13 @@ export default function FeesPage() {
         </div>
       </div>
 
-      {/* Summary */}
-
+      {/* Summary Cards */}
       <FeesSummaryCards
-        summary={summary}
-        activeStatus={statusFilter}
-        onCardClick={setStatusFilter}
+        filter={currentFilter}
+        setFilter={handleFilterChange}
       />
 
       {/* Fees Table */}
-
       <FeesTable
         fees={fees}
         onPayment={updatePayment}
