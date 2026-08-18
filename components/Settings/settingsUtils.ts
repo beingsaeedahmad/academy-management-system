@@ -59,12 +59,25 @@ export const SETTINGS_SECTIONS: {
 /* -------------------------------------------------------------------------- */
 
 export const DEFAULT_SETTINGS: AppSettings = {
+  /* ------------------------------------------------------------------------ */
+  /* General                                                                  */
+  /* ------------------------------------------------------------------------ */
+
   general: {
-    language: "English",
+    academyName: "Saeed Educational Academy",
+    academyEmail: "",
+    academyPhone: "",
+    academyAddress: "",
+
     timezone: "Asia/Karachi",
+    language: "English",
     dateFormat: "DD/MM/YYYY",
     currency: "PKR",
   },
+
+  /* ------------------------------------------------------------------------ */
+  /* Academy                                                                  */
+  /* ------------------------------------------------------------------------ */
 
   academy: {
     name: "Saeed Educational Academy",
@@ -77,46 +90,82 @@ export const DEFAULT_SETTINGS: AppSettings = {
     country: "Pakistan",
   },
 
+  /* ------------------------------------------------------------------------ */
+  /* Appearance                                                               */
+  /* ------------------------------------------------------------------------ */
+
   appearance: {
     theme: "dark",
     accentColor: "blue",
     sidebarDensity: "comfortable",
   },
 
+  /* ------------------------------------------------------------------------ */
+  /* Notifications                                                             */
+  /* ------------------------------------------------------------------------ */
+
   notifications: {
+    enabled: true,
+
     emailNotifications: true,
+    pushNotifications: true,
+    smsNotifications: false,
+
     attendanceAlerts: true,
-    feeReminders: true,
-    admissionNotifications: true,
-    resultNotifications: true,
+    feeAlerts: true,
+    admissionAlerts: true,
+    systemAlerts: true,
   },
+
+  /* ------------------------------------------------------------------------ */
+  /* Security                                                                  */
+  /* ------------------------------------------------------------------------ */
 
   security: {
+    newPassword: "",
+    confirmPassword: "",
+
     twoFactorEnabled: false,
-    sessionTimeout: 30,
+
+    sessionTimeout: "30 minutes",
+
+    loginProtection: "Standard",
   },
 
+  /* ------------------------------------------------------------------------ */
+  /* Account                                                                   */
+  /* ------------------------------------------------------------------------ */
+
   account: {
-    firstName: "",
-    lastName: "",
+    firstName: "Saeed",
+    lastName: "Ahmad",
     email: "",
     phone: "",
-    username: "admin",
+    username: "administrator",
   },
+
+  /* ------------------------------------------------------------------------ */
+  /* Backup                                                                    */
+  /* ------------------------------------------------------------------------ */
 
   backup: {
     automaticBackup: true,
-    frequency: "daily",
+    frequency: "Daily",
     retention: "30 days",
-    lastBackupDate: "",
+    lastBackupDate: "Never",
   },
+
+  /* ------------------------------------------------------------------------ */
+  /* Danger Zone                                                               */
+  /* ------------------------------------------------------------------------ */
+
   danger: {
     confirmBeforeDelete: true,
   },
 };
 
 /* -------------------------------------------------------------------------- */
-/* Helpers                                                                    */
+/* Get Settings Section                                                       */
 /* -------------------------------------------------------------------------- */
 
 export function getSettingsSection(
@@ -127,10 +176,16 @@ export function getSettingsSection(
   );
 }
 
+/* -------------------------------------------------------------------------- */
+/* Format Settings Label                                                      */
+/* -------------------------------------------------------------------------- */
+
 export function formatSettingsLabel(
   value: string
 ): string {
   return value
     .replace(/([A-Z])/g, " $1")
-    .replace(/^./, (char) => char.toUpperCase());
+    .replace(/^./, (char) =>
+      char.toUpperCase()
+    );
 }

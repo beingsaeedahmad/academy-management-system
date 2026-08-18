@@ -1,28 +1,35 @@
 "use client";
 
 import {
-  Award,
   BarChart3,
   CheckCircle2,
   Clock3,
   TrendingUp,
 } from "lucide-react";
 
-interface ResultOverview {
-  total: number;
-  published: number;
-  pending: number;
-  averagePercentage: number;
+/* =========================================================
+   TYPES
+   ========================================================= */
+
+export interface ResultsStats {
+  totalStudents: number;
+  publishedResults: number;
+  pendingResults: number;
+  averagePerformance: number;
 }
 
 interface ResultsOverviewCardsProps {
-  results: ResultOverview;
+  stats: ResultsStats;
 }
+
+/* =========================================================
+   CARD CONFIG
+   ========================================================= */
 
 const cards = [
   {
     title: "Total Results",
-    key: "total" as const,
+    key: "totalStudents" as const,
     subtitle: "Academic records",
     icon: BarChart3,
     iconBg: "bg-blue-500/10",
@@ -33,7 +40,7 @@ const cards = [
   },
   {
     title: "Published",
-    key: "published" as const,
+    key: "publishedResults" as const,
     subtitle: "Results published",
     icon: CheckCircle2,
     iconBg: "bg-emerald-500/10",
@@ -44,7 +51,7 @@ const cards = [
   },
   {
     title: "Pending",
-    key: "pending" as const,
+    key: "pendingResults" as const,
     subtitle: "Awaiting publication",
     icon: Clock3,
     iconBg: "bg-amber-500/10",
@@ -55,7 +62,7 @@ const cards = [
   },
   {
     title: "Average Score",
-    key: "averagePercentage" as const,
+    key: "averagePerformance" as const,
     subtitle: "Overall performance",
     icon: TrendingUp,
     iconBg: "bg-violet-500/10",
@@ -65,6 +72,10 @@ const cards = [
       "group-hover:shadow-[0_8px_32px_rgba(139,92,246,0.12)]",
   },
 ];
+
+/* =========================================================
+   SKELETON
+   ========================================================= */
 
 function OverviewCardSkeleton() {
   return (
@@ -93,45 +104,66 @@ function OverviewCardSkeleton() {
   );
 }
 
+/* =========================================================
+   COMPONENT
+   ========================================================= */
+
 export default function ResultsOverviewCards({
-  results,
+  stats,
 }: ResultsOverviewCardsProps) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {cards.map((card) => {
         const Icon = card.icon;
 
-        const rawValue = results[card.key];
-
-        const value =
-          card.key === "averagePercentage"
-            ? `${Number(rawValue).toFixed(1)}%`
-            : Number(rawValue).toLocaleString();
+        const rawValue = stats[card.key];
 
         const numericValue = Number(rawValue);
 
+        /* -------------------------------------------------
+           Display Value
+        ------------------------------------------------- */
+
+        const value =
+          card.key === "averagePerformance"
+            ? `${numericValue.toFixed(1)}%`
+            : numericValue.toLocaleString();
+
+        /* -------------------------------------------------
+           Progress
+        ------------------------------------------------- */
+
         let progress = 0;
 
-        if (card.key === "published") {
+        if (card.key === "publishedResults") {
           progress =
-            results.total > 0
-              ? (results.published / results.total) * 100
+            stats.totalStudents > 0
+              ? (stats.publishedResults /
+                  stats.totalStudents) *
+                100
               : 0;
         }
 
-        if (card.key === "pending") {
+        if (card.key === "pendingResults") {
           progress =
-            results.total > 0
-              ? (results.pending / results.total) * 100
+            stats.totalStudents > 0
+              ? (stats.pendingResults /
+                  stats.totalStudents) *
+                100
               : 0;
         }
 
-        if (card.key === "averagePercentage") {
+        if (card.key === "averagePerformance") {
           progress = Math.min(
             Math.max(numericValue, 0),
             100
           );
         }
+
+        const safeProgress = Math.min(
+          Math.max(progress, 0),
+          100
+        );
 
         return (
           <article
@@ -141,7 +173,8 @@ export default function ResultsOverviewCards({
               relative
               overflow-hidden
               rounded-2xl
-              border border-slate-800/80
+              border
+              border-slate-800/80
               bg-slate-900/40
               p-5
               backdrop-blur-sm
@@ -151,7 +184,10 @@ export default function ResultsOverviewCards({
               ${card.glow}
             `}
           >
-            {/* Top Accent */}
+            {/* =================================================
+                TOP ACCENT
+            ================================================= */}
+
             <div
               className={`
                 absolute
@@ -164,7 +200,10 @@ export default function ResultsOverviewCards({
               `}
             />
 
-            {/* Background Glow */}
+            {/* =================================================
+                BACKGROUND GLOW
+            ================================================= */}
+
             <div
               className={`
                 pointer-events-none
@@ -185,7 +224,10 @@ export default function ResultsOverviewCards({
             />
 
             <div className="relative">
-              {/* Header */}
+              {/* =================================================
+                  HEADER
+              ================================================= */}
+
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
                   <p className="text-xs font-medium text-slate-500">
@@ -217,8 +259,11 @@ export default function ResultsOverviewCards({
                 </div>
               </div>
 
-              {/* Progress */}
-              {card.key !== "total" && (
+              {/* =================================================
+                  PROGRESS
+              ================================================= */}
+
+              {card.key !== "totalStudents" && (
                 <div className="mt-5">
                   <div className="h-1.5 overflow-hidden rounded-full bg-slate-800">
                     <div
@@ -231,17 +276,17 @@ export default function ResultsOverviewCards({
                         duration-700
                       `}
                       style={{
-                        width: `${Math.min(
-                          Math.max(progress, 0),
-                          100
-                        )}%`,
+                        width: `${safeProgress}%`,
                       }}
                     />
                   </div>
                 </div>
               )}
 
-              {/* Meta */}
+              {/* =================================================
+                  META
+              ================================================= */}
+
               <div className="mt-4 flex items-center gap-2">
                 <div
                   className={`
@@ -271,5 +316,9 @@ export default function ResultsOverviewCards({
     </div>
   );
 }
+
+/* =========================================================
+   EXPORTS
+   ========================================================= */
 
 export { OverviewCardSkeleton };

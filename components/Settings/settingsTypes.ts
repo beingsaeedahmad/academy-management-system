@@ -17,8 +17,13 @@ export type SettingsSection =
 /* -------------------------------------------------------------------------- */
 
 export interface GeneralSettings {
-  language: string;
+  academyName: string;
+  academyEmail: string;
+  academyPhone: string;
+  academyAddress: string;
+
   timezone: string;
+  language: string;
   dateFormat: string;
   currency: string;
 }
@@ -70,20 +75,42 @@ export interface AppearanceSettings {
 /* -------------------------------------------------------------------------- */
 
 export interface NotificationSettings {
+  enabled: boolean;
+
   emailNotifications: boolean;
+  pushNotifications: boolean;
+  smsNotifications: boolean;
+
   attendanceAlerts: boolean;
-  feeReminders: boolean;
-  admissionNotifications: boolean;
-  resultNotifications: boolean;
+  feeAlerts: boolean;
+  admissionAlerts: boolean;
+  systemAlerts: boolean;
 }
 
 /* -------------------------------------------------------------------------- */
 /* Security Settings                                                          */
 /* -------------------------------------------------------------------------- */
 
+export type SessionTimeout =
+  | "15 minutes"
+  | "30 minutes"
+  | "1 hour"
+  | "4 hours"
+  | "Never";
+
+export type LoginProtection =
+  | "Standard"
+  | "Enhanced"
+  | "Strict";
+
 export interface SecuritySettings {
+  newPassword: string;
+  confirmPassword: string;
+
   twoFactorEnabled: boolean;
-  sessionTimeout: number;
+
+  sessionTimeout: SessionTimeout;
+  loginProtection: LoginProtection;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -103,9 +130,9 @@ export interface AccountSettings {
 /* -------------------------------------------------------------------------- */
 
 export type BackupFrequency =
-  | "daily"
-  | "weekly"
-  | "monthly";
+  | "Daily"
+  | "Weekly"
+  | "Monthly";
 
 export type BackupRetention =
   | "7 days"
@@ -119,6 +146,7 @@ export interface BackupSettings {
   retention: BackupRetention;
   lastBackupDate: string;
 }
+
 /* -------------------------------------------------------------------------- */
 /* Danger Zone                                                                */
 /* -------------------------------------------------------------------------- */

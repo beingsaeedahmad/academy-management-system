@@ -121,21 +121,32 @@ model Note {
   updatedAt DateTime @updatedAt
 }
 model Result {
-  id           String   @id @default(cuid())
-  studentId    String
-  subjectId    String?
-  examName     String
-  totalMarks   Float
-  obtainedMarks Float
-  grade        String?
-  remarks      String?
-  examDate     DateTime?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id            String   @id @default(cuid())
 
-  student      Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId     String
+  student       Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  subject       String
+  className     String
+
+  session       String   @default("Academic Session")
+
+  totalMarks    Float
+  obtainedMarks Float
+
+  percentage    Float
+  grade         String
+
+  status        String   @default("Pending")
+
+  remarks       String?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@index([studentId])
-  @@index([subjectId])
-  @@index([examName])
+  @@index([className])
+  @@index([session])
+  @@index([subject])
+  @@index([status])
 }

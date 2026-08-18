@@ -3,7 +3,6 @@
 import { useState } from "react";
 
 import {
-  Activity,
   AlertTriangle,
   Bell,
   Building2,
@@ -12,7 +11,6 @@ import {
   Database,
   Languages,
   Palette,
-  Save,
   Settings2,
   ShieldCheck,
   SlidersHorizontal,
@@ -98,6 +96,14 @@ const defaultSettings: SettingsData = {
     frequency: "Daily",
     retention: "30 days",
     lastBackupDate: "Never",
+  },
+
+  /* ============================================================
+     DANGER SETTINGS
+  ============================================================ */
+
+  danger: {
+    confirmBeforeDelete: true,
   },
 };
 
@@ -234,6 +240,10 @@ export default function SettingsPage() {
     try {
       /*
        * Database integration will be connected here.
+       *
+       * IMPORTANT:
+       * For the AMS project, permanent settings should
+       * eventually be saved in PostgreSQL through Prisma.
        */
 
       await new Promise((resolve) =>
@@ -250,6 +260,10 @@ export default function SettingsPage() {
 
   function renderSettings() {
     switch (activeSection) {
+      /* ========================================================
+         GENERAL
+      ======================================================== */
+
       case "general":
         return (
           <GeneralSettings
@@ -265,6 +279,10 @@ export default function SettingsPage() {
             saving={saving}
           />
         );
+
+      /* ========================================================
+         ACADEMY
+      ======================================================== */
 
       case "academy":
         return (
@@ -282,6 +300,10 @@ export default function SettingsPage() {
           />
         );
 
+      /* ========================================================
+         APPEARANCE
+      ======================================================== */
+
       case "appearance":
         return (
           <AppearanceSettings
@@ -297,6 +319,10 @@ export default function SettingsPage() {
             saving={saving}
           />
         );
+
+      /* ========================================================
+         NOTIFICATIONS
+      ======================================================== */
 
       case "notifications":
         return (
@@ -314,6 +340,10 @@ export default function SettingsPage() {
           />
         );
 
+      /* ========================================================
+         SECURITY
+      ======================================================== */
+
       case "security":
         return (
           <SecuritySettings
@@ -329,6 +359,10 @@ export default function SettingsPage() {
             saving={saving}
           />
         );
+
+      /* ========================================================
+         ACCOUNT
+      ======================================================== */
 
       case "account":
         return (
@@ -346,6 +380,10 @@ export default function SettingsPage() {
           />
         );
 
+      /* ========================================================
+         BACKUP
+      ======================================================== */
+
       case "backup":
         return (
           <BackupSettings
@@ -362,6 +400,10 @@ export default function SettingsPage() {
           />
         );
 
+      /* ========================================================
+         DANGER ZONE
+      ======================================================== */
+
       case "danger":
         return <DangerZone />;
 
@@ -377,17 +419,20 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen bg-[#020817] text-white">
       <div className="flex min-h-screen">
+
         {/* ======================================================
             LEFT SIDEBAR
         ====================================================== */}
 
         <aside className="hidden w-[278px] shrink-0 border-r border-slate-800/80 bg-[#020817] lg:flex lg:flex-col">
-          {/* ----------------------------------------------------
+
+          {/* ====================================================
               BRAND
-          ---------------------------------------------------- */}
+          ==================================================== */}
 
           <div className="border-b border-slate-800/70 px-6 py-7">
             <div className="flex items-start gap-3">
+
               {/* Logo */}
 
               <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 shadow-[0_0_25px_rgba(37,99,235,0.25)]">
@@ -412,16 +457,18 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          {/* ----------------------------------------------------
+          {/* ====================================================
               SIDEBAR NAVIGATION
-          ---------------------------------------------------- */}
+          ==================================================== */}
 
           <div className="flex-1 overflow-y-auto px-5 py-5">
+
             {sidebarGroups.map((group) => (
               <div
                 key={group.title}
                 className="mb-6"
               >
+
                 {/* Group title */}
 
                 <div className="mb-3 px-1">
@@ -433,6 +480,7 @@ export default function SettingsPage() {
                 {/* Group items */}
 
                 <div className="space-y-1">
+
                   {group.items.map((item) => {
                     const Icon = item.icon;
 
@@ -452,6 +500,7 @@ export default function SettingsPage() {
                             : "border border-transparent hover:bg-slate-900/60"
                         }`}
                       >
+
                         {/* Active left line */}
 
                         {active && (
@@ -473,6 +522,7 @@ export default function SettingsPage() {
                         {/* Text */}
 
                         <div className="min-w-0 flex-1">
+
                           <p
                             className={`text-sm font-semibold ${
                               active
@@ -492,6 +542,7 @@ export default function SettingsPage() {
                           >
                             {item.description}
                           </p>
+
                         </div>
 
                         {/* Active indicator */}
@@ -499,18 +550,21 @@ export default function SettingsPage() {
                         {active && (
                           <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.8)]" />
                         )}
+
                       </button>
                     );
                   })}
+
                 </div>
               </div>
             ))}
 
-            {/* --------------------------------------------------
+            {/* ==================================================
                 DANGER ZONE
-            -------------------------------------------------- */}
+            ================================================== */}
 
             <div className="mt-2">
+
               <div className="mb-3 px-1">
                 <p className="text-[12px] font-medium tracking-[0.12em] text-red-400">
                   DANGER ZONE
@@ -528,6 +582,7 @@ export default function SettingsPage() {
                     : "border border-transparent hover:bg-red-500/5"
                 }`}
               >
+
                 <div
                   className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
                     activeSection === "danger"
@@ -539,6 +594,7 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="min-w-0">
+
                   <p className="text-sm font-semibold text-slate-200">
                     Danger Zone
                   </p>
@@ -546,23 +602,29 @@ export default function SettingsPage() {
                   <p className="mt-1 text-[11px] text-slate-500">
                     Sensitive system actions
                   </p>
+
                 </div>
+
               </button>
             </div>
           </div>
 
-          {/* ----------------------------------------------------
+          {/* ====================================================
               HELP CARD
-          ---------------------------------------------------- */}
+          ==================================================== */}
 
           <div className="border-t border-slate-800/70 p-5">
+
             <div className="rounded-xl border border-blue-500/30 bg-blue-500/5 p-4 shadow-[0_0_30px_rgba(37,99,235,0.04)]">
+
               <div className="flex items-start gap-3">
+
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-600/15 text-blue-400">
                   <CircleHelp className="h-5 w-5" />
                 </div>
 
                 <div>
+
                   <p className="text-sm font-semibold text-blue-400">
                     Need Help?
                   </p>
@@ -572,7 +634,9 @@ export default function SettingsPage() {
                     <br />
                     guides and support.
                   </p>
+
                 </div>
+
               </div>
 
               <button
@@ -581,6 +645,7 @@ export default function SettingsPage() {
               >
                 Help Center
               </button>
+
             </div>
           </div>
         </aside>
@@ -590,22 +655,25 @@ export default function SettingsPage() {
         ====================================================== */}
 
         <main className="min-w-0 flex-1">
+
           {/* ====================================================
               TOP HEADER
           ==================================================== */}
 
           <header className="border-b border-slate-800/70 bg-[#020817]">
+
             <div className="flex min-h-[118px] items-center justify-between gap-6 px-7 py-5 xl:px-8">
-              {/* ------------------------------------------------
-                  PAGE TITLE
-              ------------------------------------------------ */}
+
+              {/* PAGE TITLE */}
 
               <div className="flex items-center gap-5">
+
                 <div className="flex h-[62px] w-[62px] shrink-0 items-center justify-center rounded-xl bg-blue-600/20 shadow-[0_0_30px_rgba(37,99,235,0.12)]">
                   <Settings2 className="h-8 w-8 text-blue-400" />
                 </div>
 
                 <div>
+
                   <h1 className="text-[27px] font-bold tracking-tight text-white">
                     Settings
                   </h1>
@@ -614,22 +682,24 @@ export default function SettingsPage() {
                     Manage your academy system
                     preferences and configuration.
                   </p>
+
                 </div>
               </div>
 
-              {/* ------------------------------------------------
-                  RIGHT HEADER
-              ------------------------------------------------ */}
+              {/* RIGHT HEADER */}
 
               <div className="hidden items-center gap-5 xl:flex">
+
                 {/* System status */}
 
                 <div className="flex h-[70px] min-w-[300px] items-center gap-4 rounded-xl border border-slate-800 bg-slate-900/20 px-5">
+
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/10">
                     <span className="h-3 w-3 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.8)]" />
                   </div>
 
                   <div className="flex-1">
+
                     <p className="text-[12px] text-blue-400">
                       System Status
                     </p>
@@ -637,11 +707,13 @@ export default function SettingsPage() {
                     <p className="mt-1 text-sm font-medium text-emerald-400">
                       All Systems Operational
                     </p>
+
                   </div>
 
                   {/* ECG */}
 
                   <div className="relative flex h-8 w-12 items-center">
+
                     <div className="absolute left-0 right-0 top-1/2 h-px bg-emerald-500/20" />
 
                     <svg
@@ -657,7 +729,9 @@ export default function SettingsPage() {
                         strokeLinejoin="round"
                       />
                     </svg>
+
                   </div>
+
                 </div>
 
                 {/* Administrator */}
@@ -666,11 +740,13 @@ export default function SettingsPage() {
                   type="button"
                   className="flex h-[70px] min-w-[235px] items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/20 px-4 text-left transition hover:border-slate-700"
                 >
+
                   <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-violet-600 text-sm font-bold text-white shadow-[0_0_18px_rgba(59,130,246,0.2)]">
                     SA
                   </div>
 
                   <div className="flex-1">
+
                     <p className="text-sm font-semibold text-white">
                       Administrator
                     </p>
@@ -678,10 +754,13 @@ export default function SettingsPage() {
                     <p className="mt-1 text-xs text-slate-500">
                       Super Admin
                     </p>
+
                   </div>
 
                   <ChevronDown className="h-5 w-5 text-slate-400" />
+
                 </button>
+
               </div>
             </div>
           </header>
@@ -691,9 +770,11 @@ export default function SettingsPage() {
           ==================================================== */}
 
           <section className="px-7 py-7 xl:px-8">
+
             <div className="mx-auto w-full max-w-[1195px]">
               {renderSettings()}
             </div>
+
           </section>
 
           {/* ====================================================
@@ -701,11 +782,14 @@ export default function SettingsPage() {
           ==================================================== */}
 
           <footer className="px-6 pb-8 pt-4 text-center">
+
             <p className="text-xs text-slate-500">
               © 2026 Academy Management System. All
               rights reserved.
             </p>
+
           </footer>
+
         </main>
       </div>
     </div>

@@ -31,9 +31,11 @@ export default function ReportsOverviewCards({
       iconClass: "text-blue-400",
       iconBg: "bg-blue-500/10",
       border: "border-blue-500/20",
-      hoverBorder: "hover:border-blue-500/30",
+      hoverBorder: "hover:border-blue-500/40",
       glow: "bg-blue-500/5",
       topGlow: "via-blue-400/60",
+      valueClass: "text-white",
+      subtitleClass: "text-slate-600",
     },
     {
       title: "Active Students",
@@ -43,9 +45,11 @@ export default function ReportsOverviewCards({
       iconClass: "text-emerald-400",
       iconBg: "bg-emerald-500/10",
       border: "border-emerald-500/20",
-      hoverBorder: "hover:border-emerald-500/30",
+      hoverBorder: "hover:border-emerald-400/40",
       glow: "bg-emerald-500/5",
       topGlow: "via-emerald-400/60",
+      valueClass: "text-white",
+      subtitleClass: "text-slate-600",
     },
     {
       title: "Attendance Rate",
@@ -55,9 +59,11 @@ export default function ReportsOverviewCards({
       iconClass: "text-violet-400",
       iconBg: "bg-violet-500/10",
       border: "border-violet-500/20",
-      hoverBorder: "hover:border-violet-500/30",
+      hoverBorder: "hover:border-violet-400/40",
       glow: "bg-violet-500/5",
       topGlow: "via-violet-400/60",
+      valueClass: "text-white",
+      subtitleClass: "text-slate-600",
     },
     {
       title: "Fees Collected",
@@ -67,9 +73,11 @@ export default function ReportsOverviewCards({
       iconClass: "text-cyan-400",
       iconBg: "bg-cyan-500/10",
       border: "border-cyan-500/20",
-      hoverBorder: "hover:border-cyan-500/30",
+      hoverBorder: "hover:border-cyan-400/40",
       glow: "bg-cyan-500/5",
       topGlow: "via-cyan-400/60",
+      valueClass: "text-white",
+      subtitleClass: "text-slate-600",
     },
     {
       title: "Pending Fees",
@@ -78,10 +86,12 @@ export default function ReportsOverviewCards({
       icon: AlertCircle,
       iconClass: "text-amber-400",
       iconBg: "bg-amber-500/10",
-      border: "border-amber-500/20",
-      hoverBorder: "hover:border-amber-500/30",
-      glow: "bg-amber-500/5",
-      topGlow: "via-amber-400/60",
+      border: "border-amber-500/30",
+      hoverBorder: "hover:border-amber-400/60",
+      glow: "bg-amber-500/10",
+      topGlow: "via-amber-400/80",
+      valueClass: "text-amber-300",
+      subtitleClass: "text-amber-400/70",
     },
   ];
 
@@ -89,6 +99,7 @@ export default function ReportsOverviewCards({
     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-5">
       {cards.map((card) => {
         const Icon = card.icon;
+        const isPending = card.title === "Pending Fees";
 
         return (
           <div
@@ -108,6 +119,11 @@ export default function ReportsOverviewCards({
               duration-300
               hover:-translate-y-1
               hover:shadow-[0_20px_60px_rgba(0,0,0,0.28)]
+              ${
+                isPending
+                  ? "shadow-[0_20px_60px_rgba(245,158,11,0.08)]"
+                  : ""
+              }
             `}
           >
             {/* Background Glow */}
@@ -127,6 +143,11 @@ export default function ReportsOverviewCards({
                 group-hover:scale-125
               `}
             />
+
+            {/* Extra Pending Glow */}
+            {isPending && (
+              <div className="pointer-events-none absolute -bottom-20 -left-10 h-32 w-32 rounded-full bg-amber-500/5 blur-3xl" />
+            )}
 
             {/* Top Accent Line */}
             <div
@@ -148,16 +169,33 @@ export default function ReportsOverviewCards({
             {/* Card Content */}
             <div className="relative z-10">
               <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0">
-                  <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500">
+                {/* Text */}
+                <div className="min-w-0 flex-1">
+                  <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-slate-500">
                     {card.title}
                   </p>
 
-                  <h2 className="mt-3 truncate text-2xl font-bold tracking-tight text-white">
+                  <h2
+                    className={`
+                      mt-3
+                      truncate
+                      text-2xl
+                      font-bold
+                      tracking-tight
+                      ${card.valueClass}
+                    `}
+                  >
                     {card.value}
                   </h2>
 
-                  <p className="mt-2 truncate text-[10px] text-slate-600">
+                  <p
+                    className={`
+                      mt-2
+                      truncate
+                      text-[10px]
+                      ${card.subtitleClass}
+                    `}
+                  >
                     {card.subtitle}
                   </p>
                 </div>
@@ -178,16 +216,22 @@ export default function ReportsOverviewCards({
                     transition-all
                     duration-300
                     group-hover:scale-105
+                    ${
+                      isPending
+                        ? "border-amber-400/10"
+                        : ""
+                    }
                   `}
                 >
                   <Icon
                     size={19}
+                    strokeWidth={1.8}
                     className={card.iconClass}
                   />
                 </div>
               </div>
 
-              {/* Bottom */}
+              {/* Bottom Status */}
               <div className="mt-5 flex items-center gap-2">
                 <span
                   className={`
@@ -195,10 +239,24 @@ export default function ReportsOverviewCards({
                     w-1.5
                     rounded-full
                     ${card.iconBg.replace("/10", "")}
+                    ${
+                      isPending
+                        ? "shadow-[0_0_8px_rgba(245,158,11,0.7)]"
+                        : ""
+                    }
                   `}
                 />
 
-                <span className="text-[9px] text-slate-600">
+                <span
+                  className={`
+                    text-[9px]
+                    ${
+                      isPending
+                        ? "text-amber-400/60"
+                        : "text-slate-600"
+                    }
+                  `}
+                >
                   Academy overview
                 </span>
               </div>

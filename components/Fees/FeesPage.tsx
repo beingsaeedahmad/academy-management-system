@@ -20,11 +20,17 @@ const months = [
   "December",
 ];
 
-type FilterType = "all" | "active" | "new" | "defaulters";
+type FilterType =
+  | "all"
+  | "paid"
+  | "pending"
+  | "defaulters";
 
 export default function FeesPage() {
   const searchParams = useSearchParams();
-  const selectedStudentId = searchParams.get("studentId");
+
+  const selectedStudentId =
+    searchParams.get("studentId");
 
   const {
     fees,
@@ -38,19 +44,24 @@ export default function FeesPage() {
   } = useFees(selectedStudentId);
 
   /*
-   * FeesSummaryCards uses student-style filter names,
-   * while useFees uses actual fee statuses.
+   * useFees uses actual fee statuses:
    *
-   * Mapping:
+   * null      → all
+   * Paid      → paid
+   * Pending   → pending
+   * Overdue   → defaulters
    *
-   * all        → null
-   * defaulters → Pending
+   * FeesSummaryCards uses the same filter type.
    */
 
   const currentFilter: FilterType =
-    statusFilter === "Pending"
-      ? "defaulters"
-      : "all";
+    statusFilter === "Paid"
+      ? "paid"
+      : statusFilter === "Pending"
+        ? "pending"
+        : statusFilter === "Overdue"
+          ? "defaulters"
+          : "all";
 
   const handleFilterChange = (
     nextFilter: React.SetStateAction<FilterType>
@@ -60,14 +71,24 @@ export default function FeesPage() {
         ? nextFilter(currentFilter)
         : nextFilter;
 
-    if (resolvedFilter === "defaulters") {
-      // Fee Defaulters = Pending fees
-      setStatusFilter("Pending");
-      return;
-    }
+    switch (resolvedFilter) {
+      case "paid":
+        setStatusFilter("Paid");
+        break;
 
-    // All fees
-    setStatusFilter(null);
+      case "pending":
+        setStatusFilter("Pending");
+        break;
+
+      case "defaulters":
+        setStatusFilter("Overdue");
+        break;
+
+      case "all":
+      default:
+        setStatusFilter(null);
+        break;
+    }
   };
 
   return (
@@ -113,7 +134,9 @@ export default function FeesPage() {
           <select
             value={selectedMonth}
             onChange={(e) =>
-              setSelectedMonth(Number(e.target.value))
+              setSelectedMonth(
+                Number(e.target.value)
+              )
             }
             className="
               rounded-xl
@@ -144,7 +167,9 @@ export default function FeesPage() {
           <select
             value={selectedYear}
             onChange={(e) =>
-              setSelectedYear(Number(e.target.value))
+              setSelectedYear(
+                Number(e.target.value)
+              )
             }
             className="
               rounded-xl
@@ -161,16 +186,21 @@ export default function FeesPage() {
               focus:ring-blue-500/20
             "
           >
-            {[2025, 2026, 2027, 2028, 2029, 2030].map(
-              (year) => (
-                <option
-                  key={year}
-                  value={year}
-                >
-                  {year}
-                </option>
-              )
-            )}
+            {[
+              2025,
+              2026,
+              2027,
+              2028,
+              2029,
+              2030,
+            ].map((year) => (
+              <option
+                key={year}
+                value={year}
+              >
+                {year}
+              </option>
+            ))}
           </select>
         </div>
       </div>

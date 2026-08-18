@@ -266,7 +266,7 @@ export async function updateStudent(
   }
 }
 
-// ================= STUDENT STATS =================
+// ================= STUDENT + FEE STATS =================
 
 export async function getStudentStats() {
   try {
@@ -293,19 +293,23 @@ export async function getStudentStats() {
       totalStudents,
       activeStudents,
       newAdmissions,
+      feeStats,
       feeDefaulters,
     ] = await Promise.all([
-      // Total students
+      // ================= TOTAL STUDENTS =================
+
       prisma.student.count(),
 
-      // Active students
+      // ================= ACTIVE STUDENTS =================
+
       prisma.student.count({
         where: {
           status: "Active",
         },
       }),
 
-      // New admissions this month
+      // ================= NEW ADMISSIONS =================
+
       prisma.student.count({
         where: {
           createdAt: {
@@ -315,7 +319,21 @@ export async function getStudentStats() {
         },
       }),
 
-      // Current month pending/overdue fees
+      // ================= CURRENT MONTH FEES =================
+
+      prisma.fee.aggregate({
+        where: {
+          month: currentMonth,
+          year: currentYear,
+        },
+        _sum: {
+          totalFee: true,
+          paidAmount: true,
+        },
+      }),
+
+      // ================= FEE DEFAULTERS =================
+
       prisma.fee.count({
         where: {
           month: currentMonth,
@@ -327,10 +345,33 @@ export async function getStudentStats() {
       }),
     ]);
 
+    // ================= FEE CALCULATIONS =================
+
+    const totalFees = Number(
+      feeStats._sum.totalFee ?? 0
+    );
+
+    const paidFees = Number(
+      feeStats._sum.paidAmount ?? 0
+    );
+
+    const pendingFees = Math.max(
+      totalFees - paidFees,
+      0
+    );
+
+    // ================= RETURN =================
+
     return {
+      // Student stats
       totalStudents,
       activeStudents,
       newAdmissions,
+
+      // Fee stats
+      totalFees,
+      paidFees,
+      pendingFees,
       feeDefaulters,
     };
   } catch (error) {

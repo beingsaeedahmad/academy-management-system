@@ -2,21 +2,25 @@
 
 import { useEffect, useState } from "react";
 import {
-  Users,
-  UserCheck,
-  UserPlus,
   Wallet,
+  CircleCheck,
+  Clock3,
+  AlertCircle,
   LucideIcon,
 } from "lucide-react";
 
 import { getStudentStats } from "@/actions/studentActions";
 
-type FilterType = "all" | "active" | "new" | "defaulters";
+type FilterType =
+  | "all"
+  | "paid"
+  | "pending"
+  | "defaulters";
 
-interface StudentStats {
-  totalStudents: number;
-  activeStudents: number;
-  newAdmissions: number;
+interface FeeStats {
+  totalFees: number;
+  paidFees: number;
+  pendingFees: number;
   feeDefaulters: number;
 }
 
@@ -30,109 +34,147 @@ interface CardItem {
   accent: string;
   glow: string;
   subtitle: string;
+  isCurrency?: boolean;
 }
 
 interface Props {
   filter?: FilterType;
-  setFilter?: React.Dispatch<React.SetStateAction<FilterType>>;
+  setFilter?: React.Dispatch<
+    React.SetStateAction<FilterType>
+  >;
 }
 
 export default function FeesSummaryCards({
   filter: externalFilter,
   setFilter: externalSetFilter,
 }: Props) {
-  const [stats, setStats] = useState<StudentStats>({
-    totalStudents: 0,
-    activeStudents: 0,
-    newAdmissions: 0,
-    feeDefaulters: 0,
-  });
+  const [stats, setStats] =
+    useState<FeeStats>({
+      totalFees: 0,
+      paidFees: 0,
+      pendingFees: 0,
+      feeDefaulters: 0,
+    });
 
   const [localFilter, setLocalFilter] =
     useState<FilterType>("all");
 
-  const filter = externalFilter ?? localFilter;
+  const filter =
+    externalFilter ?? localFilter;
 
   useEffect(() => {
     async function loadStats() {
       try {
-        const data = await getStudentStats();
+        const data =
+          await getStudentStats();
 
         setStats({
-          totalStudents: data.totalStudents ?? 0,
-          activeStudents: data.activeStudents ?? 0,
-          newAdmissions: data.newAdmissions ?? 0,
-          feeDefaulters: data.feeDefaulters ?? 0,
+          totalFees:
+            data.totalFees ?? 0,
+
+          paidFees:
+            data.paidFees ?? 0,
+
+          pendingFees:
+            data.pendingFees ?? 0,
+
+          feeDefaulters:
+            data.feeDefaulters ?? 0,
         });
       } catch (error) {
-        console.error("LOAD STUDENT STATS ERROR:", error);
+        console.error(
+          "LOAD FEE STATS ERROR:",
+          error
+        );
       }
     }
 
     loadStats();
   }, []);
 
-  const handleFilterChange = (nextFilter: FilterType) => {
+  const handleFilterChange = (
+    nextFilter: FilterType
+  ) => {
     const newFilter =
-      filter === nextFilter ? "all" : nextFilter;
+      filter === nextFilter
+        ? "all"
+        : nextFilter;
 
-    // Update parent state
-    if (typeof externalSetFilter === "function") {
+    if (
+      typeof externalSetFilter ===
+      "function"
+    ) {
       externalSetFilter(newFilter);
     }
 
-    // Keep local state synchronized
     setLocalFilter(newFilter);
   };
 
+  const formatAmount = (
+    value: number
+  ) => `Rs. ${value.toLocaleString()}`;
+
   const cards: CardItem[] = [
     {
-      title: "Total Students",
-      value: stats.totalStudents,
-      icon: Users,
+      title: "Total Fees",
+      value: stats.totalFees,
+      icon: Wallet,
       filterValue: "all",
       color: "text-blue-400",
       bg: "bg-blue-500/10",
-      accent: "from-blue-500 to-cyan-500",
+      accent:
+        "from-blue-500 to-cyan-500",
       glow:
         "group-hover:shadow-[0_8px_32px_rgba(59,130,246,0.12)]",
-      subtitle: "All registered students",
+      subtitle: "Total fee amount",
+      isCurrency: true,
     },
+
     {
-      title: "Active Students",
-      value: stats.activeStudents,
-      icon: UserCheck,
-      filterValue: "active",
+      title: "Paid Fees",
+      value: stats.paidFees,
+      icon: CircleCheck,
+      filterValue: "paid",
       color: "text-emerald-400",
       bg: "bg-emerald-500/10",
-      accent: "from-emerald-500 to-teal-500",
+      accent:
+        "from-emerald-500 to-teal-500",
       glow:
         "group-hover:shadow-[0_8px_32px_rgba(16,185,129,0.12)]",
-      subtitle: "Currently active",
+      subtitle:
+        "Successfully collected",
+      isCurrency: true,
     },
+
     {
-      title: "New Admissions",
-      value: stats.newAdmissions,
-      icon: UserPlus,
-      filterValue: "new",
-      color: "text-violet-400",
-      bg: "bg-violet-500/10",
-      accent: "from-violet-500 to-purple-500",
+      title: "Pending Fees",
+      value: stats.pendingFees,
+      icon: Clock3,
+      filterValue: "pending",
+      color: "text-amber-400",
+      bg: "bg-amber-500/10",
+      accent:
+        "from-amber-500 to-orange-500",
       glow:
-        "group-hover:shadow-[0_8px_32px_rgba(139,92,246,0.12)]",
-      subtitle: "Recent admissions",
+        "group-hover:shadow-[0_8px_32px_rgba(245,158,11,0.12)]",
+      subtitle:
+        "Amount still pending",
+      isCurrency: true,
     },
+
     {
       title: "Fee Defaulters",
       value: stats.feeDefaulters,
-      icon: Wallet,
+      icon: AlertCircle,
       filterValue: "defaulters",
       color: "text-rose-400",
       bg: "bg-rose-500/10",
-      accent: "from-rose-500 to-orange-500",
+      accent:
+        "from-rose-500 to-orange-500",
       glow:
         "group-hover:shadow-[0_8px_32px_rgba(244,63,94,0.12)]",
-      subtitle: "Pending fee students",
+      subtitle:
+        "Students with pending fees",
     },
   ];
 
@@ -140,14 +182,18 @@ export default function FeesSummaryCards({
     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
       {cards.map((card) => {
         const Icon = card.icon;
-        const active = filter === card.filterValue;
+
+        const active =
+          filter === card.filterValue;
 
         return (
           <button
             key={card.title}
             type="button"
             onClick={() =>
-              handleFilterChange(card.filterValue)
+              handleFilterChange(
+                card.filterValue
+              )
             }
             className={`
               group
@@ -168,7 +214,11 @@ export default function FeesSummaryCards({
               hover:-translate-y-1
               hover:border-slate-700/80
               ${card.glow}
-              ${active ? "ring-2 ring-blue-500/60" : ""}
+              ${
+                active
+                  ? "ring-2 ring-blue-500/60"
+                  : ""
+              }
             `}
           >
             {/* Top accent */}
@@ -212,7 +262,11 @@ export default function FeesSummaryCards({
                   </p>
 
                   <p className="mt-2 text-2xl font-bold tracking-tight text-white sm:text-3xl">
-                    {card.value.toLocaleString()}
+                    {card.isCurrency
+                      ? formatAmount(
+                          card.value
+                        )
+                      : card.value.toLocaleString()}
                   </p>
                 </div>
 
@@ -258,6 +312,7 @@ export default function FeesSummaryCards({
                 </div>
               </div>
 
+              {/* Progress accent */}
               <div className="mt-5">
                 <div className="h-1.5 overflow-hidden rounded-full bg-slate-800/80">
                   <div
@@ -273,6 +328,7 @@ export default function FeesSummaryCards({
                 </div>
               </div>
 
+              {/* Subtitle */}
               <div className="mt-4 flex items-center gap-2">
                 <span
                   className={`
