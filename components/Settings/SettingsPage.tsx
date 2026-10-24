@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   AlertTriangle,
@@ -9,7 +9,6 @@ import {
   ChevronDown,
   CircleHelp,
   Database,
-  Languages,
   Palette,
   Settings2,
   ShieldCheck,
@@ -207,10 +206,21 @@ export default function SettingsPage() {
     useState<SettingsData>(defaultSettings);
 
   const [saving, setSaving] = useState(false);
+  const [savedAt, setSavedAt] = useState("");
 
-  /* ============================================================
-     UPDATE SETTINGS
-  ============================================================ */
+  useEffect(() => {
+    const stored = localStorage.getItem("academy-settings");
+    if (!stored) return;
+
+    try {
+      setSettings({
+        ...defaultSettings,
+        ...JSON.parse(stored),
+      });
+    } catch (error) {
+      console.error("Failed to load settings:", error);
+    }
+  }, []);
 
   function updateSettings<
     S extends keyof SettingsData,
@@ -230,25 +240,17 @@ export default function SettingsPage() {
     }));
   }
 
-  /* ============================================================
-     SAVE SETTINGS
-  ============================================================ */
-
   async function handleSave() {
     setSaving(true);
 
     try {
-      /*
-       * Database integration will be connected here.
-       *
-       * IMPORTANT:
-       * For the AMS project, permanent settings should
-       * eventually be saved in PostgreSQL through Prisma.
-       */
-
-      await new Promise((resolve) =>
-        setTimeout(resolve, 600)
+      localStorage.setItem(
+        "academy-settings",
+        JSON.stringify(settings)
       );
+
+      await new Promise((resolve) => setTimeout(resolve, 400));
+      setSavedAt(new Date().toLocaleTimeString());
     } finally {
       setSaving(false);
     }
@@ -417,8 +419,8 @@ export default function SettingsPage() {
   ============================================================ */
 
   return (
-    <div className="min-h-screen bg-[#020817] text-white">
-      <div className="flex min-h-screen">
+    <div className="text-white">
+      <div className="flex min-h-[calc(100vh-72px)]">
 
         {/* ======================================================
             LEFT SIDEBAR
@@ -430,31 +432,18 @@ export default function SettingsPage() {
               BRAND
           ==================================================== */}
 
-          <div className="border-b border-slate-800/70 px-6 py-7">
-            <div className="flex items-start gap-3">
-
-              {/* Logo */}
-
-              <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 shadow-[0_0_25px_rgba(37,99,235,0.25)]">
-                <div className="absolute inset-[3px] rounded-lg border border-white/10" />
-
-                <Languages className="relative h-6 w-6 text-white" />
-              </div>
-
-              {/* Brand text */}
-
-              <div className="min-w-0">
-                <h2 className="text-[25px] font-bold leading-none tracking-tight text-white">
-                  AMS
-                </h2>
-
-                <p className="mt-2 text-sm leading-5 text-slate-300">
-                  Academy Management
-                  <br />
-                  System
-                </p>
-              </div>
-            </div>
+          <div className="border-b border-slate-800/70 px-6 py-6">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-400">
+              Configuration
+            </p>
+            <h2 className="mt-2 text-lg font-bold text-white">
+              System Settings
+            </h2>
+            {savedAt && (
+              <p className="mt-2 text-xs text-slate-500">
+                Last saved {savedAt}
+              </p>
+            )}
           </div>
 
           {/* ====================================================

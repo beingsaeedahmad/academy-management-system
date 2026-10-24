@@ -141,7 +141,7 @@ export default function ReportsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#020817] p-4 text-white sm:p-6 lg:p-8">
+    <div className="p-4 text-white sm:p-6 lg:p-8">
       <div className="mx-auto max-w-[1600px]">
 
         <ReportsHeader

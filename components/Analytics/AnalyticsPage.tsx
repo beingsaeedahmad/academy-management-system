@@ -185,8 +185,6 @@ export default function AnalyticsPage() {
   return (
     <main
       className="
-        min-h-screen
-        bg-[#020817]
         px-4
         py-6
         sm:px-6

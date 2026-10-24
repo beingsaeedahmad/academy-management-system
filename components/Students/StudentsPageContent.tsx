@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 
 import { Student } from "@/types";
-import { getStudentById } from "@/actions/studentActions";
+import { getStudentById, getStudents } from "@/actions/studentActions";
 
 import StudentCard from "./StudentCard";
 import StudentTable from "./StudentTable";
@@ -88,8 +88,52 @@ export default function StudentsPageContent() {
     );
   }
 
+  async function handleExport() {
+    const students = await getStudents();
+    if (!students.length) return;
+
+    const headers = [
+      "Admission No",
+      "Roll Number",
+      "Name",
+      "Father Name",
+      "Class",
+      "Phone",
+      "Status",
+      "Monthly Fees",
+    ];
+
+    const csv = [
+      headers.join(","),
+      ...students.map((student) =>
+        [
+          student.admissionNo,
+          student.rollNumber,
+          student.name,
+          student.fatherName,
+          student.className,
+          student.phone,
+          student.status,
+          student.monthlyFees,
+        ]
+          .map((value) => `"${String(value).replace(/"/g, '""')}"`)
+          .join(",")
+      ),
+    ].join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "students.csv";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
   return (
-    <div className="min-h-screen bg-[#020817] p-6 space-y-6">
+    <div className="space-y-6 p-6 lg:p-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -104,6 +148,8 @@ export default function StudentsPageContent() {
 
         <div className="flex gap-3">
           <button
+            type="button"
+            onClick={handleExport}
             className="flex items-center gap-2 rounded-xl bg-slate-800 px-4 py-2 text-white hover:bg-slate-700"
           >
             <Download size={18} />
@@ -111,6 +157,8 @@ export default function StudentsPageContent() {
           </button>
 
           <button
+            type="button"
+            onClick={() => window.print()}
             className="flex items-center gap-2 rounded-xl bg-slate-800 px-4 py-2 text-white hover:bg-slate-700"
           >
             <Printer size={18} />

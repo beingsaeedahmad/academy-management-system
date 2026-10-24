@@ -126,8 +126,8 @@ export default function FeesPageContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#020817] text-white">
-      <div className="w-full space-y-6 px-4 py-6">
+    <div className="text-white">
+      <div className="w-full space-y-6 px-4 py-6 lg:px-8">
 
         {/* Page Header */}
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">

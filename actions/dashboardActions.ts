@@ -66,6 +66,8 @@ export async function getDashboardStats() {
     presentStudents,
     absentStudents,
     allFees,
+    totalSubjects,
+    classGroups,
   ] = await Promise.all([
     prisma.student.count(),
 
@@ -100,6 +102,12 @@ export async function getDashboardStats() {
         paidAmount: true,
         status: true,
       },
+    }),
+
+    prisma.subject.count(),
+
+    prisma.student.groupBy({
+      by: ["className"],
     }),
   ]);
 
@@ -167,6 +175,12 @@ export async function getDashboardStats() {
       0
     );
 
+  const markedToday = presentStudents + absentStudents;
+  const attendanceRate =
+    markedToday > 0
+      ? Math.round((presentStudents / markedToday) * 100)
+      : 0;
+
   return {
     totalStudents,
     presentStudents,
@@ -174,6 +188,9 @@ export async function getDashboardStats() {
     collectedFee,
     pendingFees,
     overdueFees,
+    totalSubjects,
+    totalClasses: classGroups.length,
+    attendanceRate,
   };
 }
 

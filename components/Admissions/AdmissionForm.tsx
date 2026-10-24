@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Users, Upload, Save, CheckCircle2 } from "lucide-react";
 
 import { createStudent } from "@/actions/studentActions";
+import { getClasses } from "@/actions/classActions";
 import Input from "../UI/Input";
 
 interface AdmissionFormData {
@@ -19,6 +20,15 @@ interface AdmissionFormData {
 export default function AdmissionForm() {
   const [photo, setPhoto] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [classOptions, setClassOptions] = useState<string[]>([]);
+
+  useEffect(() => {
+    getClasses()
+      .then((items) => setClassOptions(items.map((item) => item.name)))
+      .catch(() => setClassOptions([]));
+  }, []);
 
   const {
     register,
@@ -54,6 +64,8 @@ export default function AdmissionForm() {
   const onSubmit = async (data: AdmissionFormData) => {
     try {
       setIsSubmitting(true);
+      setSuccessMessage("");
+      setErrorMessage("");
 
       await createStudent({
         name: data.studentName,
@@ -65,14 +77,13 @@ export default function AdmissionForm() {
         photo,
       });
 
-      // Notify other components
       window.dispatchEvent(new Event("student-added"));
-
-      // Reset form
       reset();
       setPhoto("");
+      setSuccessMessage(`${data.studentName} has been admitted successfully.`);
     } catch (error) {
       console.error("CREATE STUDENT ERROR:", error);
+      setErrorMessage("Unable to save admission. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -243,6 +254,18 @@ export default function AdmissionForm() {
 
         {/* ================= FORM ================= */}
 
+        {successMessage && (
+          <div className="mb-6 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
+            {successMessage}
+          </div>
+        )}
+
+        {errorMessage && (
+          <div className="mb-6 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+            {errorMessage}
+          </div>
+        )}
+
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-6"
@@ -283,12 +306,22 @@ export default function AdmissionForm() {
                 })}
               />
 
-              <Input
-                label="Class"
-                placeholder="Enter class"
-                autoComplete="off"
-                {...register("className")}
-              />
+              <div>
+                <Input
+                  label="Class"
+                  placeholder="Enter or select class"
+                  autoComplete="off"
+                  list="academy-classes"
+                  {...register("className", {
+                    required: true,
+                  })}
+                />
+                <datalist id="academy-classes">
+                  {classOptions.map((name) => (
+                    <option key={name} value={name} />
+                  ))}
+                </datalist>
+              </div>
 
               <Input
                 label="Father Name"

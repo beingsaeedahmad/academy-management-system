@@ -1,8 +1,7 @@
-
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getDashboardStats } from "@/actions/dashboardActions";
 
 import {
@@ -15,175 +14,130 @@ import {
   BookOpen,
   Settings,
   TrendingUp,
+  School,
+  AlertCircle,
 } from "lucide-react";
 
 type Stats = Awaited<ReturnType<typeof getDashboardStats>>;
 
-type CardTheme = {
+type KpiCard = {
   title: string;
   subtitle: string;
-  icon: React.ElementType;
   href: string;
+  icon: React.ElementType;
   accent: string;
   iconBg: string;
   iconColor: string;
-  borderHover: string;
-  glow: string;
   getValue: (stats: Stats) => string;
   getMeta: (stats: Stats) => string;
 };
 
-const cardThemes: CardTheme[] = [
-  {
-    title: "Admissions",
-    subtitle: "Student admissions",
-    icon: UserPlus,
-    href: "/admissions",
-    accent: "from-violet-500 to-purple-600",
-    iconBg: "bg-violet-500/10",
-    iconColor: "text-violet-400",
-    borderHover: "hover:border-violet-500/30",
-    glow:
-      "group-hover:shadow-[0_8px_32px_rgba(139,92,246,0.12)]",
-    getValue: (stats) => stats.totalStudents.toLocaleString(),
-    getMeta: () => "Manage admissions",
-  },
-
+const kpiCards: KpiCard[] = [
   {
     title: "Students",
-    subtitle: "Registered students",
-    icon: GraduationCap,
+    subtitle: "Active academy roster",
     href: "/students",
-    accent: "from-blue-500 to-blue-600",
+    icon: GraduationCap,
+    accent: "from-blue-500 to-cyan-400",
     iconBg: "bg-blue-500/10",
     iconColor: "text-blue-400",
-    borderHover: "hover:border-blue-500/30",
-    glow:
-      "group-hover:shadow-[0_8px_32px_rgba(59,130,246,0.12)]",
     getValue: (stats) => stats.totalStudents.toLocaleString(),
-    getMeta: () => "Total enrolled",
+    getMeta: (stats) => `${stats.totalClasses} classes enrolled`,
   },
-
   {
     title: "Attendance",
-    subtitle: "Present today",
-    icon: CalendarCheck2,
+    subtitle: "Marked present today",
     href: "/attendance",
-    accent: "from-emerald-500 to-emerald-600",
+    icon: CalendarCheck2,
+    accent: "from-emerald-500 to-teal-400",
     iconBg: "bg-emerald-500/10",
     iconColor: "text-emerald-400",
-    borderHover: "hover:border-emerald-500/30",
-    glow:
-      "group-hover:shadow-[0_8px_32px_rgba(16,185,129,0.12)]",
-    getValue: (stats) =>
-      stats.presentStudents.toLocaleString(),
+    getValue: (stats) => stats.presentStudents.toLocaleString(),
     getMeta: (stats) =>
-      `${stats.absentStudents} absent · ${stats.totalStudents} total`,
+      `${stats.attendanceRate}% rate · ${stats.absentStudents} absent`,
   },
-
   {
     title: "Fees Collected",
     subtitle: "This month",
-    icon: Wallet,
     href: "/fees",
-    accent: "from-cyan-500 to-cyan-600",
+    icon: Wallet,
+    accent: "from-cyan-500 to-sky-400",
     iconBg: "bg-cyan-500/10",
     iconColor: "text-cyan-400",
-    borderHover: "hover:border-cyan-500/30",
-    glow:
-      "group-hover:shadow-[0_8px_32px_rgba(6,182,212,0.12)]",
-    getValue: (stats) =>
-      `Rs. ${stats.collectedFee.toLocaleString()}`,
-    getMeta: () => "Monthly collection",
+    getValue: (stats) => `Rs. ${stats.collectedFee.toLocaleString()}`,
+    getMeta: (stats) => `Rs. ${stats.pendingFees.toLocaleString()} pending`,
   },
-
   {
-    title: "Reports",
-    subtitle: "Academy analytics",
-    icon: BarChart3,
-    href: "/reports",
-    accent: "from-fuchsia-500 to-pink-600",
-    iconBg: "bg-fuchsia-500/10",
-    iconColor: "text-fuchsia-400",
-    borderHover: "hover:border-fuchsia-500/30",
-    glow:
-      "group-hover:shadow-[0_8px_32px_rgba(217,70,239,0.12)]",
-    getValue: () => "Reports",
-    getMeta: () => "View academy analytics",
-  },
-
-  {
-    title: "Subjects",
-    subtitle: "Academic subjects",
-    icon: BookOpen,
-    href: "/subjects",
-    accent: "from-sky-500 to-blue-600",
-    iconBg: "bg-sky-500/10",
-    iconColor: "text-sky-400",
-    borderHover: "hover:border-sky-500/30",
-    glow:
-      "group-hover:shadow-[0_8px_32px_rgba(14,165,233,0.12)]",
-    getValue: () => "Subjects",
-    getMeta: () => "Manage academic subjects",
-  },
-
-  {
-    title: "Settings",
-    subtitle: "System configuration",
-    icon: Settings,
-    href: "/settings",
-    accent: "from-slate-400 to-slate-600",
-    iconBg: "bg-slate-500/10",
-    iconColor: "text-slate-300",
-    borderHover: "hover:border-slate-500/30",
-    glow:
-      "group-hover:shadow-[0_8px_32px_rgba(148,163,184,0.10)]",
-    getValue: () => "Settings",
-    getMeta: () => "Configure academy system",
-  },
-
-  {
-    title: "Analytics",
-    subtitle: "Academy performance",
-    icon: TrendingUp,
-    href: "/analytics",
-    accent: "from-amber-500 to-orange-600",
+    title: "Pending Dues",
+    subtitle: "Outstanding this month",
+    href: "/fees",
+    icon: AlertCircle,
+    accent: "from-amber-500 to-orange-400",
     iconBg: "bg-amber-500/10",
     iconColor: "text-amber-400",
-    borderHover: "hover:border-amber-500/30",
-    glow:
-      "group-hover:shadow-[0_8px_32px_rgba(245,158,11,0.12)]",
-    getValue: () => "Analytics",
-    getMeta: () => "View academy performance",
+    getValue: (stats) => `Rs. ${stats.pendingFees.toLocaleString()}`,
+    getMeta: (stats) =>
+      `Rs. ${stats.overdueFees.toLocaleString()} overdue`,
+  },
+];
+
+const modules = [
+  {
+    title: "Admissions",
+    description: "Register new students",
+    href: "/admissions",
+    icon: UserPlus,
+    color: "text-violet-400",
+    bg: "bg-violet-500/10",
+  },
+  {
+    title: "Classes",
+    description: "Manage academic groups",
+    href: "/classes",
+    icon: School,
+    color: "text-sky-400",
+    bg: "bg-sky-500/10",
+  },
+  {
+    title: "Subjects",
+    description: "Curriculum and notes",
+    href: "/subjects",
+    icon: BookOpen,
+    color: "text-blue-400",
+    bg: "bg-blue-500/10",
+  },
+  {
+    title: "Results",
+    description: "Exam performance",
+    href: "/results",
+    icon: BarChart3,
+    color: "text-fuchsia-400",
+    bg: "bg-fuchsia-500/10",
+  },
+  {
+    title: "Analytics",
+    description: "Academy insights",
+    href: "/analytics",
+    icon: TrendingUp,
+    color: "text-amber-400",
+    bg: "bg-amber-500/10",
+  },
+  {
+    title: "Settings",
+    description: "System configuration",
+    href: "/settings",
+    icon: Settings,
+    color: "text-slate-300",
+    bg: "bg-slate-500/10",
   },
 ];
 
 function StatCardSkeleton() {
   return (
-    <article
-      className="
-        relative overflow-hidden rounded-2xl
-        border border-slate-800/80
-        bg-slate-900/40
-        p-6
-        backdrop-blur-sm
-      "
-    >
-      <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0 flex-1">
-          <div className="h-4 w-24 animate-pulse rounded bg-slate-800" />
-
-          <div className="mt-3 h-9 w-32 animate-pulse rounded bg-slate-800" />
-
-          <div className="mt-2 h-3 w-28 animate-pulse rounded bg-slate-800" />
-
-          <div className="mt-4 h-3 w-36 animate-pulse rounded bg-slate-800" />
-        </div>
-
-        <div className="h-12 w-12 shrink-0 animate-pulse rounded-xl bg-slate-800" />
-      </div>
-
-      <div className="mt-5 h-3 w-24 animate-pulse rounded bg-slate-800" />
+    <article className="rounded-2xl border border-slate-800/80 bg-slate-900/40 p-6">
+      <div className="h-4 w-24 animate-pulse rounded bg-slate-800" />
+      <div className="mt-4 h-9 w-32 animate-pulse rounded bg-slate-800" />
+      <div className="mt-3 h-3 w-36 animate-pulse rounded bg-slate-800" />
     </article>
   );
 }
@@ -191,6 +145,12 @@ function StatCardSkeleton() {
 export default function DashboardCards() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
+  const greeting = useMemo(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 17) return "Good afternoon";
+    return "Good evening";
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -198,21 +158,15 @@ export default function DashboardCards() {
     async function loadDashboard() {
       try {
         const data = await getDashboardStats();
-
-        if (mounted) {
-          setStats(data);
-        }
+        if (mounted) setStats(data);
       } catch (error) {
         console.error("Failed to load dashboard stats:", error);
       } finally {
-        if (mounted) {
-          setLoading(false);
-        }
+        if (mounted) setLoading(false);
       }
     }
 
     loadDashboard();
-
     return () => {
       mounted = false;
     };
@@ -220,148 +174,128 @@ export default function DashboardCards() {
 
   return (
     <section className="space-y-6">
-      {/* Header */}
-      <div>
-        <p className="text-sm font-medium uppercase tracking-[0.18em] text-blue-400">
-          Overview
-        </p>
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p className="text-sm font-medium uppercase tracking-[0.18em] text-cyan-400">
+            Command Center
+          </p>
+          <h1 className="mt-2 text-2xl font-bold tracking-tight text-white sm:text-3xl">
+            {greeting}, Administrator
+          </h1>
+          <p className="mt-2 max-w-2xl text-sm text-slate-400">
+            Saeed Educational Academy — live operations for admissions,
+            attendance, fees, and academics.
+          </p>
+        </div>
 
-        <h1 className="mt-2 text-2xl font-bold tracking-tight text-white sm:text-3xl">
-          SAEED EDUCATIONAL ACADEMY
-        </h1>
-
-        <p className="mt-2 text-sm text-slate-400">
-          Welcome to my academy system
-        </p>
+        {stats && (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            <div className="rounded-xl border border-slate-800 bg-slate-900/50 px-4 py-3">
+              <p className="text-[11px] uppercase tracking-wide text-slate-500">
+                Classes
+              </p>
+              <p className="mt-1 text-lg font-semibold text-white">
+                {stats.totalClasses}
+              </p>
+            </div>
+            <div className="rounded-xl border border-slate-800 bg-slate-900/50 px-4 py-3">
+              <p className="text-[11px] uppercase tracking-wide text-slate-500">
+                Subjects
+              </p>
+              <p className="mt-1 text-lg font-semibold text-white">
+                {stats.totalSubjects}
+              </p>
+            </div>
+            <div className="hidden rounded-xl border border-slate-800 bg-slate-900/50 px-4 py-3 sm:block">
+              <p className="text-[11px] uppercase tracking-wide text-slate-500">
+                Attendance
+              </p>
+              <p className="mt-1 text-lg font-semibold text-white">
+                {stats.attendanceRate}%
+              </p>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Cards */}
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
         {loading ? (
           Array.from({ length: 4 }).map((_, index) => (
             <StatCardSkeleton key={index} />
           ))
         ) : stats ? (
-          cardThemes.map((card) => {
+          kpiCards.map((card) => {
             const Icon = card.icon;
 
             return (
-              <Link
-                key={card.title}
-                href={card.href}
-                className={`group block ${card.glow}`}
-              >
-                <article
-                  className={`
-                    relative overflow-hidden rounded-2xl
-                    border border-slate-800/80
-                    bg-slate-900/40
-                    p-6
-                    backdrop-blur-sm
-                    transition-all duration-300
-                    hover:-translate-y-1
-                    ${card.borderHover}
-                  `}
-                >
-                  {/* Top Gradient Line */}
+              <Link key={card.title} href={card.href} className="group block">
+                <article className="relative overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/45 p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-slate-700 hover:shadow-[0_16px_40px_rgba(2,8,23,0.45)]">
                   <div
-                    className={`
-                      absolute inset-x-0 top-0 h-px
-                      bg-gradient-to-r
-                      ${card.accent}
-                      opacity-60
-                    `}
+                    className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r ${card.accent} opacity-70`}
                   />
 
-                  {/* Card Content */}
                   <div className="flex items-start justify-between gap-4">
-                    <div className="min-w-0 flex-1">
+                    <div className="min-w-0">
                       <p className="text-sm font-medium text-slate-400">
                         {card.title}
                       </p>
-
                       <p className="mt-2 text-3xl font-bold tabular-nums tracking-tight text-white">
                         {card.getValue(stats)}
                       </p>
-
-                      <p className="mt-1 text-xs text-slate-500">
-                        {card.subtitle}
-                      </p>
-
-                      <p className="mt-3 text-xs font-medium text-slate-400">
+                      <p className="mt-2 text-xs text-slate-500">
                         {card.getMeta(stats)}
                       </p>
                     </div>
 
-                    {/* Icon */}
                     <div
-                      className={`
-                        flex h-12 w-12 shrink-0
-                        items-center justify-center
-                        rounded-xl
-                        ${card.iconBg}
-                      `}
+                      className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${card.iconBg}`}
                     >
-                      <Icon
-                        size={22}
-                        strokeWidth={1.8}
-                        className={card.iconColor}
-                      />
+                      <Icon size={22} className={card.iconColor} />
                     </div>
                   </div>
 
-                  {/* View Details */}
-                  <div
-                    className="
-                      mt-5 flex items-center gap-1.5
-                      text-xs font-medium text-slate-500
-                      transition-colors
-                      group-hover:text-blue-400
-                    "
-                  >
-                    <span>View details</span>
-
+                  <div className="mt-5 flex items-center gap-1.5 text-xs font-medium text-slate-500 transition-colors group-hover:text-cyan-300">
+                    <span>Open {card.title.toLowerCase()}</span>
                     <ArrowUpRight
                       size={14}
-                      className="
-                        transition-transform duration-200
-                        group-hover:translate-x-0.5
-                        group-hover:-translate-y-0.5
-                      "
+                      className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
                     />
                   </div>
-
-                  {/* Subtle Glow */}
-                  <div
-                    className="
-                      pointer-events-none
-                      absolute -right-16 -top-16
-                      h-32 w-32
-                      rounded-full
-                      bg-white/[0.02]
-                      blur-3xl
-                      opacity-0
-                      transition-opacity duration-300
-                      group-hover:opacity-100
-                    "
-                  />
                 </article>
               </Link>
             );
           })
         ) : (
-          <div
-            className="
-              col-span-full rounded-2xl
-              border border-red-500/20
-              bg-red-500/5
-              p-6 text-sm text-red-400
-            "
-          >
-            Unable to load dashboard statistics.
-            Please try again.
+          <div className="col-span-full rounded-2xl border border-red-500/20 bg-red-500/5 p-6 text-sm text-red-400">
+            Unable to load dashboard statistics. Please try again.
           </div>
         )}
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
+        {modules.map((item) => {
+          const Icon = item.icon;
+
+          return (
+            <Link
+              key={item.title}
+              href={item.href}
+              className="group flex items-center gap-3 rounded-2xl border border-slate-800/80 bg-slate-900/35 px-4 py-3 transition hover:border-slate-700 hover:bg-slate-900/60"
+            >
+              <div
+                className={`flex h-10 w-10 items-center justify-center rounded-xl ${item.bg}`}
+              >
+                <Icon size={18} className={item.color} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-white">{item.title}</p>
+                <p className="truncate text-[11px] text-slate-500">
+                  {item.description}
+                </p>
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );

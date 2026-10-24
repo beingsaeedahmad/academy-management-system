@@ -460,7 +460,7 @@ export default function ResultsPage() {
   /* ------------------------------------------------------------------------ */
 
   return (
-    <div className="min-h-screen bg-[#020817] text-white">
+    <div className="text-white">
       <div
         className="
           mx-auto

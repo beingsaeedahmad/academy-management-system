@@ -142,19 +142,22 @@ export default function Sidebar() {
                     href={item.href}
                     title={collapsed ? item.title : undefined}
                     className={`
-                      flex items-center gap-3 rounded-xl px-3 py-2.5
+                      relative flex items-center gap-3 rounded-xl px-3 py-2.5
                       text-sm font-medium transition-all duration-200
                       ${
                         active
-                          ? "bg-blue-500/10 text-white"
+                          ? "bg-gradient-to-r from-blue-500/16 to-cyan-500/8 text-white shadow-[inset_0_0_0_1px_rgba(59,130,246,0.18)]"
                           : "text-slate-400 hover:bg-slate-800/50 hover:text-white"
                       }
                       ${collapsed ? "justify-center" : ""}
                     `}
                   >
+                    {active && (
+                      <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-cyan-400" />
+                    )}
                     <Icon
                       size={18}
-                      className={active ? "text-blue-400" : "text-slate-500"}
+                      className={active ? "text-cyan-300" : "text-slate-500"}
                     />
 
                     {!collapsed && <span>{item.title}</span>}

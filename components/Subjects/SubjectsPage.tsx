@@ -173,7 +173,7 @@ export default function SubjectsPage() {
   // =========================================================
 
   return (
-    <main className="min-h-screen w-full bg-[#020817] px-5 py-6 text-white sm:px-6 lg:px-8">
+    <main className="w-full px-5 py-6 text-white sm:px-6 lg:px-8">
       <div className="w-full">
         {/* =====================================================
             HEADER
